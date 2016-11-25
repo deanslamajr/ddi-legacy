@@ -1,7 +1,10 @@
 import React from 'react';
+import cssModules from 'react-css-modules';
 import { throttle } from 'throttle-debounce';
 
-export default class DrawTool extends React.Component {
+import styles from './draw-tool.css';
+
+class DrawTool extends React.Component {
   constructor(props) {
     super(props);
 
@@ -78,12 +81,13 @@ export default class DrawTool extends React.Component {
     let svgSnippet = this.state.current;
     svgSnippet += ` L ${x} ${y}`;
 
-    const svgObjects = this.state.svgObjects;
-    svgObjects.push(this.path);
+    const svgObjects = Array.from(this.state.svgObjects);
+    svgObjects.push(svgSnippet);
 
     this.setState({
-      current: svgSnippet,
+      current: '',
       active: false,
+      svgObjects,
       x,
       y
     })
@@ -94,10 +98,10 @@ export default class DrawTool extends React.Component {
 
     return (
       <div>
-        <svg 
+        <svg
           xmlns='http://www.w3.org/2000/svg'
           ref={canvas => this.canvas = canvas} 
-          id='canvas' 
+          styleName='canvas-space'
           width={width} 
           height={height}
           onMouseDown={this.onDown}
@@ -108,6 +112,9 @@ export default class DrawTool extends React.Component {
           onTouchEnd={this.onUp}
           >
           <path d={this.state.current} stroke='black' strokeWidth='3' fillOpacity='0' />
+          { this.state.svgObjects.map(path => (
+              <path d={path} stroke='black' strokeWidth='3' fillOpacity='0' />
+            ))}
         </svg>
         <div>{this.state.x}</div>
         <div>{this.state.y}</div>
@@ -121,3 +128,5 @@ DrawTool.propTypes = {
   width: React.PropTypes.number.isRequired,
   height: React.PropTypes.number.isRequired
 };
+
+export default cssModules(DrawTool, styles);

@@ -14,7 +14,9 @@ export default class DrawTool extends React.Component {
     this.state = {
       active: false,
       x: 0,
-      y: 0
+      y: 0,
+      svgObjects: [],
+      current: ''
     };
   }
 
@@ -23,31 +25,24 @@ export default class DrawTool extends React.Component {
 
     // handle the first touch event or the mouse click
     const evt = event.changedTouches && event.changedTouches[0] || event;
+
+    const x = Math.round(evt.pageX - this.canvas.getBoundingClientRect().left);
+    const y = Math.round(evt.pageY - this.canvas.getBoundingClientRect().top);
+
+    let svgSnippet = `M ${x} ${y}`;
     
     this.setState({
       active: true,
-      x: evt.pageX - this.canvas.offsetLeft,
-      y: evt.pageY - this.canvas.offsetTop
+      current: svgSnippet,
+      x,
+      y
     });
-  }
-
-  onUp(event) {
-    event.preventDefault();
-
-    // handle the first touch event or the mouse click
-    const evt = event.changedTouches && event.changedTouches[0] || event;
-
-    this.setState({
-      active: false,
-      x: evt.pageX - this.canvas.offsetLeft,
-      y: evt.pageY - this.canvas.offsetTop
-    })
   }
 
   onMove(event) {
     // needed for the throttling
     event.persist();
-    
+
     event.preventDefault();
     this.doMoveAction(event);
   }
@@ -56,20 +51,42 @@ export default class DrawTool extends React.Component {
     // handle the first touch event or the mouse click
     const evt = event.changedTouches && event.changedTouches[0] || event;
 
+    const x = Math.round(evt.pageX - this.canvas.getBoundingClientRect().left);
+    const y = Math.round(evt.pageY - this.canvas.getBoundingClientRect().top);
+
+    let svgSnippet = this.state.current;
+    svgSnippet += ` L ${x} ${y}`;
+
     if (this.state.active) {
       this.setState({
-        x: evt.pageX - this.canvas.offsetLeft,
-        y: evt.pageY - this.canvas.offsetTop
+        current: svgSnippet,
+        x,
+        y
       });
     }
   }
 
-  componentDidMount() {
-    const { width, height } = this.props;
+  onUp(event) {
+    event.preventDefault();
 
-    this.ctx = this.canvas.getContext('2d');
-    this.ctx.fillStyle = 'white';
-    this.ctx.fillRect(0,0, width, height);
+    // handle the first touch event or the mouse click
+    const evt = event.changedTouches && event.changedTouches[0] || event;
+
+    const x = Math.round(evt.pageX - this.canvas.getBoundingClientRect().left);
+    const y = Math.round(evt.pageY - this.canvas.getBoundingClientRect().top);
+
+    let svgSnippet = this.state.current;
+    svgSnippet += ` L ${x} ${y}`;
+
+    const svgObjects = this.state.svgObjects;
+    svgObjects.push(this.path);
+
+    this.setState({
+      current: svgSnippet,
+      active: false,
+      x,
+      y
+    })
   }
   
   render() {
@@ -77,7 +94,8 @@ export default class DrawTool extends React.Component {
 
     return (
       <div>
-        <canvas 
+        <svg 
+          xmlns='http://www.w3.org/2000/svg'
           ref={canvas => this.canvas = canvas} 
           id='canvas' 
           width={width} 
@@ -88,9 +106,12 @@ export default class DrawTool extends React.Component {
           onTouchMove={this.onMove}
           onMouseUp={this.onUp}
           onTouchEnd={this.onUp}
-          />
+          >
+          <path d={this.state.current} stroke='black' strokeWidth='3' fillOpacity='0' />
+        </svg>
         <div>{this.state.x}</div>
         <div>{this.state.y}</div>
+        <div>{this.state.current}</div>
       </div>
     );
   }

@@ -1,14 +1,15 @@
 import React from 'react';
+import { throttle } from 'throttle-debounce';
 
 export default class DrawTool extends React.Component {
   constructor(props) {
     super(props);
 
-    this.ctx = null;
-
     this.onDown = this.onDown.bind(this);
     this.onMove = this.onMove.bind(this);
     this.onUp = this.onUp.bind(this);
+
+    this.doMoveAction = throttle(50, this.doMoveAction);
 
     this.state = {
       active: false,
@@ -18,48 +19,55 @@ export default class DrawTool extends React.Component {
   }
 
   onDown(event) {
+    event.preventDefault();
+
     // handle the first touch event or the mouse click
     const evt = event.changedTouches && event.changedTouches[0] || event;
-
+    
     this.setState({
       active: true,
-      x: evt.pageX,
-      y: evt.pageY
+      x: evt.pageX - this.canvas.offsetLeft,
+      y: evt.pageY - this.canvas.offsetTop
     });
   }
 
-  onMove(event) {
-    event.preventDefault();
-    // handle the first touch event or the mouse click
-    const evt = event.changedTouches && event.changedTouches[0] || event;
-
-    if (this.state.active) {
-      this.setState({
-        x: evt.clientX,
-        y: evt.clientY
-      });
-    }
-  }
-
   onUp(event) {
+    event.preventDefault();
+
     // handle the first touch event or the mouse click
     const evt = event.changedTouches && event.changedTouches[0] || event;
 
     this.setState({
       active: false,
-      x: evt.pageX,
-      y: evt.pageY
+      x: evt.pageX - this.canvas.offsetLeft,
+      y: evt.pageY - this.canvas.offsetTop
     })
   }
 
-  componentDidMount() {
-    this.updateCanvas();
+  onMove(event) {
+    // needed for the throttling
+    event.persist();
+    
+    event.preventDefault();
+    this.doMoveAction(event);
   }
 
-  updateCanvas() {
+  doMoveAction(event) {
+    // handle the first touch event or the mouse click
+    const evt = event.changedTouches && event.changedTouches[0] || event;
+
+    if (this.state.active) {
+      this.setState({
+        x: evt.pageX - this.canvas.offsetLeft,
+        y: evt.pageY - this.canvas.offsetTop
+      });
+    }
+  }
+
+  componentDidMount() {
     const { width, height } = this.props;
 
-    this.ctx = this.refs.canvas.getContext('2d');
+    this.ctx = this.canvas.getContext('2d');
     this.ctx.fillStyle = 'white';
     this.ctx.fillRect(0,0, width, height);
   }
@@ -70,7 +78,7 @@ export default class DrawTool extends React.Component {
     return (
       <div>
         <canvas 
-          ref='canvas' 
+          ref={canvas => this.canvas = canvas} 
           id='canvas' 
           width={width} 
           height={height}

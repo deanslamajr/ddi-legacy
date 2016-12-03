@@ -12,7 +12,7 @@ class DrawTool extends React.Component {
     this.onMove = this.onMove.bind(this);
     this.onUp = this.onUp.bind(this);
 
-    this.doMoveAction = throttle(50, this.doMoveAction);
+    this.doMoveAction = throttle(30, this.doMoveAction);
 
     this.state = {
       active: false,

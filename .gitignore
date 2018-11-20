@@ -4,3 +4,11 @@ npm-debug.log
 
 # build artifacts
 public
+
+# next.js
+.next
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

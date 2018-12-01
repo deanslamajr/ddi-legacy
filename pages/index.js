@@ -1,8 +1,40 @@
 import Head from 'next/head'
 import { withRouter } from 'next/router'
 import { Component } from 'react'
+import styled from 'styled-components'
+import Konva from 'konva'
+import { Stage, Layer, Image } from 'react-konva'
+import { Emoji, Picker } from 'emoji-mart'
+
+import 'emoji-mart/css/emoji-mart.css'
+
+const CanvasContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  background-color: black;
+`
 
 class Test extends Component {
+  state = {
+    image: undefined,
+    selectedEmoji: undefined
+  }
+
+  selectEmoji = (emoji) => {
+    this.setState({ selectedEmoji: emoji }, () => {
+      const emojiSpan = document.querySelector('.emoji-mart-emoji').firstChild
+      const { backgroundImage, backgroundPositionX, backgroundPositionY, backgroundSize } = emojiSpan.style
+
+      const imageUrl = backgroundImage.split('"')[1]
+
+      const image = new window.Image()
+      image.src = imageUrl
+      image.onload = () => {
+        this.setState({ image })
+      }
+    })
+  }
+
   render () {
     const { router } = this.props
     const v = router.query.v || '0'
@@ -30,7 +62,20 @@ class Test extends Component {
           {/* Images for this Card support an aspect ratio of 1:1 with minimum dimensions of 144x144 or maximum of 4096x4096 pixels. Images must be less than 5MB in size. The image will be cropped to a square on all platforms. JPG, PNG, WEBP and GIF formats are supported. Only the first frame of an animated GIF will be used. SVG is not supported  */}
           <meta name="twitter:image" content={`https://s3-us-west-2.amazonaws.com/assets.dslama.net/test${v}.jpg`} />
         </Head>
-        <div>How about them?</div>
+        <CanvasContainer>
+          <Stage width={250} height={250}>
+            <Layer>
+              {/* { this.state.image && <Image
+                image={this.state.image}
+              />} */}
+              <Image image={this.state.image} />
+            </Layer>
+          </Stage>
+        </CanvasContainer>
+        <Picker onSelect={this.selectEmoji} />
+        {this.state.selectedEmoji && <div id='taco'>
+          <Emoji emoji={this.state.selectedEmoji} size={32} />
+        </div>}
       </div>
     )
   }

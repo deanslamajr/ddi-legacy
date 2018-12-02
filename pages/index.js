@@ -58,6 +58,8 @@ class Test extends Component {
     return (
       <div>
         <Head>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+
           {/* - iMessage/Messages https://developer.apple.com/library/archive/technotes/tn2444/_index.html
                 * Images should be at least 900px in width
               - android app Messages

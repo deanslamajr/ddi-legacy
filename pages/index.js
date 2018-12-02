@@ -22,7 +22,12 @@ class Test extends Component {
   }
 
   selectEmoji = (emoji) => {
+    console.log('emoji')
+    console.dir(emoji)
+
     this.setState({ selectedEmoji: emoji }, () => {
+      console.log('taco')
+      
       const emojiSpan = document.querySelector('#taco .emoji-mart-emoji').firstChild
 
       console.log('emojiSpan')
@@ -32,7 +37,7 @@ class Test extends Component {
         .then((dataUrl) => {
           console.log('dataUrl')
           console.dir(dataUrl)
-          
+
           const image = new window.Image()
           image.src = dataUrl
           image.onload = () => {

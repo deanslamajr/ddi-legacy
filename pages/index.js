@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import Konva from 'konva'
 import { Stage, Layer, Image } from 'react-konva'
 import { Emoji, Picker } from 'emoji-mart'
+import domtoimage from 'dom-to-image'
 
 import 'emoji-mart/css/emoji-mart.css'
 
@@ -22,16 +23,20 @@ class Test extends Component {
 
   selectEmoji = (emoji) => {
     this.setState({ selectedEmoji: emoji }, () => {
-      const emojiSpan = document.querySelector('.emoji-mart-emoji').firstChild
-      const { backgroundImage, backgroundPositionX, backgroundPositionY, backgroundSize } = emojiSpan.style
+      const emojiSpan = document.querySelector('#taco .emoji-mart-emoji').firstChild
 
-      const imageUrl = backgroundImage.split('"')[1]
-
-      const image = new window.Image()
-      image.src = imageUrl
-      image.onload = () => {
-        this.setState({ image })
-      }
+      domtoimage.toPng(emojiSpan)
+        .then((dataUrl) => {
+          const image = new window.Image()
+          image.src = dataUrl
+          image.onload = () => {
+            this.setState({ image })
+          }
+          document.body.appendChild(image)
+        })
+        .catch((error) => {
+            console.error('oops, something went wrong!', error);
+        })
     })
   }
 
@@ -65,16 +70,16 @@ class Test extends Component {
         <CanvasContainer>
           <Stage width={250} height={250}>
             <Layer>
-              {/* { this.state.image && <Image
-                image={this.state.image}
-              />} */}
               <Image image={this.state.image} />
             </Layer>
           </Stage>
         </CanvasContainer>
         <Picker onSelect={this.selectEmoji} />
         {this.state.selectedEmoji && <div id='taco'>
-          <Emoji emoji={this.state.selectedEmoji} size={32} />
+          <Emoji
+            emoji={this.state.selectedEmoji}
+            size={32}
+          />
         </div>}
       </div>
     )

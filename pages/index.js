@@ -25,8 +25,14 @@ class Test extends Component {
     this.setState({ selectedEmoji: emoji }, () => {
       const emojiSpan = document.querySelector('#taco .emoji-mart-emoji').firstChild
 
+      console.log('emojiSpan')
+      console.dir(emojiSpan)
+
       domtoimage.toPng(emojiSpan)
         .then((dataUrl) => {
+          console.log('dataUrl')
+          console.dir(dataUrl)
+          
           const image = new window.Image()
           image.src = dataUrl
           image.onload = () => {

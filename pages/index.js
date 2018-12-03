@@ -3,7 +3,7 @@ import { withRouter } from 'next/router'
 import { Component } from 'react'
 import styled from 'styled-components'
 import Konva from 'konva'
-import { Stage, Layer, Image } from 'react-konva'
+import { Stage, Layer, Image, Rect } from 'react-konva'
 import { Emoji, Picker } from 'emoji-mart'
 import domtoimage from 'dom-to-image'
 
@@ -12,7 +12,6 @@ import 'emoji-mart/css/emoji-mart.css'
 const CanvasContainer = styled.div`
   display: flex;
   justify-content: center;
-  background-color: black;
 `
 
 class Test extends Component {
@@ -22,22 +21,11 @@ class Test extends Component {
   }
 
   selectEmoji = (emoji) => {
-    console.log('emoji')
-    console.dir(emoji)
-
     this.setState({ selectedEmoji: emoji }, () => {
-      console.log('taco')
-      
       const emojiSpan = document.querySelector('#taco .emoji-mart-emoji').firstChild
-
-      console.log('emojiSpan')
-      console.dir(emojiSpan)
 
       domtoimage.toPng(emojiSpan)
         .then((dataUrl) => {
-          console.log('dataUrl')
-          console.dir(dataUrl)
-
           const image = new window.Image()
           image.src = dataUrl
           image.onload = () => {
@@ -83,7 +71,14 @@ class Test extends Component {
         <CanvasContainer>
           <Stage width={250} height={250}>
             <Layer>
-              <Image image={this.state.image} />
+              <Rect
+                x={0}
+                y={0}
+                width={250}
+                height={250}
+                stroke={'black'}
+              />
+              <Image image={this.state.image} scale={{ x: 2, y: 2 }} />
             </Layer>
           </Stage>
         </CanvasContainer>
@@ -91,7 +86,7 @@ class Test extends Component {
         {this.state.selectedEmoji && <div id='taco'>
           <Emoji
             emoji={this.state.selectedEmoji}
-            size={32}
+            size={64}
           />
         </div>}
       </div>

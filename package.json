@@ -26,5 +26,8 @@
     "react-dom": "^16.6.3",
     "react-konva": "^16.6.31",
     "styled-components": "^4.1.2"
+  },
+  "devDependencies": {
+    "babel-plugin-styled-components": "^1.9.2"
   }
 }

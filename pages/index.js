@@ -11,12 +11,9 @@ import getConfig from 'next/config'
 
 import 'emoji-mart/css/emoji-mart.css'
 
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig()
-
-console.log('serverRuntimeConfig')
-console.dir(serverRuntimeConfig)
-console.log('publicRuntimeConfig')
-console.dir(publicRuntimeConfig)
+// Environment variables
+// @see {@link https://nextjs.org/docs/#exposing-configuration-to-the-server--client-side}
+const { publicRuntimeConfig } = getConfig()
 
 // console.log('emojiIndex.emojis')
 // Object.values(emojiIndex.emojis).filter(emoji => emoji.native).map(emoji => console.dir(emoji.native))

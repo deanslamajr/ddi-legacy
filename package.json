@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon index.js",
-    "start": "next build && node index.js"
+    "dev": "nodemon server/index.js",
+    "start": "next build && node server/index.js"
   },
   "repository": {
     "type": "git",

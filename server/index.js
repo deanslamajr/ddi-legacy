@@ -4,6 +4,7 @@ const next = require('next')
 const { serverEnvironment } = require('./env-config')
 
 const port = parseInt(serverEnvironment.PORT, 10) || 3000
+
 const dev = serverEnvironment.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()

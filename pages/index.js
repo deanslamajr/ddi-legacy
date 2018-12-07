@@ -11,10 +11,12 @@ import getConfig from 'next/config'
 
 import 'emoji-mart/css/emoji-mart.css'
 
-const {serverRuntimeConfig, publicRuntimeConfig} = getConfig()
+const { serverRuntimeConfig, publicRuntimeConfig } = getConfig()
 
-console.log(serverRuntimeConfig.mySecret) // Will only be available on the server side
-console.log(publicRuntimeConfig.staticFolder)
+console.log('serverRuntimeConfig')
+console.dir(serverRuntimeConfig)
+console.log('publicRuntimeConfig')
+console.dir(publicRuntimeConfig)
 
 // console.log('emojiIndex.emojis')
 // Object.values(emojiIndex.emojis).filter(emoji => emoji.native).map(emoji => console.dir(emoji.native))

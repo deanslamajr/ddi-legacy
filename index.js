@@ -1,15 +1,10 @@
 const express = require('express')
 const next = require('next')
 
-const getConfig = require('next/config')
+const { serverEnvironment } = require('./env-config')
 
-const {serverRuntimeConfig, publicRuntimeConfig} = getConfig()
-
-console.log() // Will only be available on the server side
-console.log(publicRuntimeConfig.staticFolder)
-
-const port = parseInt(process.env.PORT, 10) || 3000
-const dev = process.env.NODE_ENV !== 'production'
+const port = parseInt(serverEnvironment.PORT, 10) || 3000
+const dev = serverEnvironment.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
@@ -19,10 +14,7 @@ app.prepare()
 
     // create a new cell - save image to s3 and save metadata to redis?
     server.post('/cell', (req, res) => {
-      return res.status(200).json({ data: {
-        secret: serverRuntimeConfig.mySecret,
-        static: publicRuntimeConfig.staticFolder
-      } })
+      return res.status(200).json({ data: serverEnvironment })
     })
 
     server.get('*', (req, res) => {

@@ -6,8 +6,15 @@ import Konva from 'konva'
 import { Stage, Layer, Image, Rect } from 'react-konva'
 import { Emoji, Picker, emojiIndex } from 'emoji-mart'
 import domtoimage from 'dom-to-image'
+import axios from 'axios'
+import getConfig from 'next/config'
 
 import 'emoji-mart/css/emoji-mart.css'
+
+const {serverRuntimeConfig, publicRuntimeConfig} = getConfig()
+
+console.log(serverRuntimeConfig.mySecret) // Will only be available on the server side
+console.log(publicRuntimeConfig.staticFolder)
 
 // console.log('emojiIndex.emojis')
 // Object.values(emojiIndex.emojis).filter(emoji => emoji.native).map(emoji => console.dir(emoji.native))
@@ -58,7 +65,12 @@ class Test extends Component {
   saveCell = (event) => {
     console.log('this.stage')
     const imageUri = this.stage.getStage().toDataURL()
-    downloadURI(imageUri, 'tester')
+    axios.get(imageUri).then(({ data }) => {
+      console.log('data')
+      console.dir(data)
+      axios.post('/cell')
+    })
+    //downloadURI(imageUri, 'tester')
   }
 
   searchEmojis = (event) => {

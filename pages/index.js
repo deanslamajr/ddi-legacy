@@ -62,13 +62,46 @@ class Test extends Component {
   }
 
   saveCell = (event) => {
-    console.log('this.stage')
-    const imageUri = this.stage.getStage().toDataURL()
-    axios.get(imageUri).then(({ data }) => {
-      console.log('data')
-      console.dir(data)
-      axios.post('/cell')
+    this.stage.toCanvas().toBlob((blob) => {
+      const file = new File([blob], 'cell.png', {
+        type: 'image/png',
+      })
+
+      const formData = new FormData();
+      formData.append('file', file, file.name)
+      // append other data similarly
+
+      const config = {
+        headers: { 'content-type': 'multipart/form-data' }
+      }
+
+      axios.post('/cell', formData, config)
+        .then(response => {
+          console.log('response')
+          console.dir(response)
+        })
     })
+    
+    //const imageUri = this.stage.getStage().toDataURL()
+
+
+
+    // axios.get(imageUri).then(({ data }) => {
+    //   console.log('data')
+    //   console.dir(data)
+
+    //   // const blob = new Blob(data)
+    //   // const imageFile = new File(blob, { type: 'image/png' })
+
+    //   axios.post('/cell', data, {
+    //     headers: {
+    //       'Content-Type': 'image/png'
+    //     }
+    //   })
+    // })
+
+
+
     //downloadURI(imageUri, 'tester')
   }
 

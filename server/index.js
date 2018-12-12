@@ -1,5 +1,9 @@
 const express = require('express')
 const next = require('next')
+const multer = require('multer')
+const upload = multer()//{ dest: 'uploads/' })
+
+const { save: saveCell } = require('./controllers/cell')
 
 const { serverEnvironment } = require('./env-config')
 
@@ -14,9 +18,7 @@ app.prepare()
     const server = express()
 
     // create a new cell - save image to s3 and save metadata to redis?
-    server.post('/cell', (req, res) => {
-      return res.status(200).json({ data: serverEnvironment })
-    })
+    server.post('/cell', upload.single('file'), saveCell)
 
     server.get('*', (req, res) => {
       return handle(req, res)

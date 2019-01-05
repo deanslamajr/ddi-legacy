@@ -66,20 +66,21 @@ class Test extends Component {
     })
   }
 
-  getSignedRequest = (file) => {
+  getSignedRequest = async (file) => {
     console.log('file.name')
     console.dir(file.name)
     console.log('file.type')
     console.dir(file.type)
 
-    axios.get(`/sign?file-name=${file.name}&file-type=${file.type}`)
-      .then(response => {
-        console.log('response')
-        console.dir(response)
-      })
-      .catch((e) => {
-        console.error(e)
-      })   
+    try {
+      const { data } = await axios.get(`/sign?file-name=${file.name}&file-type=${file.type}`)
+
+      console.log('data')
+      console.dir(data)
+    }
+    catch (e) {
+      console.error(e)
+    }
   }
 
   saveCell = (event) => {

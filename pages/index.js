@@ -67,66 +67,54 @@ class Test extends Component {
   }
 
   getSignedRequest = async (file) => {
-    console.log('file.name')
-    console.dir(file.name)
-    console.log('file.type')
-    console.dir(file.type)
-
     try {
       const { data } = await axios.get(`/sign?file-name=${file.name}&file-type=${file.type}`)
-
-      console.log('data')
-      console.dir(data)
+      return data
     }
     catch (e) {
-      console.error(e)
+      throw e
     }
   }
 
-  saveCell = (event) => {
-    this.stage.toCanvas().toBlob((blob) => {
+  saveCell = async (event) => {
+    this.stage.toCanvas().toBlob(async (blob) => {
       const file = new File([blob], generateFilename(), {
         type: 'image/png',
       })
 
-      this.getSignedRequest(file)
+      try {
+        const signData = await this.getSignedRequest(file)
 
-      // const formData = new FormData();
-      // formData.append('file', file, file.name)
-      // // append other data similarly
+        // const formData = new FormData()
+        // formData.append('file', file, file.name)
 
-      // const config = {
-      //   headers: { 'content-type': 'multipart/form-data' }
-      // }
+        // const config = {
+        //   headers: { 'content-type': 'multipart/form-data' }
+        // }
 
-      // axios.post('/cell', formData, config)
-      //   .then(response => {
-      //     console.log('response')
-      //     console.dir(response)
-      //   })
+        // const response = await axios.put(signData.signedRequest, formData, config)
+
+        // console.log('response')
+        // console.dir(response)
+
+        const xhr = new XMLHttpRequest()
+        xhr.open('PUT', signData.signedRequest)
+        xhr.onreadystatechange = () => {
+          if(xhr.readyState === 4){
+            if(xhr.status === 200){
+              console.log('upload success!!')
+            }
+            else{
+              console.error('could not upload file!')
+            }
+          }
+        }
+        xhr.send(file)
+      }
+      catch (e) {
+        console.error(e)
+      }
     })
-    
-    //const imageUri = this.stage.getStage().toDataURL()
-
-
-
-    // axios.get(imageUri).then(({ data }) => {
-    //   console.log('data')
-    //   console.dir(data)
-
-    //   // const blob = new Blob(data)
-    //   // const imageFile = new File(blob, { type: 'image/png' })
-
-    //   axios.post('/cell', data, {
-    //     headers: {
-    //       'Content-Type': 'image/png'
-    //     }
-    //   })
-    // })
-
-
-
-    //downloadURI(imageUri, 'tester')
   }
 
   searchEmojis = (event) => {

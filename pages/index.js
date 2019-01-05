@@ -8,6 +8,7 @@ import { Emoji, Picker, emojiIndex } from 'emoji-mart'
 import domtoimage from 'dom-to-image'
 import axios from 'axios'
 import getConfig from 'next/config'
+import shortid from 'shortid'
 
 import 'emoji-mart/css/emoji-mart.css'
 
@@ -18,6 +19,10 @@ const { publicRuntimeConfig } = getConfig()
 // console.log('emojiIndex.emojis')
 // Object.values(emojiIndex.emojis).filter(emoji => emoji.native).map(emoji => console.dir(emoji.native))
 // console.dir(emojiIndex)
+
+function generateFilename () {
+  return `${shortid.generate()}.png`
+}
 
 // function from https://stackoverflow.com/a/15832662/512042
 function downloadURI(uri, name) {
@@ -61,25 +66,43 @@ class Test extends Component {
     })
   }
 
+  getSignedRequest = (file) => {
+    console.log('file.name')
+    console.dir(file.name)
+    console.log('file.type')
+    console.dir(file.type)
+
+    axios.get(`/sign?file-name=${file.name}&file-type=${file.type}`)
+      .then(response => {
+        console.log('response')
+        console.dir(response)
+      })
+      .catch((e) => {
+        console.error(e)
+      })   
+  }
+
   saveCell = (event) => {
     this.stage.toCanvas().toBlob((blob) => {
-      const file = new File([blob], 'cell.png', {
+      const file = new File([blob], generateFilename(), {
         type: 'image/png',
       })
 
-      const formData = new FormData();
-      formData.append('file', file, file.name)
-      // append other data similarly
+      this.getSignedRequest(file)
 
-      const config = {
-        headers: { 'content-type': 'multipart/form-data' }
-      }
+      // const formData = new FormData();
+      // formData.append('file', file, file.name)
+      // // append other data similarly
 
-      axios.post('/cell', formData, config)
-        .then(response => {
-          console.log('response')
-          console.dir(response)
-        })
+      // const config = {
+      //   headers: { 'content-type': 'multipart/form-data' }
+      // }
+
+      // axios.post('/cell', formData, config)
+      //   .then(response => {
+      //     console.log('response')
+      //     console.dir(response)
+      //   })
     })
     
     //const imageUri = this.stage.getStage().toDataURL()

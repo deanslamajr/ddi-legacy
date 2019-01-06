@@ -2,6 +2,7 @@
 require('dotenv').config()
 
 const clientEnvironment = {
+  HOST: fromProcessEnv('HOST')
 }
 
 function fromProcessEnv (name) {

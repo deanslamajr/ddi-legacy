@@ -17,6 +17,15 @@ app.prepare()
 
     server.get('/sign', sign)
 
+    /**
+     * TESTING ONLY
+     * please remove
+     */
+    server.get('/taco', (req, res) => {
+      res.write(JSON.stringify({ taco: __filename }))
+      res.end()
+    })
+
     server.get('*', (req, res) => {
       return handle(req, res)
     })

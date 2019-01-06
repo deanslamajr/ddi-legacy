@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import { withRouter } from 'next/router'
+import Link from 'next/link'
 import { Component } from 'react'
 import styled from 'styled-components'
 import Konva from 'konva'
@@ -180,6 +181,9 @@ class Test extends Component {
           </div>}
           <input onChange={this.searchEmojis} type='text' />
         </CenteredContainer>
+        <Link href="/i">
+          <a>Test /i</a>
+        </Link>{' '}
       </div>
     )
   }

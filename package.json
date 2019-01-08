@@ -4,7 +4,9 @@
   "main": "app.js",
   "scripts": {
     "dev": "nodemon server/index.js",
-    "start": "next build && node server/index.js"
+    "start": "next build && node server/index.js",
+    "migrate": "sequelize db:migrate",
+    "migrate:undo": "sequelize db:migrate:undo"
   },
   "repository": {
     "type": "git",
@@ -31,14 +33,17 @@
     "express": "^4.16.4",
     "konva": "^2.5.1",
     "next": "^7.0.2",
+    "pg": "^7.7.1",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-konva": "^16.6.31",
+    "sequelize": "^4.42.0",
     "shortid": "^2.2.14",
     "styled-components": "^4.1.2"
   },
   "devDependencies": {
     "babel-plugin-styled-components": "^1.9.2",
-    "nodemon": "^1.18.7"
+    "nodemon": "^1.18.7",
+    "sequelize-cli": "^5.4.0"
   }
 }

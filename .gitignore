@@ -15,3 +15,4 @@ public
 
 # secrets
 .env
+config/config.json

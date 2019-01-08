@@ -1,0 +1,17 @@
+{
+  "development": {
+    "username": "username",
+    "password": "password",
+    "database": "local-ddi",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "qa": {
+    "username": "",
+    "password": "",
+    "database": "",
+    "host": "",
+    "dialect": "postgres"
+  }
+}
+

@@ -4,7 +4,7 @@ const Sequelize = require('sequelize')
 const { serverEnvironment } = require('../env-config')
 
 const sequelize = new Sequelize(serverEnvironment.PGDB_DBNAME, serverEnvironment.PGDB_USERNAME, serverEnvironment.PGDB_PASSWORD, {
-  host: config('PGDB_HOST'),
+  host: serverEnvironment.PGDB_HOST,
   dialect: 'postgres',
   pool: {
     max: 5,
@@ -17,4 +17,4 @@ const sequelize = new Sequelize(serverEnvironment.PGDB_DBNAME, serverEnvironment
   // }
 })
 
-export { sequelize }
+module.exports = { sequelize }

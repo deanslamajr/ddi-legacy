@@ -1,4 +1,7 @@
+const shortid = require('shortid')
+
 const { sign: signViaS3 } = require('../adapters/s3')
+const { Cells } = require('../models/index')
 
 async function sign (req, res) {
   try {
@@ -6,6 +9,14 @@ async function sign (req, res) {
     const filetype = req.query['file-type']
 
     const signData = await signViaS3(filename, filetype)
+
+    const id = shortid.generate()
+    await Cells.create({
+      image_url: signData.url,
+      url_id: id
+    })
+
+    signData.id = id
 
     res.write(JSON.stringify(signData))
     res.end()

@@ -20,7 +20,8 @@ const serverSecrets = {
   // DB
   PGDB_DBNAME: fromProcessEnv('PGDB_DBNAME'),
   PGDB_USERNAME: fromProcessEnv('PGDB_USERNAME'),
-  PGDB_PASSWORD: fromProcessEnv('PGDB_PASSWORD')
+  PGDB_PASSWORD: fromProcessEnv('PGDB_PASSWORD'),
+  PGDB_HOST: fromProcessEnv('PGDB_HOST')
 }
 
 const serverEnvironment = Object.assign({}, clientEnvironment, serverSecrets)

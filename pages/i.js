@@ -22,14 +22,15 @@ class ImageRoute extends Component {
   state = {
   }
 
-  static async getInitialProps ({ req }) {
-    const { data } = await axios.get(getApi('/taco', req))
-
-    return { data: JSON.stringify(data) }
+  static async getInitialProps ({ query, req }) {
+    const { data } = await axios.get(getApi(`/cell/${query.cellId}`, req))
+    return { imageUrl: data.image_url }
   }
 
   render () {
-    const { router } = this.props
+    const { 
+      imageUrl,
+      router } = this.props
     const v = router.query.v || '0'
     
     return (
@@ -44,7 +45,7 @@ class ImageRoute extends Component {
                 * 23 characters max for caption  */}
           <meta property="og:site_name" content="drawdrawink" />
           <meta property="og:title" content="A0 12 34 56 78 9B 01 23 45 67 89 C0 12 34 56 78 9D 01 23 45 67 89 E0 12 34 56 78 9F 01 23 45 67 89 G0 12 34 56 78 9H 01 23 45 67 89 I0 12 34 56 78 9J 01 23 45 67 89 K0 12 34 56 78 9" />
-          <meta property="og:image" content={`https://s3-us-west-2.amazonaws.com/assets.dslama.net/test${v}.jpg`} />
+          <meta property="og:image" content={imageUrl} />
           {/* The link preview generation will look for an apple-touch-icon, favicon, or one specified by <link rel="...">. 
               Icons should be square, and at least 108px per side. */}
           {/* <link rel="apple-touch-icon" href="https://www.link.to/icon/appIcon.png"> */}
@@ -55,10 +56,10 @@ class ImageRoute extends Component {
           <meta name="twitter:title" content="A0 12 34 56 78 9B 01 23 45 67 89 C0 12 34 56 78 9D 01 23 45 67 89 E0 12 34 56 78 9F 01 23 45 67 89 G0 12 34 56 78 9H 01 23 45 67 89 I0 12 34 56 78 9J 01 23 45 67 89 K0 12 34 56 78 9" />
           {/* <meta name="twitter:description" content="1 View the album on Flickr. 2 View the album on Flickr. 3 View the album on Flickr. 4 View the album on Flickr. 5 View the album on Flickr. 6 View the album on Flickr. 7 View the album on Flickr. 8 View the album on Flickr. 9 View the album on Flickr. 0 View the album on Flickr." /> */}
           {/* Images for this Card support an aspect ratio of 1:1 with minimum dimensions of 144x144 or maximum of 4096x4096 pixels. Images must be less than 5MB in size. The image will be cropped to a square on all platforms. JPG, PNG, WEBP and GIF formats are supported. Only the first frame of an animated GIF will be used. SVG is not supported  */}
-          <meta name="twitter:image" content={`https://s3-us-west-2.amazonaws.com/assets.dslama.net/test${v}.jpg`} />
+          <meta name="twitter:image" content={imageUrl} />
         </Head>
         <CenteredContainer>
-          {this.props.data}
+          <img src={imageUrl} />
         </CenteredContainer>
       </div>
     )

@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { withRouter } from 'next/router'
-import Link from 'next/link'
+import { Router } from '../routes'
 import { Component } from 'react'
 import styled from 'styled-components'
 import Konva from 'konva'
@@ -45,7 +45,8 @@ const CenteredContainer = styled.div`
 class Test extends Component {
   state = {
     image: undefined,
-    selectedEmoji: undefined
+    selectedEmoji: undefined,
+    showSaveButton: true
   }
 
   selectEmoji = (emoji) => {
@@ -78,32 +79,24 @@ class Test extends Component {
   }
 
   saveCell = async (event) => {
+    this.setState({ showSaveButton: false })
+
     this.stage.toCanvas().toBlob(async (blob) => {
       const file = new File([blob], generateFilename(), {
         type: 'image/png',
       })
 
       try {
-        const signData = await this.getSignedRequest(file)
-
-        // const formData = new FormData()
-        // formData.append('file', file, file.name)
-
-        // const config = {
-        //   headers: { 'content-type': 'multipart/form-data' }
-        // }
-
-        // const response = await axios.put(signData.signedRequest, formData, config)
-
-        // console.log('response')
-        // console.dir(response)
+        const {
+          id,
+          signedRequest } = await this.getSignedRequest(file)
 
         const xhr = new XMLHttpRequest()
-        xhr.open('PUT', signData.signedRequest)
+        xhr.open('PUT', signedRequest)
         xhr.onreadystatechange = () => {
           if(xhr.readyState === 4){
             if(xhr.status === 200){
-              console.log('upload success!!')
+              Router.pushRoute(`/i/${id}`)
             }
             else{
               console.error('could not upload file!')
@@ -171,7 +164,9 @@ class Test extends Component {
               <Image image={this.state.image} scale={{ x: 2, y: 2 }} />
             </Layer>
           </Stage>
-          <input type="button" onClick={this.saveCell} value='Save!' />
+
+          {this.state.showSaveButton && <input type="button" onClick={this.saveCell} value='Save!' />}
+
           <Picker onSelect={this.selectEmoji} />
           {this.state.selectedEmoji && <div id='taco'>
             <Emoji
@@ -181,9 +176,6 @@ class Test extends Component {
           </div>}
           <input onChange={this.searchEmojis} type='text' />
         </CenteredContainer>
-        <Link href="/i">
-          <a>Test /i</a>
-        </Link>{' '}
       </div>
     )
   }

@@ -8,7 +8,10 @@ import axios from 'axios'
 import getConfig from 'next/config'
 import shortid from 'shortid'
 
+import { GrayBackground } from '../../components/Layouts'
 import EmojiPicker from './EmojiPicker'
+
+
 
 const konvaCacheConfig = { offset: 10 }
 
@@ -188,6 +191,7 @@ class Test extends Component {
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
         </Head>
+        <GrayBackground />
         <CenteredContainer>
           <Stage ref={ref => this.stage = ref} width={250} height={250}>
             <Layer>
@@ -196,7 +200,6 @@ class Test extends Component {
                 y={0}
                 width={250}
                 height={250}
-                stroke='black'
                 fill='white'
               />
               {this.state.chosenEmoji && (

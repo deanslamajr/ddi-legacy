@@ -25,11 +25,20 @@ const CenteredContainer = styled.div`
   align-items: center;
 `
 
+const CenteredButtons = styled.div`
+  display: flex;
+`
+
 class Test extends Component {
   state = {
-    selectedEmoji: undefined,
     showEmojiPicker: true,
-    showSaveButton: true
+    showSaveButton: true,
+    // Emoji
+    selectedEmoji: undefined,
+    x: 0,
+    y: 0,
+    scale: 1,
+    size: 100
   }
 
   onEmojiSelect = (emoji) => {
@@ -87,6 +96,30 @@ class Test extends Component {
     this.setState({ showEmojiPicker: true })
   }
 
+  moveUp = () => {
+    this.setState({ y: this.state.y - 10})
+  }
+
+  moveLeft = () => {
+    this.setState({ x: this.state.x - 10})
+  }
+
+  moveRight = () => {
+    this.setState({ x: this.state.x + 10})
+  }
+
+  moveDown = () => {
+    this.setState({ y: this.state.y + 10})
+  }
+
+  makeLarger = () => {
+    this.setState({ size: this.state.size + 1 })
+  }
+
+  makeSmaller = () => {
+    this.setState({ size: this.state.size - 1 })
+  }
+
   render () {
     return (
       <div>
@@ -105,8 +138,10 @@ class Test extends Component {
               />
               {this.state.chosenEmoji && (
                 <Text
+                  x={this.state.x}
+                  y={this.state.y}
                   text={this.state.chosenEmoji}
-                  fontSize={100}
+                  fontSize={this.state.size}
                 />
               )}
             </Layer>
@@ -114,8 +149,27 @@ class Test extends Component {
 
           {this.state.showSaveButton && <input type="button" onClick={this.saveCell} value='Save!' />}
 
-          <input type="button" onClick={this.openEmojiPicker} value={this.state.chosenEmoji} />
-              
+          {this.state.chosenEmoji && <input type="button" onClick={this.openEmojiPicker} value={this.state.chosenEmoji} />}
+
+          {/* UP */}
+          {this.state.chosenEmoji && <input type='button' onClick={this.moveUp} value='UP' />}
+          <CenteredButtons>
+            {/* LEFT */}
+            {this.state.chosenEmoji && <input type='button' onClick={this.moveLeft} value='LEFT' />}
+            {/* RIGHT */}
+            {this.state.chosenEmoji && <input type='button' onClick={this.moveRight} value='RIGHT' />}
+          </CenteredButtons>
+          {/* DOWN */}
+          {this.state.chosenEmoji && <input type='button' onClick={this.moveDown} value='DOWN' />}
+
+          <CenteredButtons>
+            {/* @todo - Use a slider with smaller steps than the current 10 */}
+            {/* LARGER */}
+            {this.state.chosenEmoji && <input type='button' onClick={this.makeLarger} value='LARGER' />}
+            {/* SMALLER */}
+            {this.state.chosenEmoji && <input type='button' onClick={this.makeSmaller} value='SMALLER' />}
+          </CenteredButtons>
+
           {this.state.showEmojiPicker && <EmojiPicker onSelect={this.onEmojiSelect} />}
         </CenteredContainer>
       </div>

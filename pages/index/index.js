@@ -216,10 +216,20 @@ class Studio extends Component {
             </Layer>
           </Stage>
 
-          {this.state.showSaveButton && <input type="button" onClick={this.saveCell} value='Save!' />}
+          {this.state.showSaveButton && <input type='button' onClick={this.saveCell} value='Save!' />}
 
           {this.state.activeEmojiId && (<React.Fragment>
-            <input type="button" onClick={this.openEmojiPicker} value={activeEmoji.emoji} />
+            <input type='button' onClick={this.openEmojiPicker} value='ADD ANOTHER EMOJI' />
+            
+            <CenteredButtons>
+              {Object.values(this.state.emojis).map(({ emoji, id }) => (<input
+                key={`${id}${emoji}`}
+                type='button'
+                disabled={id === this.state.activeEmojiId}
+                onClick={() => this.setState({ activeEmojiId: id })}
+                value={emoji}
+              />))}
+            </CenteredButtons>
 
             {/* UP */}
             <input type='button' onClick={() => this.incrementField('y', -10)} value='UP' />

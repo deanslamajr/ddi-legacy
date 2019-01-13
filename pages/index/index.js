@@ -11,6 +11,7 @@ import cloneDeep from 'lodash/cloneDeep'
 
 import { GrayBackground } from '../../components/Layouts'
 import EmojiPicker from './EmojiPicker'
+import BuilderMenu from './BuilderMenu'
 
 const konvaCacheConfig = { offset: 10 }
 let currentEmojiId = 0
@@ -51,10 +52,6 @@ const CenteredContainer = styled.div`
   justify-content: center;
   flex-direction: column;
   align-items: center;
-`
-
-const CenteredButtons = styled.div`
-  display: flex;
 `
 
 //
@@ -174,6 +171,10 @@ class Studio extends Component {
     Object.values(this.emojiRefs).map(emojiRef => emojiRef.cache(konvaCacheConfig))
   }
 
+  changeActiveEmoji = (id) => {
+    this.setState({ activeEmojiId: id })
+  }
+
   render () {
     const activeEmoji = this.state.emojis[this.state.activeEmojiId]
 
@@ -218,81 +219,15 @@ class Studio extends Component {
 
           {this.state.showSaveButton && <input type='button' onClick={this.saveCell} value='Save!' />}
 
-          {this.state.activeEmojiId && (<React.Fragment>
-            <input type='button' onClick={this.openEmojiPicker} value='ADD ANOTHER EMOJI' />
-            
-            <CenteredButtons>
-              {Object.values(this.state.emojis).map(({ emoji, id }) => (<input
-                key={`${id}${emoji}`}
-                type='button'
-                disabled={id === this.state.activeEmojiId}
-                onClick={() => this.setState({ activeEmojiId: id })}
-                value={emoji}
-              />))}
-            </CenteredButtons>
-
-            {/* UP */}
-            <input type='button' onClick={() => this.incrementField('y', -10)} value='UP' />
-            <CenteredButtons>
-              {/* LEFT */}
-              <input type='button' onClick={() => this.incrementField('x', -10)} value='LEFT' />
-              {/* RIGHT */}
-              <input type='button' onClick={() => this.incrementField('x', 10)} value='RIGHT' />
-            </CenteredButtons>
-            {/* DOWN */}
-            <input type='button' onClick={() => this.incrementField('y', 10)} value='DOWN' />
-
-            <CenteredButtons>
-              {/* @todo - Use a slider with smaller steps than the current 10 */}
-              {/* LARGER */}
-              <input type='button' onClick={() => this.incrementField('size', 1)} value='LARGER' />
-              {/* SMALLER */}
-              <input type='button' onClick={() => this.incrementField('size', -1)} value='SMALLER' />
-            </CenteredButtons>
-
-            <CenteredButtons>
-              {/* ROTATION -> */}
-              <input type='button' onClick={() => this.incrementField('rotation', -10)} value='ROTATE ->' />
-              {/* ROTAION <- */}
-              <input type='button' onClick={() => this.incrementField('rotation', 10)} value='ROTATE <-' />
-            </CenteredButtons>
-
-            <CenteredButtons>
-              {/* FLIP X */}
-              <input type='button' onClick={() => this.scaleField('scaleX', -1)} value='FLIP X' />
-              {/* FLIP Y */}
-              <input type='button' onClick={() => this.scaleField('scaleY', -1)} value='FLIP Y' />
-            </CenteredButtons>
-
-            {/* TOGGLE FILTER*/}
-            <input type='button' onClick={this.toggleFilter} value='TOGGLE FILTER' />
-            {activeEmoji.filters && (<React.Fragment>
-              <CenteredButtons>
-                {/* INCREASE EFFECT OF FILTER */}
-                <input type='button' onClick={() => this.incrementField('alpha', .1)} value='INCREASE EFFECT' />
-                {/* DECREASE EFFECT OF FILTER */}
-                <input type='button' onClick={() => this.incrementField('alpha', -.1)} value='DECREASE EFFECT' />
-              </CenteredButtons>
-              <CenteredButtons>
-                {/* INCREASE RED */}
-                <input type='button' onClick={() => this.incrementField('red', 12)} value='INCREASE RED' />
-                {/* DECREASE RED */}
-                <input type='button' onClick={() => this.incrementField('red', -12)} value='DECREASE RED' />
-              </CenteredButtons>
-              <CenteredButtons>
-                {/* INCREASE BLUE */}
-                <input type='button' onClick={() => this.incrementField('blue', 12)} value='INCREASE BLUE' />
-                {/* DECREASE BLUE */}
-                <input type='button' onClick={() => this.incrementField('blue', -12)} value='DECREASE BLUE' />
-              </CenteredButtons>
-              <CenteredButtons>
-                {/* INCREASE GREEN */}
-                <input type='button' onClick={() => this.incrementField('green', 12)} value='INCREASE GREEN' />
-                {/* DECREASE GREEN */}
-                <input type='button' onClick={() => this.incrementField('green', -12)} value='DECREASE GREEN' />
-              </CenteredButtons>
-            </React.Fragment>)}
-          </React.Fragment>)}
+          {this.state.activeEmojiId && <BuilderMenu
+            activeEmoji={activeEmoji}
+            changeActiveEmoji={this.changeActiveEmoji}
+            emojis={this.state.emojis}
+            incrementField={this.incrementField}
+            openEmojiPicker={this.openEmojiPicker}
+            scaleField={this.scaleField}
+            toggleFilter={this.toggleFilter}
+          />}
 
           {this.state.showEmojiPicker && <EmojiPicker onSelect={this.onEmojiSelect} />}
         </CenteredContainer>

@@ -153,13 +153,15 @@ class Studio extends Component {
   }
 
   toggleFilter = () => {
-    const filters = this.state.filters
-      ? undefined
-      : [Konva.Filters.RGBA]
+    this.setState(({ activeEmojiId, emojis }) => {
+      const clonedEmojis = cloneDeep(emojis)
 
-    this.setState({ filters }, () => {
-      this.updateEmojiCache()
-    })
+      clonedEmojis[activeEmojiId].filters = clonedEmojis[activeEmojiId].filters
+        ? undefined
+        : [Konva.Filters.RGBA]
+      
+      return { emojis: clonedEmojis }
+    }, () => this.updateEmojiCache())
   }
 
   changeColor = (color, amount) => {
@@ -173,8 +175,7 @@ class Studio extends Component {
   }
 
   render () {
-    console.log('this.state.emojis:%o', this.state.emojis)
-    console.log('this.state.activeEmojiId:%o', this.state.activeEmojiId)
+    const activeEmoji = this.state.emojis[this.state.activeEmojiId]
 
     return (
       <div>
@@ -218,7 +219,7 @@ class Studio extends Component {
           {this.state.showSaveButton && <input type="button" onClick={this.saveCell} value='Save!' />}
 
           {this.state.activeEmojiId && (<React.Fragment>
-            <input type="button" onClick={this.openEmojiPicker} value={this.state.emojis[this.state.activeEmojiId].emoji} />
+            <input type="button" onClick={this.openEmojiPicker} value={activeEmoji.emoji} />
 
             {/* UP */}
             <input type='button' onClick={() => this.incrementField('y', -10)} value='UP' />
@@ -255,30 +256,30 @@ class Studio extends Component {
 
             {/* TOGGLE FILTER*/}
             <input type='button' onClick={this.toggleFilter} value='TOGGLE FILTER' />
-            {this.state.filters && (<React.Fragment>
+            {activeEmoji.filters && (<React.Fragment>
               <CenteredButtons>
                 {/* INCREASE EFFECT OF FILTER */}
-                <input type='button' onClick={() => this.changeColor('alpha', .1)} value='INCREASE EFFECT' />
+                <input type='button' onClick={() => this.incrementField('alpha', .1)} value='INCREASE EFFECT' />
                 {/* DECREASE EFFECT OF FILTER */}
-                <input type='button' onClick={() => this.changeColor('alpha', -.1)} value='DECREASE EFFECT' />
+                <input type='button' onClick={() => this.incrementField('alpha', -.1)} value='DECREASE EFFECT' />
               </CenteredButtons>
               <CenteredButtons>
                 {/* INCREASE RED */}
-                <input type='button' onClick={() => this.changeColor('red', 12)} value='INCREASE RED' />
+                <input type='button' onClick={() => this.incrementField('red', 12)} value='INCREASE RED' />
                 {/* DECREASE RED */}
-                <input type='button' onClick={() => this.changeColor('red', -12)} value='DECREASE RED' />
+                <input type='button' onClick={() => this.incrementField('red', -12)} value='DECREASE RED' />
               </CenteredButtons>
               <CenteredButtons>
                 {/* INCREASE BLUE */}
-                <input type='button' onClick={() => this.changeColor('blue', 12)} value='INCREASE BLUE' />
+                <input type='button' onClick={() => this.incrementField('blue', 12)} value='INCREASE BLUE' />
                 {/* DECREASE BLUE */}
-                <input type='button' onClick={() => this.changeColor('blue', -12)} value='DECREASE BLUE' />
+                <input type='button' onClick={() => this.incrementField('blue', -12)} value='DECREASE BLUE' />
               </CenteredButtons>
               <CenteredButtons>
                 {/* INCREASE GREEN */}
-                <input type='button' onClick={() => this.changeColor('green', 12)} value='INCREASE GREEN' />
+                <input type='button' onClick={() => this.incrementField('green', 12)} value='INCREASE GREEN' />
                 {/* DECREASE GREEN */}
-                <input type='button' onClick={() => this.changeColor('green', -12)} value='DECREASE GREEN' />
+                <input type='button' onClick={() => this.incrementField('green', -12)} value='DECREASE GREEN' />
               </CenteredButtons>
             </React.Fragment>)}
           </React.Fragment>)}

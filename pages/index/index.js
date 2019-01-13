@@ -7,14 +7,15 @@ import { Stage, Layer, Rect, Text } from 'react-konva'
 import axios from 'axios'
 import getConfig from 'next/config'
 import shortid from 'shortid'
+import cloneDeep from 'lodash/cloneDeep'
 
 import { GrayBackground } from '../../components/Layouts'
 import EmojiPicker from './EmojiPicker'
 
-
-
 const konvaCacheConfig = { offset: 10 }
+let currentEmojiId = 0
 
+//
 // Environment variables
 // @see {@link https://nextjs.org/docs/#exposing-configuration-to-the-server--client-side}
 const { publicRuntimeConfig } = getConfig()
@@ -23,22 +24,10 @@ function generateFilename () {
   return `${shortid.generate()}.png`
 }
 
-const CenteredContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-`
-
-const CenteredButtons = styled.div`
-  display: flex;
-`
-
-class Test extends Component {
-  state = {
-    showEmojiPicker: true,
-    showSaveButton: true,
-    // Emoji
+function createNewEmoji (emoji) {
+  return {
+    emoji,
+    id: ++currentEmojiId,
     filters: undefined,
     selectedEmoji: undefined,
     x: 100,
@@ -52,14 +41,50 @@ class Test extends Component {
     green: 0,
     blue: 0
   }
+}
+
+//
+// Styled Components
+//
+const CenteredContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+`
+
+const CenteredButtons = styled.div`
+  display: flex;
+`
+
+//
+// Studio
+class Studio extends Component {
+  constructor (props) {
+    super(props)
+    this.emojiRefs = []
+
+    this.state = {
+      activeEmojiId: null,
+      showEmojiPicker: true,
+      showSaveButton: true,
+      emojis: {}
+    }
+  }
 
   onEmojiSelect = (emoji) => {
-    this.setState({
-      chosenEmoji: emoji,
-      showEmojiPicker: false
-    }, () => {
-      this.emoji.cache(konvaCacheConfig)
-    })
+    this.setState(({ emojis }) => {
+      const newEmoji = createNewEmoji(emoji)
+
+      const clonedEmojis = cloneDeep(emojis)
+      clonedEmojis[newEmoji.id] = newEmoji
+
+      return {
+        activeEmojiId: newEmoji.id,
+        emojis: clonedEmojis,
+        showEmojiPicker: false
+      }
+    }, () => this.updateEmojiCache())
   }
 
   getSignedRequest = async (file) => {
@@ -109,64 +134,22 @@ class Test extends Component {
     this.setState({ showEmojiPicker: true })
   }
 
-  moveUp = () => {
-    this.setState({ y: this.state.y - 10}, () => {
-      this.emoji.cache(konvaCacheConfig)
-    })
+  incrementField = (field, amount) => {
+    this.setState(({ activeEmojiId, emojis }) => {
+      const clonedEmojis = cloneDeep(emojis)
+      clonedEmojis[activeEmojiId][field] += amount
+      
+      return { emojis: clonedEmojis }
+    }, () => this.updateEmojiCache())
   }
 
-  moveLeft = () => {
-    this.setState({ x: this.state.x - 10}, () => {
-      this.emoji.cache(konvaCacheConfig)
-    })
-  }
-
-  moveRight = () => {
-    this.setState({ x: this.state.x + 10}, () => {
-      this.emoji.cache(konvaCacheConfig)
-    })
-  }
-
-  moveDown = () => {
-    this.setState({ y: this.state.y + 10}, () => {
-      this.emoji.cache(konvaCacheConfig)
-    })
-  }
-
-  makeLarger = () => {
-    this.setState({ size: this.state.size + 1 }, () => {
-      this.emoji.cache(konvaCacheConfig)
-    })
-  }
-
-  makeSmaller = () => {
-    this.setState({ size: this.state.size - 1 }, () => {
-      this.emoji.cache(konvaCacheConfig)
-    })
-  }
-
-  anticlockwiseRotation = () => {
-    this.setState({ rotation: this.state.rotation - 10 }, () => {
-      this.emoji.cache(konvaCacheConfig)
-    })
-  }
-
-  clockwiseRotation = () => {
-    this.setState({ rotation: this.state.rotation + 10 }, () => {
-      this.emoji.cache(konvaCacheConfig)
-    })
-  }
-
-  flipX = () => {
-    this.setState({ scaleX: this.state.scaleX * -1 }, () => {
-      this.emoji.cache(konvaCacheConfig)
-    })
-  }
-
-  flipY = () => {
-    this.setState({ scaleY: this.state.scaleY * -1 }, () => {
-      this.emoji.cache(konvaCacheConfig)
-    })
+  scaleField = (field, amount) => {
+    this.setState(({ activeEmojiId, emojis }) => {
+      const clonedEmojis = cloneDeep(emojis)
+      clonedEmojis[activeEmojiId][field] *= amount
+      
+      return { emojis: clonedEmojis }
+    }, () => this.updateEmojiCache())
   }
 
   toggleFilter = () => {
@@ -175,17 +158,24 @@ class Test extends Component {
       : [Konva.Filters.RGBA]
 
     this.setState({ filters }, () => {
-      this.emoji.cache(konvaCacheConfig)
+      this.updateEmojiCache()
     })
   }
 
   changeColor = (color, amount) => {
     this.setState({ [color]: this.state[color] + amount }, () => {
-      this.emoji.cache(konvaCacheConfig)
+      this.updateEmojiCache()
     })
   }
 
+  updateEmojiCache = () => {
+    Object.values(this.emojiRefs).map(emojiRef => emojiRef.cache(konvaCacheConfig))
+  }
+
   render () {
+    console.log('this.state.emojis:%o', this.state.emojis)
+    console.log('this.state.activeEmojiId:%o', this.state.activeEmojiId)
+
     return (
       <div>
         <Head>
@@ -202,90 +192,95 @@ class Test extends Component {
                 height={250}
                 fill='white'
               />
-              {this.state.chosenEmoji && (
-                <Text
-                  ref={ref => this.emoji = ref}
-                  filters={this.state.filters}
-                  x={this.state.x}
-                  y={this.state.y}
-                  scaleX={this.state.scaleX}
-                  scaleY={this.state.scaleY}
-                  text={this.state.chosenEmoji}
-                  fontSize={this.state.size}
-                  rotation={this.state.rotation}
-                  alpha={this.state.alpha}
-                  red={this.state.red}
-                  green={this.state.green}
-                  blue={this.state.blue}
+              {Object.keys(this.state.emojis).sort().map(emojiId => {
+                const emoji = this.state.emojis[emojiId]
+                
+                return <Text
+                  key={`${emoji.id}${emoji.emoji}`}
+                  ref={ref => this.emojiRefs[emoji.id] = ref}
+                  filters={emoji.filters}
+                  x={emoji.x}
+                  y={emoji.y}
+                  scaleX={emoji.scaleX}
+                  scaleY={emoji.scaleY}
+                  text={emoji.emoji}
+                  fontSize={emoji.size}
+                  rotation={emoji.rotation}
+                  alpha={emoji.alpha}
+                  red={emoji.red}
+                  green={emoji.green}
+                  blue={emoji.blue}
                 />
-              )}
+              })}
             </Layer>
           </Stage>
 
           {this.state.showSaveButton && <input type="button" onClick={this.saveCell} value='Save!' />}
 
-          {this.state.chosenEmoji && <input type="button" onClick={this.openEmojiPicker} value={this.state.chosenEmoji} />}
+          {this.state.activeEmojiId && (<React.Fragment>
+            <input type="button" onClick={this.openEmojiPicker} value={this.state.emojis[this.state.activeEmojiId].emoji} />
 
-          {/* UP */}
-          {this.state.chosenEmoji && <input type='button' onClick={this.moveUp} value='UP' />}
-          <CenteredButtons>
-            {/* LEFT */}
-            {this.state.chosenEmoji && <input type='button' onClick={this.moveLeft} value='LEFT' />}
-            {/* RIGHT */}
-            {this.state.chosenEmoji && <input type='button' onClick={this.moveRight} value='RIGHT' />}
-          </CenteredButtons>
-          {/* DOWN */}
-          {this.state.chosenEmoji && <input type='button' onClick={this.moveDown} value='DOWN' />}
-
-          <CenteredButtons>
-            {/* @todo - Use a slider with smaller steps than the current 10 */}
-            {/* LARGER */}
-            {this.state.chosenEmoji && <input type='button' onClick={this.makeLarger} value='LARGER' />}
-            {/* SMALLER */}
-            {this.state.chosenEmoji && <input type='button' onClick={this.makeSmaller} value='SMALLER' />}
-          </CenteredButtons>
-
-          <CenteredButtons>
-            {/* ROTATION -> */}
-            {this.state.chosenEmoji && <input type='button' onClick={this.anticlockwiseRotation} value='ROTATE ->' />}
-            {/* ROTAION <- */}
-            {this.state.chosenEmoji && <input type='button' onClick={this.clockwiseRotation} value='ROTATE <-' />}
-          </CenteredButtons>
-
-          <CenteredButtons>
-            {/* FLIP X */}
-            {this.state.chosenEmoji && <input type='button' onClick={this.flipX} value='FLIP X' />}
-            {/* FLIP Y */}
-            {this.state.chosenEmoji && <input type='button' onClick={this.flipY} value='FLIP Y' />}
-          </CenteredButtons>
-
-          {/* TOGGLE FILTER*/}
-          {this.state.chosenEmoji && <input type='button' onClick={this.toggleFilter} value='TOGGLE FILTER' />}
-          {this.state.filters && (<React.Fragment>
+            {/* UP */}
+            <input type='button' onClick={() => this.incrementField('y', -10)} value='UP' />
             <CenteredButtons>
-              {/* INCREASE EFFECT OF FILTER */}
-              {this.state.chosenEmoji && <input type='button' onClick={() => this.changeColor('alpha', .1)} value='INCREASE EFFECT' />}
-              {/* DECREASE EFFECT OF FILTER */}
-              {this.state.chosenEmoji && <input type='button' onClick={() => this.changeColor('alpha', -.1)} value='DECREASE EFFECT' />}
+              {/* LEFT */}
+              <input type='button' onClick={() => this.incrementField('x', -10)} value='LEFT' />
+              {/* RIGHT */}
+              <input type='button' onClick={() => this.incrementField('x', 10)} value='RIGHT' />
             </CenteredButtons>
+            {/* DOWN */}
+            <input type='button' onClick={() => this.incrementField('y', 10)} value='DOWN' />
+
             <CenteredButtons>
-              {/* INCREASE RED */}
-              {this.state.chosenEmoji && <input type='button' onClick={() => this.changeColor('red', 12)} value='INCREASE RED' />}
-              {/* DECREASE RED */}
-              {this.state.chosenEmoji && <input type='button' onClick={() => this.changeColor('red', -12)} value='DECREASE RED' />}
+              {/* @todo - Use a slider with smaller steps than the current 10 */}
+              {/* LARGER */}
+              <input type='button' onClick={() => this.incrementField('size', 1)} value='LARGER' />
+              {/* SMALLER */}
+              <input type='button' onClick={() => this.incrementField('size', -1)} value='SMALLER' />
             </CenteredButtons>
+
             <CenteredButtons>
-              {/* INCREASE BLUE */}
-              {this.state.chosenEmoji && <input type='button' onClick={() => this.changeColor('blue', 12)} value='INCREASE BLUE' />}
-              {/* DECREASE BLUE */}
-              {this.state.chosenEmoji && <input type='button' onClick={() => this.changeColor('blue', -12)} value='DECREASE BLUE' />}
+              {/* ROTATION -> */}
+              <input type='button' onClick={() => this.incrementField('rotation', -10)} value='ROTATE ->' />
+              {/* ROTAION <- */}
+              <input type='button' onClick={() => this.incrementField('rotation', 10)} value='ROTATE <-' />
             </CenteredButtons>
+
             <CenteredButtons>
-              {/* INCREASE GREEN */}
-              {this.state.chosenEmoji && <input type='button' onClick={() => this.changeColor('green', 12)} value='INCREASE GREEN' />}
-              {/* DECREASE GREEN */}
-              {this.state.chosenEmoji && <input type='button' onClick={() => this.changeColor('green', -12)} value='DECREASE GREEN' />}
+              {/* FLIP X */}
+              <input type='button' onClick={() => this.scaleField('scaleX', -1)} value='FLIP X' />
+              {/* FLIP Y */}
+              <input type='button' onClick={() => this.scaleField('scaleY', -1)} value='FLIP Y' />
             </CenteredButtons>
+
+            {/* TOGGLE FILTER*/}
+            <input type='button' onClick={this.toggleFilter} value='TOGGLE FILTER' />
+            {this.state.filters && (<React.Fragment>
+              <CenteredButtons>
+                {/* INCREASE EFFECT OF FILTER */}
+                <input type='button' onClick={() => this.changeColor('alpha', .1)} value='INCREASE EFFECT' />
+                {/* DECREASE EFFECT OF FILTER */}
+                <input type='button' onClick={() => this.changeColor('alpha', -.1)} value='DECREASE EFFECT' />
+              </CenteredButtons>
+              <CenteredButtons>
+                {/* INCREASE RED */}
+                <input type='button' onClick={() => this.changeColor('red', 12)} value='INCREASE RED' />
+                {/* DECREASE RED */}
+                <input type='button' onClick={() => this.changeColor('red', -12)} value='DECREASE RED' />
+              </CenteredButtons>
+              <CenteredButtons>
+                {/* INCREASE BLUE */}
+                <input type='button' onClick={() => this.changeColor('blue', 12)} value='INCREASE BLUE' />
+                {/* DECREASE BLUE */}
+                <input type='button' onClick={() => this.changeColor('blue', -12)} value='DECREASE BLUE' />
+              </CenteredButtons>
+              <CenteredButtons>
+                {/* INCREASE GREEN */}
+                <input type='button' onClick={() => this.changeColor('green', 12)} value='INCREASE GREEN' />
+                {/* DECREASE GREEN */}
+                <input type='button' onClick={() => this.changeColor('green', -12)} value='DECREASE GREEN' />
+              </CenteredButtons>
+            </React.Fragment>)}
           </React.Fragment>)}
 
           {this.state.showEmojiPicker && <EmojiPicker onSelect={this.onEmojiSelect} />}
@@ -295,4 +290,4 @@ class Test extends Component {
   }
 }
 
-export default Test 
+export default Studio 

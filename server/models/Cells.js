@@ -17,6 +17,10 @@ const Cells = sequelize.define('cells',
     image_url: {
       type: Sequelize.STRING,
       allowNull: false
+    },
+    title: {
+      type: Sequelize.STRING,
+      allowNull: false
     }
   },
   {

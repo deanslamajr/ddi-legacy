@@ -65,7 +65,8 @@ class Studio extends Component {
       activeEmojiId: null,
       showEmojiPicker: true,
       showSaveButton: true,
-      emojis: {}
+      emojis: {},
+      title: 'untitled'
     }
   }
 
@@ -86,7 +87,7 @@ class Studio extends Component {
 
   getSignedRequest = async (file) => {
     try {
-      const { data } = await axios.get(`/sign?file-name=${file.name}&file-type=${file.type}`)
+      const { data } = await axios.get(`/sign?file-name=${file.name}&file-type=${file.type}&title=${this.state.title}`)
       return data
     }
     catch (e) {
@@ -175,6 +176,10 @@ class Studio extends Component {
     this.setState({ activeEmojiId: id })
   }
 
+  handleTitleChange = (event) => {
+    this.setState({ title: event.target.value})
+  }
+
   render () {
     const activeEmoji = this.state.emojis[this.state.activeEmojiId]
 
@@ -217,19 +222,24 @@ class Studio extends Component {
             </Layer>
           </Stage>
 
-          {this.state.showSaveButton && <input type='button' onClick={this.saveCell} value='Save!' />}
+          {this.state.showSaveButton && (
+            <React.Fragment>
+              <input type='button' onClick={this.saveCell} value='Save!' />
 
-          {this.state.activeEmojiId && <BuilderMenu
-            activeEmoji={activeEmoji}
-            changeActiveEmoji={this.changeActiveEmoji}
-            emojis={this.state.emojis}
-            incrementField={this.incrementField}
-            openEmojiPicker={this.openEmojiPicker}
-            scaleField={this.scaleField}
-            toggleFilter={this.toggleFilter}
-          />}
+              <input type='text' value={this.state.title} onChange={this.handleTitleChange} />
 
-          {this.state.showEmojiPicker && <EmojiPicker onSelect={this.onEmojiSelect} />}
+              {this.state.activeEmojiId && <BuilderMenu
+                activeEmoji={activeEmoji}
+                changeActiveEmoji={this.changeActiveEmoji}
+                emojis={this.state.emojis}
+                incrementField={this.incrementField}
+                openEmojiPicker={this.openEmojiPicker}
+                scaleField={this.scaleField}
+                toggleFilter={this.toggleFilter}
+              />}
+
+              {this.state.showEmojiPicker && <EmojiPicker onSelect={this.onEmojiSelect} />}
+            </React.Fragment>)}
         </CenteredContainer>
       </div>
     )

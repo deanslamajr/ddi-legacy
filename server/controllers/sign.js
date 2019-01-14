@@ -7,12 +7,14 @@ async function sign (req, res) {
   try {
     const filename = req.query['file-name']
     const filetype = req.query['file-type']
+    const title = req.query['title']
 
     const signData = await signViaS3(filename, filetype)
 
     const id = shortid.generate()
     await Cells.create({
       image_url: signData.url,
+      title,
       url_id: id
     })
 

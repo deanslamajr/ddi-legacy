@@ -73,7 +73,7 @@ class BuilderMenu extends React.Component {
   }
 
   renderSizeMenu = () => {
-    const { emojiSize, setField } = this.props
+    const { activeEmoji, setField } = this.props
 
     return (<React.Fragment>
       {this.renderReturnToMainMenuButton()}
@@ -82,7 +82,7 @@ class BuilderMenu extends React.Component {
         <Slider
           min={1}
           max={256}
-          value={emojiSize}
+          value={activeEmoji.size}
           onChangeStart={() => {}}
           onChange={(value) => setField('size', value)}
           onChangeComplete={() => {}}
@@ -92,17 +92,20 @@ class BuilderMenu extends React.Component {
   }
 
   renderRotationMenu = () => {
-    const { incrementField } = this.props
+    const { activeEmoji, setField } = this.props
 
     return (<React.Fragment>
       {this.renderReturnToMainMenuButton()}
-
-      <CenteredButtons>
-        {/* ROTATION -> */}
-        <input type='button' onClick={() => incrementField('rotation', -10)} value='ROTATE ->' />
-        {/* ROTAION <- */}
-        <input type='button' onClick={() => incrementField('rotation', 10)} value='ROTATE <-' />
-      </CenteredButtons>
+        <SliderContainer>
+          <Slider
+            min={-180}
+            max={180}
+            value={activeEmoji.rotation}
+            onChangeStart={() => {}}
+            onChange={(value) => setField('rotation', value)}
+            onChangeComplete={() => {}}
+          />
+        </SliderContainer>
     </React.Fragment>)
   }
 
@@ -125,6 +128,7 @@ class BuilderMenu extends React.Component {
     const {
       activeEmoji,
       incrementField,
+      setField,
       toggleFilter
     } = this.props
 
@@ -132,33 +136,54 @@ class BuilderMenu extends React.Component {
       {this.renderReturnToMainMenuButton()}
       
       {/* TOGGLE FILTER*/}
-      <input type='button' onClick={toggleFilter} value='TOGGLE FILTER' />
+      <input type='button' onClick={toggleFilter} value={activeEmoji.filters ? 'TURN OFF' : 'TURN ON'} />
 
       {activeEmoji.filters && (<React.Fragment>
-        <CenteredButtons>
-          {/* INCREASE EFFECT OF FILTER */}
-          <input type='button' onClick={() => incrementField('alpha', .1)} value='INCREASE EFFECT' />
-          {/* DECREASE EFFECT OF FILTER */}
-          <input type='button' onClick={() => incrementField('alpha', -.1)} value='DECREASE EFFECT' />
-        </CenteredButtons>
-        <CenteredButtons>
-          {/* INCREASE RED */}
-          <input type='button' onClick={() => incrementField('red', 12)} value='INCREASE RED' />
-          {/* DECREASE RED */}
-          <input type='button' onClick={() => incrementField('red', -12)} value='DECREASE RED' />
-        </CenteredButtons>
-        <CenteredButtons>
-          {/* INCREASE BLUE */}
-          <input type='button' onClick={() => incrementField('blue', 12)} value='INCREASE BLUE' />
-          {/* DECREASE BLUE */}
-          <input type='button' onClick={() => incrementField('blue', -12)} value='DECREASE BLUE' />
-        </CenteredButtons>
-        <CenteredButtons>
-          {/* INCREASE GREEN */}
-          <input type='button' onClick={() => incrementField('green', 12)} value='INCREASE GREEN' />
-          {/* DECREASE GREEN */}
-          <input type='button' onClick={() => incrementField('green', -12)} value='DECREASE GREEN' />
-        </CenteredButtons>
+        Amount
+        <SliderContainer>
+          <Slider
+            min={0}
+            max={1}
+            step={.01}
+            value={activeEmoji.alpha}
+            onChangeStart={() => {}}
+            onChange={(value) => setField('alpha', value)}
+            onChangeComplete={() => {}}
+          />
+        </SliderContainer>
+        Red
+        <SliderContainer>
+          <Slider
+            min={0}
+            max={255}
+            value={activeEmoji.red}
+            onChangeStart={() => {}}
+            onChange={(value) => setField('red', value)}
+            onChangeComplete={() => {}}
+          />
+        </SliderContainer>
+        Blue
+        <SliderContainer>
+          <Slider
+            min={0}
+            max={255}
+            value={activeEmoji.blue}
+            onChangeStart={() => {}}
+            onChange={(value) => setField('blue', value)}
+            onChangeComplete={() => {}}
+          />
+        </SliderContainer>
+        Green
+        <SliderContainer>
+          <Slider
+            min={0}
+            max={255}
+            value={activeEmoji.green}
+            onChangeStart={() => {}}
+            onChange={(value) => setField('green', value)}
+            onChangeComplete={() => {}}
+          />
+        </SliderContainer>
       </React.Fragment>)}
     </React.Fragment>)
   }

@@ -6,24 +6,47 @@ const initialEmojiSet = Object.values(emojiIndex.emojis).filter(emoji => emoji.n
 
 const OuterContainer = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1000;
   background-color: white;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   display: flex;
   flex-direction: column;
   align-items: center;
 `
 
+const FillerSpan = styled.span`
+  display: inline-block;
+  width:15%;
+`
+
+const SearchContainer = styled.div`
+  width: 99vw;
+  margin-top: 1rem;
+`
+
 const SearchInput = styled.input`
+  display: inline-block;
+  font-size: 50px; /* To avoid iOS zoom on click */
   width: 70%;
+  background: linear-gradient(#eee, #fff);
+  transition: all 0.3s ease-out;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.4);
 `
 
 const EmojisContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   font-size: 2.5rem;
+`
 
+const InnerContainer = styled.div`
+  position: relative;
+  background-color: white;
+  
 `
 
 const EmojiContainer = styled.span`
@@ -55,15 +78,22 @@ class EmojiPicker extends Component {
   render () {
     return (
       <OuterContainer>
-        <SearchInput type='text' name='search' onChange={this.handleChange} />
-        <EmojisContainer>
-          {this.state.emojis.map(emoji => (
-            <Emoji
-              key={emoji}
-              emoji={emoji}
-              onSelect={this.props.onSelect}
-            />))}
-        </EmojisContainer>
+        <InnerContainer>
+          <SearchContainer>
+            <FillerSpan/>
+            <SearchInput type='text' name='search' onChange={this.handleChange} />
+            <FillerSpan/>
+          </SearchContainer>
+        
+          <EmojisContainer>
+            {this.state.emojis.map(emoji => (
+              <Emoji
+                key={emoji}
+                emoji={emoji}
+                onSelect={this.props.onSelect}
+              />))}
+          </EmojisContainer>
+        </InnerContainer>
       </OuterContainer>
     )
   }

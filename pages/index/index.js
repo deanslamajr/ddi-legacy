@@ -54,6 +54,10 @@ const CenteredContainer = styled.div`
   align-items: center;
 `
 
+const TitleInput = styled.input`
+  font-size: 16px;
+`
+
 //
 // Studio
 class Studio extends Component {
@@ -236,7 +240,7 @@ class Studio extends Component {
             <React.Fragment>
               <input type='button' onClick={this.saveCell} value='Save!' />
 
-              <input type='text' value={this.state.title} onChange={this.handleTitleChange} />
+              <TitleInput type='text' value={this.state.title} onChange={this.handleTitleChange} />
 
               {this.state.activeEmojiId && <BuilderMenu
                 activeEmoji={activeEmoji}

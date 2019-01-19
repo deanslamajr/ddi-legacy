@@ -1,8 +1,16 @@
 import React from 'react'
 import styled from 'styled-components'
+import Slider from 'react-rangeslider'
+
+import 'react-rangeslider/lib/index.css'
 
 const CenteredButtons = styled.div`
   display: flex;
+`
+
+const SliderContainer = styled.div`
+  width: 100%;
+  display: block;
 `
 
 const MAIN = 'MAIN'
@@ -65,18 +73,21 @@ class BuilderMenu extends React.Component {
   }
 
   renderSizeMenu = () => {
-    const { incrementField } = this.props
+    const { emojiSize, setField } = this.props
 
     return (<React.Fragment>
       {this.renderReturnToMainMenuButton()}
       
-      <CenteredButtons>
-        {/* @todo - Use a slider with smaller steps than the current 10 */}
-        {/* LARGER */}
-        <input type='button' onClick={() => incrementField('size', 1)} value='LARGER' />
-        {/* SMALLER */}
-        <input type='button' onClick={() => incrementField('size', -1)} value='SMALLER' />
-      </CenteredButtons>
+      <SliderContainer>
+        <Slider
+          min={1}
+          max={256}
+          value={emojiSize}
+          onChangeStart={() => {}}
+          onChange={(value) => setField('size', value)}
+          onChangeComplete={() => {}}
+        />
+      </SliderContainer>
     </React.Fragment>)
   }
 

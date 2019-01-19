@@ -141,6 +141,15 @@ class Studio extends Component {
     }, () => this.updateEmojiCache())
   }
 
+  setField = (field, value) => {
+    this.setState(({ activeEmojiId, emojis }) => {
+      const clonedEmojis = cloneDeep(emojis)
+      clonedEmojis[activeEmojiId][field] = value
+      
+      return { emojis: clonedEmojis }
+    }, () => this.updateEmojiCache())
+  }
+
   scaleField = (field, amount) => {
     this.setState(({ activeEmojiId, emojis }) => {
       const clonedEmojis = cloneDeep(emojis)
@@ -236,6 +245,8 @@ class Studio extends Component {
                 incrementField={this.incrementField}
                 openEmojiPicker={this.openEmojiPicker}
                 scaleField={this.scaleField}
+                emojiSize={activeEmoji.size}
+                setField={this.setField}
                 toggleFilter={this.toggleFilter}
               />}
 

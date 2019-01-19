@@ -203,6 +203,7 @@ class Studio extends Component {
                 const emoji = this.state.emojis[emojiId]
                 
                 return <Text
+                  draggable={emoji.id === this.state.activeEmojiId}
                   key={`${emoji.id}${emoji.emoji}`}
                   ref={ref => this.emojiRefs[emoji.id] = ref}
                   filters={emoji.filters}

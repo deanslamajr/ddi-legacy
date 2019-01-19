@@ -6,6 +6,7 @@ import getConfig from 'next/config'
 import axios from 'axios'
 
 import { GrayBackground } from '../components/Layouts'
+import { Router } from '../routes'
 import { getApi } from '../helpers'
 
 // Environment variables
@@ -23,6 +24,18 @@ const TitleContainer = styled.div`
   width: 250px;
 `
 
+const NavigateToStudioButton = styled.input`
+  margin: 2rem;
+  padding: 1rem;
+  border-radius: 3px;
+  text-decoration: none;
+  background-color: white;
+  vertical-align: middle;
+  box-shadow: none;
+  text-shadow: none;
+  font-size: 1rem;
+`
+
 class ImageRoute extends Component {
   state = {
   }
@@ -34,6 +47,10 @@ class ImageRoute extends Component {
       imageUrl: data.image_url,
       title: data.title
     }
+  }
+
+  navigateToStudio = () => {
+    Router.pushRoute('/')
   }
 
   render () {
@@ -76,6 +93,10 @@ class ImageRoute extends Component {
           <TitleContainer>
             {title}
           </TitleContainer>
+          <NavigateToStudioButton
+            type='button'
+            value='Create New'
+            onClick={this.navigateToStudio}/>
         </CenteredContainer>
       </div>
     )

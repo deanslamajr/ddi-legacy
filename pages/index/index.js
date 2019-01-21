@@ -25,10 +25,16 @@ function generateFilename () {
   return `${shortid.generate()}.png`
 }
 
+function sortByOrder ({ order: a }, { order: b }) {
+  return a - b
+}
+
 function createNewEmoji (emoji) {
+  currentEmojiId = currentEmojiId + 1
   return {
     emoji,
-    id: ++currentEmojiId,
+    id: currentEmojiId,
+    order: currentEmojiId,
     filters: undefined,
     selectedEmoji: undefined,
     x: 100,
@@ -136,6 +142,52 @@ class Studio extends Component {
     this.setState({ showEmojiPicker: true })
   }
 
+  increaseStackOrder = () => {
+    this.setState(({ activeEmojiId, emojis }) => {
+      const clonedEmojis = cloneDeep(emojis)
+
+      // get index of activeEmoji
+      const activeEmoji = clonedEmojis[activeEmojiId]
+      const activeEmojiOrder = activeEmoji.order
+
+      if (activeEmojiOrder < Object.keys(this.state.emojis).length) {
+        const clonedEmojisValues = Object.values(clonedEmojis)
+        const emojiToDecreaseOrder = clonedEmojisValues.find(({ order }) => order === activeEmojiOrder + 1)
+
+        // increase the order of activeEmoji
+        activeEmoji.order = activeEmojiOrder + 1
+        
+        // decrease the order of the emoji with order === activeEmoji.order + 1
+        emojiToDecreaseOrder.order = activeEmojiOrder
+      }
+
+      return { emojis: clonedEmojis }
+    }, () => this.updateEmojiCache())
+  }
+
+  decreaseStackOrder = () => {
+    this.setState(({ activeEmojiId, emojis }) => {
+      const clonedEmojis = cloneDeep(emojis)
+
+      // get index of activeEmoji
+      const activeEmoji = clonedEmojis[activeEmojiId]
+      const activeEmojiOrder = activeEmoji.order
+
+      if (activeEmojiOrder > 1) {
+        const clonedEmojisValues = Object.values(clonedEmojis)
+        const emojiToDecreaseOrder = clonedEmojisValues.find(({ order }) => order === activeEmojiOrder - 1)
+
+        // decrease the order of activeEmoji
+        activeEmoji.order = activeEmojiOrder - 1
+        
+        // increase the order of the emoji with order === activeEmoji.order - 1
+        emojiToDecreaseOrder.order = activeEmojiOrder
+      }
+
+      return { emojis: clonedEmojis }
+    }, () => this.updateEmojiCache())
+  }
+
   incrementField = (field, amount) => {
     this.setState(({ activeEmojiId, emojis }) => {
       const clonedEmojis = cloneDeep(emojis)
@@ -212,27 +264,23 @@ class Studio extends Component {
                 height={250}
                 fill='white'
               />
-              {Object.keys(this.state.emojis).sort().map(emojiId => {
-                const emoji = this.state.emojis[emojiId]
-                
-                return <Text
-                  draggable={emoji.id === this.state.activeEmojiId}
-                  key={`${emoji.id}${emoji.emoji}`}
-                  ref={ref => this.emojiRefs[emoji.id] = ref}
-                  filters={emoji.filters}
-                  x={emoji.x}
-                  y={emoji.y}
-                  scaleX={emoji.scaleX}
-                  scaleY={emoji.scaleY}
-                  text={emoji.emoji}
-                  fontSize={emoji.size}
-                  rotation={emoji.rotation}
-                  alpha={emoji.alpha}
-                  red={emoji.red}
-                  green={emoji.green}
-                  blue={emoji.blue}
-                />
-              })}
+              {Object.values(this.state.emojis).sort(sortByOrder).map(emoji => (<Text
+                draggable={emoji.id === this.state.activeEmojiId}
+                key={`${emoji.id}${emoji.emoji}`}
+                ref={ref => this.emojiRefs[emoji.id] = ref}
+                filters={emoji.filters}
+                x={emoji.x}
+                y={emoji.y}
+                scaleX={emoji.scaleX}
+                scaleY={emoji.scaleY}
+                text={emoji.emoji}
+                fontSize={emoji.size}
+                rotation={emoji.rotation}
+                alpha={emoji.alpha}
+                red={emoji.red}
+                green={emoji.green}
+                blue={emoji.blue}
+              />))}
             </Layer>
           </Stage>
 
@@ -245,7 +293,9 @@ class Studio extends Component {
               {this.state.activeEmojiId && <BuilderMenu
                 activeEmoji={activeEmoji}
                 changeActiveEmoji={this.changeActiveEmoji}
+                decreaseStackOrder={this.decreaseStackOrder}
                 emojis={this.state.emojis}
+                increaseStackOrder={this.increaseStackOrder}
                 incrementField={this.incrementField}
                 openEmojiPicker={this.openEmojiPicker}
                 scaleField={this.scaleField}

@@ -18,6 +18,7 @@ const POSITION = 'POSITION'
 const SIZE = 'SIZE'
 const ROTATION = 'ROTATION'
 const FLIP = 'FLIP'
+const STACK_ORDER = 'STACK ORDER'
 const RGB = 'RGB'
 
 class BuilderMenu extends React.Component {
@@ -34,6 +35,7 @@ class BuilderMenu extends React.Component {
       [SIZE]: this.renderSizeMenu,
       [ROTATION]: this.renderRotationMenu,
       [FLIP]: this.renderFlipMenu,
+      [STACK_ORDER]: this.renderStackOrderMenu,
       [RGB]: this.renderRGBMenu
     }
   }
@@ -49,7 +51,20 @@ class BuilderMenu extends React.Component {
       <input type='button' onClick={() => this.setState({ currentMenu: SIZE })} value={SIZE} />
       <input type='button' onClick={() => this.setState({ currentMenu: ROTATION })} value={ROTATION} />
       <input type='button' onClick={() => this.setState({ currentMenu: FLIP })} value={FLIP} />
+      <input type='button' onClick={() => this.setState({ currentMenu: STACK_ORDER })} value={STACK_ORDER} />
       <input type='button' onClick={() => this.setState({ currentMenu: RGB })} value={RGB} />
+    </React.Fragment>)
+  }
+
+  renderStackOrderMenu = () => {
+    const { increaseStackOrder, decreaseStackOrder } = this.props
+
+    return (<React.Fragment>
+      {this.renderReturnToMainMenuButton()}
+
+      {/* UP */}
+      <input type='button' onClick={() => increaseStackOrder()} value='MOVE UP' />
+      <input type='button' onClick={() => decreaseStackOrder()} value='MOVE DOWN' />
     </React.Fragment>)
   }
 

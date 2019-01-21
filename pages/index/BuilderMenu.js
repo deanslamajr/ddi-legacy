@@ -2,6 +2,12 @@ import React from 'react'
 import styled from 'styled-components'
 import Slider from 'react-rangeslider'
 
+import {
+  MenuButton,
+  RedMenuButton,
+  GreenMenuButton
+} from '../../components/Buttons'
+
 import 'react-rangeslider/lib/index.css'
 
 const CenteredButtons = styled.div`
@@ -41,18 +47,18 @@ class BuilderMenu extends React.Component {
   }
 
   renderReturnToMainMenuButton = () => {
-    return <input type='button' onClick={() => this.setState({ currentMenu: MAIN })} value='RETURN TO MAIN MENU' />
+    return <RedMenuButton type='button' onClick={() => this.setState({ currentMenu: MAIN })} value='RETURN TO MAIN MENU' />
   }
 
   renderMainMenu = () => {
     return (<React.Fragment>
-      <input type='button' onClick={this.props.openEmojiPicker} value='ADD' />
-      <input type='button' onClick={() => this.setState({ currentMenu: POSITION })} value={POSITION} />
-      <input type='button' onClick={() => this.setState({ currentMenu: SIZE })} value={SIZE} />
-      <input type='button' onClick={() => this.setState({ currentMenu: ROTATION })} value={ROTATION} />
-      <input type='button' onClick={() => this.setState({ currentMenu: FLIP })} value={FLIP} />
-      <input type='button' onClick={() => this.setState({ currentMenu: STACK_ORDER })} value={STACK_ORDER} />
-      <input type='button' onClick={() => this.setState({ currentMenu: RGB })} value={RGB} />
+      <MenuButton type='button' onClick={this.props.openEmojiPicker} value='ADD EMOJI' />
+      <MenuButton type='button' onClick={() => this.setState({ currentMenu: SIZE })} value={SIZE} />
+      <MenuButton type='button' onClick={() => this.setState({ currentMenu: ROTATION })} value={ROTATION} />
+      <MenuButton type='button' onClick={() => this.setState({ currentMenu: FLIP })} value={FLIP} />
+      <MenuButton type='button' onClick={() => this.setState({ currentMenu: STACK_ORDER })} value={STACK_ORDER} />
+      <MenuButton type='button' onClick={() => this.setState({ currentMenu: POSITION })} value={POSITION} />
+      <MenuButton type='button' onClick={() => this.setState({ currentMenu: RGB })} value={RGB} />
     </React.Fragment>)
   }
 
@@ -63,8 +69,8 @@ class BuilderMenu extends React.Component {
       {this.renderReturnToMainMenuButton()}
 
       {/* UP */}
-      <input type='button' onClick={() => increaseStackOrder()} value='MOVE UP' />
-      <input type='button' onClick={() => decreaseStackOrder()} value='MOVE DOWN' />
+      <MenuButton type='button' onClick={() => increaseStackOrder()} value='MOVE UP' />
+      <MenuButton type='button' onClick={() => decreaseStackOrder()} value='MOVE DOWN' />
     </React.Fragment>)
   }
 
@@ -129,13 +135,10 @@ class BuilderMenu extends React.Component {
 
     return (<React.Fragment>
       {this.renderReturnToMainMenuButton()}
-
-      <CenteredButtons>
-        {/* FLIP X */}
-        <input type='button' onClick={() => scaleField('scaleX', -1)} value='FLIP X' />
-        {/* FLIP Y */}
-        <input type='button' onClick={() => scaleField('scaleY', -1)} value='FLIP Y' />
-      </CenteredButtons>
+      {/* FLIP X */}
+      <MenuButton type='button' onClick={() => scaleField('scaleX', -1)} value='FLIP X' />
+      {/* FLIP Y */}
+      <MenuButton type='button' onClick={() => scaleField('scaleY', -1)} value='FLIP Y' />
     </React.Fragment>)
   }
 
@@ -151,7 +154,10 @@ class BuilderMenu extends React.Component {
       {this.renderReturnToMainMenuButton()}
       
       {/* TOGGLE FILTER*/}
-      <input type='button' onClick={toggleFilter} value={activeEmoji.filters ? 'TURN OFF' : 'TURN ON'} />
+      {activeEmoji.filters
+        ? <RedMenuButton type='button' onClick={toggleFilter} value='TURN OFF' />
+        : <GreenMenuButton type='button' onClick={toggleFilter} value='TURN ON' />
+      }
 
       {activeEmoji.filters && (<React.Fragment>
         Amount

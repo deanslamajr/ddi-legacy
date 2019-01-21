@@ -10,6 +10,7 @@ import shortid from 'shortid'
 import cloneDeep from 'lodash/cloneDeep'
 
 import { GrayBackground } from '../../components/Layouts'
+import { GreenMenuButton } from '../../components/Buttons'
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
 
@@ -60,8 +61,11 @@ const CenteredContainer = styled.div`
   align-items: center;
 `
 
-const TitleInput = styled.input`
+const TitleInput = styled.textarea`
   font-size: 16px;
+  margin: .5rem;
+  height: 4rem;
+  width: 15rem;
 `
 
 //
@@ -286,8 +290,6 @@ class Studio extends Component {
 
           {this.state.showSaveButton && (
             <React.Fragment>
-              <input type='button' onClick={this.saveCell} value='Save!' />
-
               <TitleInput type='text' value={this.state.title} onChange={this.handleTitleChange} />
 
               {this.state.activeEmojiId && <BuilderMenu
@@ -303,6 +305,8 @@ class Studio extends Component {
                 setField={this.setField}
                 toggleFilter={this.toggleFilter}
               />}
+
+              <GreenMenuButton type='button' onClick={this.saveCell} value='Save!' />
 
               {this.state.showEmojiPicker && <EmojiPicker onSelect={this.onEmojiSelect} />}
             </React.Fragment>)}

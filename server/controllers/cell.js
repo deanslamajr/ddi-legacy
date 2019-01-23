@@ -11,6 +11,12 @@ async function get (req, res) {
   res.end()
 }
 
+async function all (req, res) {
+  const cells = await Cells.findAll({})
+  res.json(cells)
+}
+
 module.exports = {
+  all,
   get
 }

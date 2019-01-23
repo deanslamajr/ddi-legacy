@@ -6,6 +6,8 @@ import getConfig from 'next/config'
 import axios from 'axios'
 
 import { GrayBackground } from '../components/Layouts'
+import Cell from '../components/Cell'
+
 import { Link } from '../routes'
 import { getApi } from '../helpers'
 
@@ -90,10 +92,7 @@ class ImageRoute extends Component {
         </Head>
         <GrayBackground />
         <CenteredContainer>
-          <img src={imageUrl} />
-          <TitleContainer>
-            {title}
-          </TitleContainer>
+          <Cell imageUrl={imageUrl} title={title} />
           <Link href='/studio'>
             <NavigateToStudioButton>Create New</NavigateToStudioButton>
           </Link>

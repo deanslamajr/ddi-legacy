@@ -2,7 +2,7 @@ const express = require('express')
 const next = require('next')
 
 const { sign } = require('./controllers/sign')
-const { get: getCell } = require('./controllers/cell')
+const { all: getCells, get: getCell } = require('./controllers/cell')
 
 const routes = require('../routes')
 
@@ -21,6 +21,7 @@ app.prepare()
     // @todo namespace data endpoints with /api
     server.get('/sign', sign)
     server.get('/cell/:cellId', getCell)
+    server.get('/cells', getCells)
 
     server.get('*', (req, res) => {
       return handler(req, res)

@@ -35,7 +35,7 @@ const NavigateToStudioButton = styled.a`
 function sortByUpdatedAt ({ updated_at: updatedAtA }, { updated_at: updatedAtB }) {
   const updatedAtDateA = new Date(updatedAtA)
   const updatedAtDateB = new Date(updatedAtB)
-  return updatedAtDateA.getTime() - updatedAtDateB.getTime()
+  return updatedAtDateB.getTime() - updatedAtDateA.getTime()
 }
 
 class GalleryRoute extends Component {

@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import getConfig from 'next/config'
 import axios from 'axios'
 
-import { GrayBackground } from '../components/Layouts'
+import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
 import Cell from '../components/Cell'
 
 import { Link } from '../routes'
@@ -67,6 +67,7 @@ class ImageRoute extends Component {
     
     return (
       <div>
+        <MobileViewportSettings />
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
 

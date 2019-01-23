@@ -2,7 +2,7 @@ import { Component } from 'react'
 import styled from 'styled-components'
 import axios from 'axios'
 
-import { GrayBackground } from '../components/Layouts'
+import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
 import Cell from '../components/Cell'
 
 import { Link } from '../routes'
@@ -49,6 +49,7 @@ class GalleryRoute extends Component {
     
     return (
       <div>
+        <MobileViewportSettings />
         <GrayBackground />
         <CenteredContainer>
           {cells.map(({ image_url, title }) => <Cell imageUrl={image_url} title={title} />)}

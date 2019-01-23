@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import { Router } from '../../routes'
 import { Component } from 'react'
 import styled from 'styled-components'
@@ -9,7 +8,7 @@ import getConfig from 'next/config'
 import shortid from 'shortid'
 import cloneDeep from 'lodash/cloneDeep'
 
-import { GrayBackground } from '../../components/Layouts'
+import { GrayBackground, MobileViewportSettings } from '../../components/Layouts'
 import { GreenMenuButton } from '../../components/Buttons'
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
@@ -254,9 +253,7 @@ class Studio extends Component {
 
     return (
       <div>
-        <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-        </Head>
+        <MobileViewportSettings />
         <GrayBackground />
         <CenteredContainer>
           <Stage ref={ref => this.stage = ref} width={250} height={250}>

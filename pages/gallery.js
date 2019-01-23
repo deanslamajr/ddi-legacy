@@ -32,6 +32,12 @@ const NavigateToStudioButton = styled.a`
   }
 `
 
+function sortByUpdatedAt ({ updated_at: updatedAtA }, { updated_at: updatedAtB }) {
+  const updatedAtDateA = new Date(updatedAtA)
+  const updatedAtDateB = new Date(updatedAtB)
+  return updatedAtDateA.getTime() - updatedAtDateB.getTime()
+}
+
 class GalleryRoute extends Component {
   state = {
   }
@@ -52,7 +58,7 @@ class GalleryRoute extends Component {
         <MobileViewportSettings />
         <GrayBackground />
         <CenteredContainer>
-          {cells.map(({ image_url, title }) => <Cell imageUrl={image_url} title={title} />)}
+          {cells.sort(sortByUpdatedAt).map(({ id, image_url, title }) => <Cell key={id} imageUrl={image_url} title={title} />)}
           <Link href='/studio'>
             <NavigateToStudioButton>Create New</NavigateToStudioButton>
           </Link>

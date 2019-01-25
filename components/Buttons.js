@@ -1,9 +1,10 @@
 import styled from 'styled-components'
 
-const MenuButton = styled.input`
+const MenuButton = styled.span`
   width: 15rem;
   height: 2.75rem;
   margin: .25rem;
+  cursor: pointer;
 
   &:hover {
     background-color: black;

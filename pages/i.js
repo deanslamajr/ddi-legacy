@@ -7,6 +7,7 @@ import axios from 'axios'
 
 import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
 import Cell from '../components/Cell'
+import NavigateToStudioButton from '../components/NavigateToStudioButton'
 
 import { Link } from '../routes'
 import { getApi } from '../helpers'
@@ -26,8 +27,8 @@ const TitleContainer = styled.div`
   width: 250px;
 `
 
-const NavigateToStudioButton = styled.a`
-  margin: 2rem;
+const NavigateToGalleryButton = styled.a`
+  margin: 1rem;
   padding: 1rem;
   border-radius: 3px;
   text-decoration: none;
@@ -36,6 +37,7 @@ const NavigateToStudioButton = styled.a`
   box-shadow: none;
   text-shadow: none;
   font-size: 1rem;
+  cursor: pointer;
 
   &:hover {
     background-color: black;
@@ -94,11 +96,9 @@ class ImageRoute extends Component {
         <GrayBackground />
         <CenteredContainer>
           <Cell imageUrl={imageUrl} title={title} />
-          <Link href='/studio'>
-            <NavigateToStudioButton>Create New</NavigateToStudioButton>
-          </Link>
+          <NavigateToStudioButton/>
           <Link href='/gallery'>
-            <NavigateToStudioButton>Gallery</NavigateToStudioButton>
+            <NavigateToGalleryButton>Gallery</NavigateToGalleryButton>
           </Link>
         </CenteredContainer>
       </div>

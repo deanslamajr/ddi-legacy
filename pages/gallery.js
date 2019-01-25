@@ -4,6 +4,7 @@ import axios from 'axios'
 
 import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
 import Cell from '../components/Cell'
+import NavigateToStudioButton from '../components/NavigateToStudioButton'
 
 import { Link } from '../routes'
 import { getApi } from '../helpers'
@@ -15,21 +16,10 @@ const CenteredContainer = styled.div`
   align-items: center;
 `
 
-const NavigateToStudioButton = styled.a`
-  margin: 2rem;
-  padding: 1rem;
-  border-radius: 3px;
+const UnstyledLink = styled.a`
   text-decoration: none;
-  background-color: white;
-  vertical-align: middle;
-  box-shadow: none;
-  text-shadow: none;
-  font-size: 1rem;
-
-  &:hover {
-    background-color: black;
-    color: white;
-  }
+  color: black;
+  cursor: pointer;
 `
 
 function sortByUpdatedAt ({ updated_at: updatedAtA }, { updated_at: updatedAtB }) {
@@ -60,15 +50,13 @@ class GalleryRoute extends Component {
         <CenteredContainer>
           {cells.sort(sortByUpdatedAt).map(({ id, image_url, title, url_id }) => (
             <Link key={id} route={`/i/${url_id}`}>
-              <a>
+              <UnstyledLink>
                 <Cell key={id} imageUrl={image_url} title={title} />
-              </a>
+              </UnstyledLink>
             </Link>)
           )}
 
-          <Link route='/studio'>
-            <NavigateToStudioButton>Create New</NavigateToStudioButton>
-          </Link>
+          <NavigateToStudioButton />
         </CenteredContainer>
       </div>
     )

@@ -58,8 +58,15 @@ class GalleryRoute extends Component {
         <MobileViewportSettings />
         <GrayBackground />
         <CenteredContainer>
-          {cells.sort(sortByUpdatedAt).map(({ id, image_url, title }) => <Cell key={id} imageUrl={image_url} title={title} />)}
-          <Link href='/studio'>
+          {cells.sort(sortByUpdatedAt).map(({ id, image_url, title, url_id }) => (
+            <Link key={id} route={`/i/${url_id}`}>
+              <a>
+                <Cell key={id} imageUrl={image_url} title={title} />
+              </a>
+            </Link>)
+          )}
+
+          <Link route='/studio'>
             <NavigateToStudioButton>Create New</NavigateToStudioButton>
           </Link>
         </CenteredContainer>

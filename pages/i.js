@@ -97,6 +97,9 @@ class ImageRoute extends Component {
           <Link href='/studio'>
             <NavigateToStudioButton>Create New</NavigateToStudioButton>
           </Link>
+          <Link href='/gallery'>
+            <NavigateToStudioButton>Gallery</NavigateToStudioButton>
+          </Link>
         </CenteredContainer>
       </div>
     )

@@ -250,8 +250,10 @@ class Studio extends Component {
 
   render () {
     const activeEmoji = this.state.emojis[this.state.activeEmojiId]
+    const emojiCount = Object.keys(this.state.emojis).length
 
     console.log('activeEmoji:%o', activeEmoji)
+    console.log('emoji count:%o', emojiCount)
 
     return (
       <div>

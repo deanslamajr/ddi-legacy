@@ -251,6 +251,8 @@ class Studio extends Component {
   render () {
     const activeEmoji = this.state.emojis[this.state.activeEmojiId]
 
+    console.log('activeEmoji:%o', activeEmoji)
+
     return (
       <div>
         <MobileViewportSettings />

@@ -5,6 +5,11 @@ const MenuButton = styled.span`
   height: 2.75rem;
   margin: .25rem;
   cursor: pointer;
+  background-color: white;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     background-color: black;
@@ -19,6 +24,7 @@ const RedMenuButton = styled(MenuButton)`
 
 const GreenMenuButton = styled(MenuButton)`
   background-color: limegreen;
+  color: black;
 `
 
 export {

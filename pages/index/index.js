@@ -303,7 +303,9 @@ class Studio extends Component {
                 toggleFilter={this.toggleFilter}
               />}
 
-              <GreenMenuButton type='button' onClick={this.saveCell} value='Save!' />
+              <GreenMenuButton onClick={this.saveCell}>
+                Save!
+              </GreenMenuButton>
 
               {this.state.showEmojiPicker && <EmojiPicker onSelect={this.onEmojiSelect} />}
             </React.Fragment>)}

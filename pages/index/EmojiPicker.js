@@ -17,14 +17,14 @@ const OuterContainer = styled.div`
   align-items: center;
 `
 
-const FillerSpan = styled.span`
-  display: inline-block;
-  width:15%;
-`
-
 const SearchContainer = styled.div`
-  width: 99vw;
-  margin-top: 1rem;
+  overflow-x: hidden;
+  margin-top: .5rem;
+  position: fixed;
+  bottom: 1.75rem;
+  width: 50rem;
+  left: 50%;
+  margin-left: -400px;
 `
 
 const SearchInput = styled.input`
@@ -34,6 +34,8 @@ const SearchInput = styled.input`
   background: linear-gradient(#eee, #fff);
   transition: all 0.3s ease-out;
   box-shadow: inset 0 1px 4px rgba(0,0,0,0.4);
+  width: 100%;
+  text-align: center;
 `
 
 const EmojisContainer = styled.div`
@@ -41,6 +43,7 @@ const EmojisContainer = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   font-size: 2.5rem;
+  margin-bottom: 8rem;
 `
 
 const InnerContainer = styled.div`
@@ -80,9 +83,7 @@ class EmojiPicker extends Component {
       <OuterContainer>
         <InnerContainer>
           <SearchContainer>
-            <FillerSpan/>
             <SearchInput type='text' name='search' onChange={this.handleChange} />
-            <FillerSpan/>
           </SearchContainer>
         
           <EmojisContainer>

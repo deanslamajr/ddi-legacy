@@ -54,25 +54,25 @@ class BuilderMenu extends React.Component {
 
   renderMainMenu = () => {
     return (<React.Fragment>
-      <MenuButton type='button' onClick={this.props.openEmojiPicker}>
+      <MenuButton onClick={this.props.openEmojiPicker}>
         ADD EMOJI
       </MenuButton>
-      <MenuButton type='button' onClick={() => this.setState({ currentMenu: SIZE })}>
+      <MenuButton onClick={() => this.setState({ currentMenu: SIZE })}>
         {SIZE}
       </MenuButton>
-      <MenuButton type='button' onClick={() => this.setState({ currentMenu: ROTATION })}>
+      <MenuButton onClick={() => this.setState({ currentMenu: ROTATION })}>
         {ROTATION}
       </MenuButton>
-      <MenuButton type='button' onClick={() => this.setState({ currentMenu: FLIP })}>
+      <MenuButton onClick={() => this.setState({ currentMenu: FLIP })}>
         {FLIP}
       </MenuButton>
-      <MenuButton type='button' onClick={() => this.setState({ currentMenu: STACK_ORDER })}>
+      <MenuButton onClick={() => this.setState({ currentMenu: STACK_ORDER })}>
         {STACK_ORDER}
       </MenuButton>
-      <MenuButton type='button' onClick={() => this.setState({ currentMenu: POSITION })}>
+      <MenuButton onClick={() => this.setState({ currentMenu: POSITION })}>
         {POSITION}
       </MenuButton>
-      <MenuButton type='button' onClick={() => this.setState({ currentMenu: RGB })}>
+      <MenuButton onClick={() => this.setState({ currentMenu: RGB })}>
         {RGB}
       </MenuButton>
     </React.Fragment>)
@@ -85,10 +85,10 @@ class BuilderMenu extends React.Component {
       {this.renderReturnToMainMenuButton()}
 
       {/* UP */}
-      <MenuButton type='button' onClick={() => increaseStackOrder()}>
+      <MenuButton onClick={() => increaseStackOrder()}>
         MOVE UP
       </MenuButton>
-      <MenuButton type='button' onClick={() => decreaseStackOrder()}>
+      <MenuButton onClick={() => decreaseStackOrder()}>
         MOVE DOWN
       </MenuButton>
     </React.Fragment>)
@@ -156,11 +156,11 @@ class BuilderMenu extends React.Component {
     return (<React.Fragment>
       {this.renderReturnToMainMenuButton()}
       {/* FLIP X */}
-      <MenuButton type='button' onClick={() => scaleField('scaleX', -1)}>
+      <MenuButton onClick={() => scaleField('scaleX', -1)}>
         FLIP X
       </MenuButton>
       {/* FLIP Y */}
-      <MenuButton type='button' onClick={() => scaleField('scaleY', -1)}>
+      <MenuButton onClick={() => scaleField('scaleY', -1)}>
         FLIP Y
       </MenuButton>
     </React.Fragment>)
@@ -179,8 +179,8 @@ class BuilderMenu extends React.Component {
       
       {/* TOGGLE FILTER*/}
       {activeEmoji.filters
-        ? (<RedMenuButton type='button' onClick={toggleFilter}>TURN OFF</RedMenuButton>)
-        : (<GreenMenuButton type='button' onClick={toggleFilter}>TURN ON</GreenMenuButton>)
+        ? (<RedMenuButton onClick={toggleFilter}>TURN OFF</RedMenuButton>)
+        : (<GreenMenuButton onClick={toggleFilter}>TURN ON</GreenMenuButton>)
       }
 
       {activeEmoji.filters && (<React.Fragment>

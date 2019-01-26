@@ -21,7 +21,7 @@ const SearchContainer = styled.div`
   overflow-x: hidden;
   margin-top: .5rem;
   position: fixed;
-  bottom: 1.75rem;
+  top: 1rem;
   width: 50rem;
   left: 50%;
   margin-left: -400px;
@@ -36,6 +36,12 @@ const SearchInput = styled.input`
   box-shadow: inset 0 1px 4px rgba(0,0,0,0.4);
   width: 100%;
   text-align: center;
+
+  &::placeholder {
+    color: gray;
+    font-size: 50px;
+    opacity: 0.5;
+  }
 `
 
 const EmojisContainer = styled.div`
@@ -43,13 +49,12 @@ const EmojisContainer = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   font-size: 2.5rem;
-  margin-bottom: 8rem;
+  margin-top: 6rem;
 `
 
 const InnerContainer = styled.div`
   position: relative;
   background-color: white;
-  
 `
 
 const EmojiContainer = styled.span`
@@ -83,7 +88,12 @@ class EmojiPicker extends Component {
       <OuterContainer>
         <InnerContainer>
           <SearchContainer>
-            <SearchInput type='text' name='search' onChange={this.handleChange} />
+            <SearchInput
+              type='text'
+              name='search'
+              onChange={this.handleChange}
+              placeholder='search by keyword'
+            />
           </SearchContainer>
         
           <EmojisContainer>

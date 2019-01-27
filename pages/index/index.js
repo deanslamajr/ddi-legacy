@@ -238,7 +238,11 @@ class Studio extends Component {
 
   updateEmojiCache = () => {
     console.log('updating emoji cache...')
-    Object.values(this.emojiRefs).map(emojiRef => emojiRef.cache(konvaCacheConfig))
+    //Object.values(this.emojiRefs).map(emojiRef => emojiRef.cache(konvaCacheConfig))
+    const activeEmojiRef = this.emojiRefs[this.state.activeEmojiId]
+    if (activeEmojiRef) {
+      activeEmojiRef.cache(konvaCacheConfig)
+    }
   }
 
   changeActiveEmoji = (id) => {

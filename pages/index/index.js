@@ -13,7 +13,7 @@ import { GreenMenuButton } from '../../components/Buttons'
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
 
-const konvaCacheConfig = { offset: 10 }
+const konvaCacheConfig = { offset: 20 }
 let currentEmojiId = 0
 
 //
@@ -201,12 +201,15 @@ class Studio extends Component {
   }
 
   setField = (field, value) => {
+    let emojiId
     this.setState(({ activeEmojiId, emojis }) => {
+      emojiId = activeEmojiId
+
       const clonedEmojis = cloneDeep(emojis)
       clonedEmojis[activeEmojiId][field] = value
       
       return { emojis: clonedEmojis }
-    }, () => this.updateEmojiCache())
+    }, () => this.updateEmojiCache(emojiId))
   }
 
   scaleField = (field, amount) => {
@@ -236,10 +239,10 @@ class Studio extends Component {
     })
   }
 
-  updateEmojiCache = () => {
+  updateEmojiCache = (emojiId) => {
     console.log('updating emoji cache...')
     //Object.values(this.emojiRefs).map(emojiRef => emojiRef.cache(konvaCacheConfig))
-    const activeEmojiRef = this.emojiRefs[this.state.activeEmojiId]
+    const activeEmojiRef = this.emojiRefs[emojiId]
     if (activeEmojiRef) {
       activeEmojiRef.cache(konvaCacheConfig)
     }
@@ -289,6 +292,7 @@ class Studio extends Component {
                 red={emoji.red}
                 green={emoji.green}
                 blue={emoji.blue}
+                useCache
               />))}
             </Layer>
           </Stage>

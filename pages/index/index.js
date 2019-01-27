@@ -95,7 +95,7 @@ class Studio extends Component {
         emojis: clonedEmojis,
         showEmojiPicker: false
       }
-    }, () => this.updateEmojiCache())
+    })
   }
 
   getSignedRequest = async (file) => {
@@ -165,7 +165,7 @@ class Studio extends Component {
       }
 
       return { emojis: clonedEmojis }
-    }, () => this.updateEmojiCache())
+    })
   }
 
   decreaseStackOrder = () => {
@@ -188,7 +188,7 @@ class Studio extends Component {
       }
 
       return { emojis: clonedEmojis }
-    }, () => this.updateEmojiCache())
+    })
   }
 
   incrementField = (field, amount) => {
@@ -197,11 +197,12 @@ class Studio extends Component {
       clonedEmojis[activeEmojiId][field] += amount
       
       return { emojis: clonedEmojis }
-    }, () => this.updateEmojiCache())
+    })
   }
 
   setField = (field, value) => {
     let emojiId
+
     this.setState(({ activeEmojiId, emojis }) => {
       emojiId = activeEmojiId
 
@@ -218,11 +219,14 @@ class Studio extends Component {
       clonedEmojis[activeEmojiId][field] *= amount
       
       return { emojis: clonedEmojis }
-    }, () => this.updateEmojiCache())
+    })
   }
 
   toggleFilter = () => {
+    let emojiId
+
     this.setState(({ activeEmojiId, emojis }) => {
+      emojiId = activeEmojiId
       const clonedEmojis = cloneDeep(emojis)
 
       clonedEmojis[activeEmojiId].filters = clonedEmojis[activeEmojiId].filters
@@ -230,18 +234,10 @@ class Studio extends Component {
         : [Konva.Filters.RGBA]
       
       return { emojis: clonedEmojis }
-    }, () => this.updateEmojiCache())
-  }
-
-  changeColor = (color, amount) => {
-    this.setState({ [color]: this.state[color] + amount }, () => {
-      this.updateEmojiCache()
-    })
+    }, () => this.updateEmojiCache(emojiId))
   }
 
   updateEmojiCache = (emojiId) => {
-    console.log('updating emoji cache...')
-    //Object.values(this.emojiRefs).map(emojiRef => emojiRef.cache(konvaCacheConfig))
     const activeEmojiRef = this.emojiRefs[emojiId]
     if (activeEmojiRef) {
       activeEmojiRef.cache(konvaCacheConfig)
@@ -258,9 +254,6 @@ class Studio extends Component {
 
   render () {
     const activeEmoji = this.state.emojis[this.state.activeEmojiId]
-
-    console.log('activeEmoji:%o', activeEmoji)
-    console.log('this.emojiRefs:%o', this.emojiRefs)
 
     return (
       <div>
@@ -292,7 +285,7 @@ class Studio extends Component {
                 red={emoji.red}
                 green={emoji.green}
                 blue={emoji.blue}
-                useCache
+                
               />))}
             </Layer>
           </Stage>

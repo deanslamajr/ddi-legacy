@@ -13,7 +13,12 @@ import { GreenMenuButton } from '../../components/Buttons'
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
 
-const konvaCacheConfig = { offset: 20 }
+const konvaCacheConfig = {
+  offset: 30,
+  /// for debugging
+  //drawBorder: true
+}
+
 let currentEmojiId = 0
 
 //
@@ -201,16 +206,14 @@ class Studio extends Component {
   }
 
   setField = (field, value) => {
-    let emojiId
-
     this.setState(({ activeEmojiId, emojis }) => {
-      emojiId = activeEmojiId
+      this.updateEmojiCache(activeEmojiId)
 
       const clonedEmojis = cloneDeep(emojis)
       clonedEmojis[activeEmojiId][field] = value
       
       return { emojis: clonedEmojis }
-    }, () => this.updateEmojiCache(emojiId))
+    })
   }
 
   scaleField = (field, amount) => {
@@ -223,10 +226,8 @@ class Studio extends Component {
   }
 
   toggleFilter = () => {
-    let emojiId
-
     this.setState(({ activeEmojiId, emojis }) => {
-      emojiId = activeEmojiId
+      this.updateEmojiCache(activeEmojiId)
       const clonedEmojis = cloneDeep(emojis)
 
       clonedEmojis[activeEmojiId].filters = clonedEmojis[activeEmojiId].filters
@@ -234,7 +235,7 @@ class Studio extends Component {
         : [Konva.Filters.RGBA]
       
       return { emojis: clonedEmojis }
-    }, () => this.updateEmojiCache(emojiId))
+    })
   }
 
   updateEmojiCache = (emojiId) => {

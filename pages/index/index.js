@@ -15,8 +15,9 @@ import BuilderMenu from './BuilderMenu'
 
 const konvaCacheConfig = {
   offset: 30,
+  pixelRatio: 1,
   /// for debugging
-  //drawBorder: true
+  drawBorder: true
 }
 
 let currentEmojiId = 0
@@ -286,7 +287,7 @@ class Studio extends Component {
                 red={emoji.red}
                 green={emoji.green}
                 blue={emoji.blue}
-                
+                useCache
               />))}
             </Layer>
           </Stage>

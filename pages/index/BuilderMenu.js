@@ -173,7 +173,6 @@ class BuilderMenu extends React.Component {
   renderRGBMenu = () => {
     const {
       activeEmoji,
-      incrementField,
       setField,
       toggleFilter
     } = this.props
@@ -241,7 +240,8 @@ class BuilderMenu extends React.Component {
     const {
       activeEmoji,
       changeActiveEmoji,
-      emojis
+      emojis,
+      updateEmojiCache
     } = this.props
 
     return (
@@ -255,6 +255,12 @@ class BuilderMenu extends React.Component {
             value={emoji}
           />))}
         </CenteredButtons>
+
+        <input
+            type='button'
+            onClick={() => updateEmojiCache()}
+            value='update emoji cache'
+          />
         
         {this.menus[this.state.currentMenu]()}        
       </React.Fragment>

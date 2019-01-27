@@ -238,7 +238,7 @@ class Studio extends Component {
     })
   }
 
-  updateEmojiCache = (emojiId) => {
+  updateEmojiCache = (emojiId = this.state.activeEmojiId) => {
     const activeEmojiRef = this.emojiRefs[emojiId]
     if (activeEmojiRef) {
       activeEmojiRef.cache(konvaCacheConfig)
@@ -304,9 +304,9 @@ class Studio extends Component {
                 incrementField={this.incrementField}
                 openEmojiPicker={this.openEmojiPicker}
                 scaleField={this.scaleField}
-                emojiSize={activeEmoji.size}
                 setField={this.setField}
                 toggleFilter={this.toggleFilter}
+                updateEmojiCache={this.updateEmojiCache}
               />}
 
               <GreenMenuButton onClick={this.saveCell}>

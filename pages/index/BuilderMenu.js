@@ -114,7 +114,11 @@ class BuilderMenu extends React.Component {
   }
 
   renderSizeMenu = () => {
-    const { activeEmoji, setField } = this.props
+    const {
+      activeEmoji,
+      setField,
+      updateEmojiCache
+    } = this.props
 
     return (<React.Fragment>
       {this.renderReturnToMainMenuButton()}
@@ -126,7 +130,7 @@ class BuilderMenu extends React.Component {
           value={activeEmoji.size}
           onChangeStart={() => {}}
           onChange={(value) => setField('size', value)}
-          onChangeComplete={() => {}}
+          onChangeComplete={() => updateEmojiCache()}
         />
       </SliderContainer>
     </React.Fragment>)

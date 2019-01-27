@@ -17,7 +17,7 @@ const konvaCacheConfig = {
   offset: 30,
   pixelRatio: 1,
   /// for debugging
-  drawBorder: true
+  //drawBorder: true
 }
 
 let currentEmojiId = 0

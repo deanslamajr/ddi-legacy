@@ -10,7 +10,7 @@ import cloneDeep from 'lodash/cloneDeep'
 import pick from 'lodash/pick'
 
 import { GrayBackground, MobileViewportSettings } from '../../components/Layouts'
-import { GreenMenuButton } from '../../components/Buttons'
+import { GreenMenuButton, RedMenuButton } from '../../components/Buttons'
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
 
@@ -25,6 +25,15 @@ const konvaCacheConfig = {
   offset: 30,
   pixelRatio: 1, /// fixes android graphics glitch
   //drawBorder: true /// for debugging
+}
+
+const initialState = {
+  activeEmojiId: null,
+  currentEmojiId: 1,
+  showEmojiPicker: true,
+  showSaveButton: true,
+  emojis: {},
+  title: 'untitled'
 }
 
 //
@@ -84,14 +93,7 @@ class Studio extends Component {
     super(props)
     this.emojiRefs = []
 
-    this.state = {
-      activeEmojiId: null,
-      currentEmojiId: 1,
-      showEmojiPicker: true,
-      showSaveButton: true,
-      emojis: {},
-      title: 'untitled'
-    }
+    this.state = initialState
   }
 
   onEmojiSelect = (emoji) => {
@@ -257,11 +259,21 @@ class Studio extends Component {
   }
 
   changeActiveEmoji = (id) => {
-    this.setState({ activeEmojiId: id })
+    this.setState({ activeEmojiId: id }, this.updateCache)
   }
 
   handleTitleChange = (event) => {
-    this.setState({ title: event.target.value})
+    this.setState({ title: event.target.value}, this.updateCache)
+  }
+
+  clearCache = () => {
+    const store = require('store2')
+    store(STORAGEKEY_STUDIO, {})
+  }
+
+  onStartOverClick = () => {
+    this.clearCache()
+    this.setState(initialState)
   }
 
   updateCache = () => {
@@ -353,6 +365,10 @@ class Studio extends Component {
                 updateCache={this.updateCache}
                 updateEmojiCache={this.updateEmojiCache}
               />}
+
+              <RedMenuButton onClick={this.onStartOverClick}>
+                START OVER
+              </RedMenuButton>
 
               <GreenMenuButton onClick={this.saveCell}>
                 Save!

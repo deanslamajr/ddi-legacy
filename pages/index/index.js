@@ -7,20 +7,25 @@ import axios from 'axios'
 import getConfig from 'next/config'
 import shortid from 'shortid'
 import cloneDeep from 'lodash/cloneDeep'
+import pick from 'lodash/pick'
 
 import { GrayBackground, MobileViewportSettings } from '../../components/Layouts'
 import { GreenMenuButton } from '../../components/Buttons'
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
 
-const konvaCacheConfig = {
-  offset: 30,
-  pixelRatio: 1,
-  /// for debugging
-  //drawBorder: true
+import { STORAGEKEY_STUDIO } from '../../config/constants.json'
+
+const RGBA = 'RGBA'
+const filters = {
+  [RGBA]: Konva.Filters.RGBA
 }
 
-let currentEmojiId = 0
+const konvaCacheConfig = {
+  offset: 30,
+  pixelRatio: 1, /// fixes android graphics glitch
+  //drawBorder: true /// for debugging
+}
 
 //
 // Environment variables
@@ -35,8 +40,7 @@ function sortByOrder ({ order: a }, { order: b }) {
   return a - b
 }
 
-function createNewEmoji (emoji) {
-  currentEmojiId = currentEmojiId + 1
+function createNewEmoji (emoji, currentEmojiId) {
   return {
     emoji,
     id: currentEmojiId,
@@ -82,6 +86,7 @@ class Studio extends Component {
 
     this.state = {
       activeEmojiId: null,
+      currentEmojiId: 1,
       showEmojiPicker: true,
       showSaveButton: true,
       emojis: {},
@@ -90,14 +95,15 @@ class Studio extends Component {
   }
 
   onEmojiSelect = (emoji) => {
-    this.setState(({ emojis }) => {
-      const newEmoji = createNewEmoji(emoji)
+    this.setState(({ currentEmojiId, emojis }) => {
+      const newEmoji = createNewEmoji(emoji, currentEmojiId)
 
       const clonedEmojis = cloneDeep(emojis)
       clonedEmojis[newEmoji.id] = newEmoji
 
       return {
         activeEmojiId: newEmoji.id,
+        currentEmojiId: currentEmojiId + 1,
         emojis: clonedEmojis,
         showEmojiPicker: false
       }
@@ -171,7 +177,7 @@ class Studio extends Component {
       }
 
       return { emojis: clonedEmojis }
-    })
+    }, this.updateCache)
   }
 
   decreaseStackOrder = () => {
@@ -194,7 +200,7 @@ class Studio extends Component {
       }
 
       return { emojis: clonedEmojis }
-    })
+    }, this.updateCache)
   }
 
   incrementField = (field, amount) => {
@@ -203,7 +209,7 @@ class Studio extends Component {
       clonedEmojis[activeEmojiId][field] += amount
       
       return { emojis: clonedEmojis }
-    })
+    }, this.updateCache)
   }
 
   setField = (field, value) => {
@@ -223,7 +229,7 @@ class Studio extends Component {
       clonedEmojis[activeEmojiId][field] *= amount
       
       return { emojis: clonedEmojis }
-    })
+    }, this.updateCache)
   }
 
   toggleFilter = () => {
@@ -233,10 +239,10 @@ class Studio extends Component {
 
       clonedEmojis[activeEmojiId].filters = clonedEmojis[activeEmojiId].filters
         ? undefined
-        : [Konva.Filters.RGBA]
+        : [RGBA]
       
       return { emojis: clonedEmojis }
-    })
+    }, this.updateCache)
   }
 
   updateEmojiCache = (emojiId = this.state.activeEmojiId) => {
@@ -246,12 +252,48 @@ class Studio extends Component {
     }
   }
 
+  updateAllEmojisCache = () => {
+    Object.keys(this.state.emojis).forEach(this.updateEmojiCache)
+  }
+
   changeActiveEmoji = (id) => {
     this.setState({ activeEmojiId: id })
   }
 
   handleTitleChange = (event) => {
     this.setState({ title: event.target.value})
+  }
+
+  updateCache = () => {
+    const latestState = pick(this.state, ['activeEmojiId', 'currentEmojiId', 'emojis', 'showEmojiPicker', 'title'])
+
+    const store = require('store2')
+    store(STORAGEKEY_STUDIO, latestState)
+  }
+
+  restoreFromCache = (cache) => {
+    this.setState(cache, this.updateAllEmojisCache)
+  }
+
+  handleDragEnd = (e) => {
+    const { x, y } = e.target.attrs
+
+    this.setState(({ activeEmojiId, emojis }) => {
+      const clonedEmojis = cloneDeep(emojis)
+      clonedEmojis[activeEmojiId].x = x
+      clonedEmojis[activeEmojiId].y = y
+      
+      return { emojis: clonedEmojis }
+    }, this.updateCache)
+  }
+
+  componentDidMount () {
+    const store = require('store2')
+    const studioCache = store(STORAGEKEY_STUDIO)
+
+    if (studioCache) {
+      this.restoreFromCache(studioCache)
+    }
   }
 
   render () {
@@ -275,7 +317,7 @@ class Studio extends Component {
                 draggable={emoji.id === this.state.activeEmojiId}
                 key={`${emoji.id}${emoji.emoji}`}
                 ref={ref => this.emojiRefs[emoji.id] = ref}
-                filters={emoji.filters}
+                filters={emoji.filters && emoji.filters.map(filter => filters[filter])}
                 x={emoji.x}
                 y={emoji.y}
                 scaleX={emoji.scaleX}
@@ -287,6 +329,7 @@ class Studio extends Component {
                 red={emoji.red}
                 green={emoji.green}
                 blue={emoji.blue}
+                onDragEnd={this.handleDragEnd}
                 useCache
               />))}
             </Layer>
@@ -307,6 +350,7 @@ class Studio extends Component {
                 scaleField={this.scaleField}
                 setField={this.setField}
                 toggleFilter={this.toggleFilter}
+                updateCache={this.updateCache}
                 updateEmojiCache={this.updateEmojiCache}
               />}
 

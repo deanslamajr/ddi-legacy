@@ -117,7 +117,7 @@ class BuilderMenu extends React.Component {
     const {
       activeEmoji,
       setField,
-      updateEmojiCache
+      updateCache
     } = this.props
 
     return (<React.Fragment>
@@ -130,14 +130,14 @@ class BuilderMenu extends React.Component {
           value={activeEmoji.size}
           onChangeStart={() => {}}
           onChange={(value) => setField('size', value)}
-          onChangeComplete={() => updateEmojiCache()}
+          onChangeComplete={() => updateCache()}
         />
       </SliderContainer>
     </React.Fragment>)
   }
 
   renderRotationMenu = () => {
-    const { activeEmoji, setField } = this.props
+    const { activeEmoji, setField, updateCache } = this.props
 
     return (<React.Fragment>
       {this.renderReturnToMainMenuButton()}
@@ -148,7 +148,7 @@ class BuilderMenu extends React.Component {
             value={activeEmoji.rotation}
             onChangeStart={() => {}}
             onChange={(value) => setField('rotation', value)}
-            onChangeComplete={() => {}}
+            onChangeComplete={() => updateCache()}
           />
         </SliderContainer>
     </React.Fragment>)
@@ -174,7 +174,8 @@ class BuilderMenu extends React.Component {
     const {
       activeEmoji,
       setField,
-      toggleFilter
+      toggleFilter,
+      updateCache
     } = this.props
 
     return (<React.Fragment>
@@ -196,7 +197,7 @@ class BuilderMenu extends React.Component {
             value={activeEmoji.alpha}
             onChangeStart={() => {}}
             onChange={(value) => setField('alpha', value)}
-            onChangeComplete={() => {}}
+            onChangeComplete={() => updateCache()}
           />
         </SliderContainer>
         Red
@@ -207,7 +208,7 @@ class BuilderMenu extends React.Component {
             value={activeEmoji.red}
             onChangeStart={() => {}}
             onChange={(value) => setField('red', value)}
-            onChangeComplete={() => {}}
+            onChangeComplete={() => updateCache()}
           />
         </SliderContainer>
         Blue
@@ -218,7 +219,7 @@ class BuilderMenu extends React.Component {
             value={activeEmoji.blue}
             onChangeStart={() => {}}
             onChange={(value) => setField('blue', value)}
-            onChangeComplete={() => {}}
+            onChangeComplete={() => updateCache()}
           />
         </SliderContainer>
         Green
@@ -229,7 +230,7 @@ class BuilderMenu extends React.Component {
             value={activeEmoji.green}
             onChangeStart={() => {}}
             onChange={(value) => setField('green', value)}
-            onChangeComplete={() => {}}
+            onChangeComplete={() => updateCache()}
           />
         </SliderContainer>
       </React.Fragment>)}

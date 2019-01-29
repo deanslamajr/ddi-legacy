@@ -96,6 +96,12 @@ class Studio extends Component {
     this.state = initialState
   }
 
+  doPostEmojiSelect = () => {
+    this.updateCache()
+    this.updateAllEmojisCache() // clear all outlines
+    this.outlineActiveEmoji()
+  }
+
   onEmojiSelect = (emoji) => {
     this.setState(({ currentEmojiId, emojis }) => {
       const newEmoji = createNewEmoji(emoji, currentEmojiId)
@@ -109,7 +115,7 @@ class Studio extends Component {
         emojis: clonedEmojis,
         showEmojiPicker: false
       }
-    }, this.updateCache)
+    }, this.doPostEmojiSelect)
   }
 
   getSignedRequest = async (file) => {
@@ -123,35 +129,39 @@ class Studio extends Component {
   }
 
   saveCell = async (event) => {
-    this.setState({ showSaveButton: false })
+    // clears active emoji border
+    this.updateEmojiCache(undefined, false)
+    this.incrementField('red', 1, this.clearCache) // hack bc we need to get a konva image refresh for the canvas to get the 'remove border' update
 
-    this.stage.toCanvas().toBlob(async (blob) => {
-      const file = new File([blob], generateFilename(), {
-        type: 'image/png',
-      })
-
-      try {
-        const {
-          id,
-          signedRequest } = await this.getSignedRequest(file)
-
-        const xhr = new XMLHttpRequest()
-        xhr.open('PUT', signedRequest)
-        xhr.onreadystatechange = () => {
-          if(xhr.readyState === 4){
-            if(xhr.status === 200){
-              Router.pushRoute(`/i/${id}`)
-            }
-            else{
-              console.error('could not upload file!')
+    this.setState({ showSaveButton: false }, () => {
+      this.stage.toCanvas().toBlob(async (blob) => {
+        const file = new File([blob], generateFilename(), {
+          type: 'image/png',
+        })
+  
+        try {
+          const {
+            id,
+            signedRequest } = await this.getSignedRequest(file)
+  
+          const xhr = new XMLHttpRequest()
+          xhr.open('PUT', signedRequest)
+          xhr.onreadystatechange = () => {
+            if(xhr.readyState === 4){
+              if(xhr.status === 200){
+                Router.pushRoute(`/i/${id}`)
+              }
+              else{
+                console.error('could not upload file!')
+              }
             }
           }
+          xhr.send(file)
         }
-        xhr.send(file)
-      }
-      catch (e) {
-        console.error(e)
-      }
+        catch (e) {
+          console.error(e)
+        }
+      })
     })
   }
 
@@ -205,13 +215,13 @@ class Studio extends Component {
     }, this.updateCache)
   }
 
-  incrementField = (field, amount) => {
+  incrementField = (field, amount, cb = this.updateCache) => {
     this.setState(({ activeEmojiId, emojis }) => {
       const clonedEmojis = cloneDeep(emojis)
       clonedEmojis[activeEmojiId][field] += amount
       
       return { emojis: clonedEmojis }
-    }, this.updateCache)
+    }, cb)
   }
 
   setField = (field, value) => {
@@ -250,10 +260,10 @@ class Studio extends Component {
   updateEmojiCache = (emojiId = this.state.activeEmojiId, useOutline = true) => {
     const activeEmojiRef = this.emojiRefs[emojiId]
     if (activeEmojiRef) {
-      console.log('useOutline:%o', useOutline)
       const cacheConfig = useOutline
         ? Object.assign({}, konvaCacheConfig, { drawBorder: true })
         : konvaCacheConfig
+
       activeEmojiRef.cache(cacheConfig)
     }
   }
@@ -280,7 +290,7 @@ class Studio extends Component {
     store(STORAGEKEY_STUDIO, {})
   }
 
-  onStartOverClick = () => {
+  resetStudioSession = () => {
     this.clearCache()
     this.setState(initialState)
   }
@@ -380,7 +390,7 @@ class Studio extends Component {
                 updateEmojiCache={this.updateEmojiCache}
               />}
 
-              <RedMenuButton onClick={this.onStartOverClick}>
+              <RedMenuButton onClick={this.resetStudioSession}>
                 START OVER
               </RedMenuButton>
 

@@ -247,19 +247,28 @@ class Studio extends Component {
     }, this.updateCache)
   }
 
-  updateEmojiCache = (emojiId = this.state.activeEmojiId) => {
+  updateEmojiCache = (emojiId = this.state.activeEmojiId, useOutline = true) => {
     const activeEmojiRef = this.emojiRefs[emojiId]
     if (activeEmojiRef) {
-      activeEmojiRef.cache(konvaCacheConfig)
+      console.log('useOutline:%o', useOutline)
+      const cacheConfig = useOutline
+        ? Object.assign({}, konvaCacheConfig, { drawBorder: true })
+        : konvaCacheConfig
+      activeEmojiRef.cache(cacheConfig)
     }
   }
 
   updateAllEmojisCache = () => {
-    Object.keys(this.state.emojis).forEach(this.updateEmojiCache)
+    Object.keys(this.state.emojis).forEach(emoji => this.updateEmojiCache(emoji, false))
+  }
+
+  updateEmojiAndSessionCache = () => {
+    this.updateAllEmojisCache()
+    this.outlineActiveEmoji()
   }
 
   changeActiveEmoji = (id) => {
-    this.setState({ activeEmojiId: id }, this.updateCache)
+    this.setState({ activeEmojiId: id }, this.updateEmojiAndSessionCache)
   }
 
   handleTitleChange = (event) => {
@@ -283,8 +292,13 @@ class Studio extends Component {
     store(STORAGEKEY_STUDIO, latestState)
   }
 
+  outlineActiveEmoji = () => {
+    // set outline
+    this.updateEmojiCache(undefined, true)
+  }
+
   restoreFromCache = (cache) => {
-    this.setState(cache, this.updateAllEmojisCache)
+    this.setState(cache, this.updateEmojiAndSessionCache)
   }
 
   handleDragEnd = (e) => {

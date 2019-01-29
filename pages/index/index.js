@@ -109,7 +109,7 @@ class Studio extends Component {
         emojis: clonedEmojis,
         showEmojiPicker: false
       }
-    })
+    }, this.updateCache)
   }
 
   getSignedRequest = async (file) => {

@@ -19,8 +19,18 @@ const SliderContainer = styled.div`
   display: block;
 `
 
+const SelectActiveEmojiButton = styled(MenuButton)`
+  background-color: ${props => props.isActive ? 'green' : 'white'};
+  cursor: ${props => props.isActive ? 'default' : 'pointer'};
+
+  &:hover {
+    background-color: ${props => props.isActive ? 'green' : 'black'};
+  }
+`
+
 const MAIN = 'MAIN'
 const POSITION = 'POSITION'
+const SELECT_ACTIVE_EMOJI = 'SELECT ACTIVE EMOJI'
 const SIZE = 'SIZE'
 const ROTATION = 'ROTATION'
 const FLIP = 'FLIP'
@@ -38,6 +48,7 @@ class BuilderMenu extends React.Component {
     this.menus = {
       [MAIN]: this.renderMainMenu,
       [POSITION]: this.renderPositionMenu,
+      [SELECT_ACTIVE_EMOJI]: this.renderSelectActiveEmoji,
       [SIZE]: this.renderSizeMenu,
       [ROTATION]: this.renderRotationMenu,
       [FLIP]: this.renderFlipMenu,
@@ -56,6 +67,9 @@ class BuilderMenu extends React.Component {
     return (<React.Fragment>
       <MenuButton onClick={this.props.openEmojiPicker}>
         ADD EMOJI
+      </MenuButton>
+      <MenuButton onClick={() => this.setState({ currentMenu: SELECT_ACTIVE_EMOJI })}>
+        {SELECT_ACTIVE_EMOJI}
       </MenuButton>
       <MenuButton onClick={() => this.setState({ currentMenu: SIZE })}>
         {SIZE}
@@ -237,25 +251,31 @@ class BuilderMenu extends React.Component {
     </React.Fragment>)
   }
 
-  render () {
+  renderSelectActiveEmoji = () => {
     const {
       activeEmoji,
       changeActiveEmoji,
       emojis
     } = this.props
 
+    return (<React.Fragment>
+      {this.renderReturnToMainMenuButton()}
+      
+      {Object.values(emojis).map(({ emoji, id }) => (<SelectActiveEmojiButton
+        key={`${id}${emoji}`}
+        type='button'
+        isActive={id === activeEmoji.id}
+        onClick={() => changeActiveEmoji(id)}
+        value={emoji}
+      >
+        {emoji}
+      </SelectActiveEmojiButton>))}
+    </React.Fragment>)
+  }
+
+  render () {
     return (
-      <React.Fragment>
-        <CenteredButtons>
-          {Object.values(emojis).map(({ emoji, id }) => (<input
-            key={`${id}${emoji}`}
-            type='button'
-            disabled={id === activeEmoji.id}
-            onClick={() => changeActiveEmoji(id)}
-            value={emoji}
-          />))}
-        </CenteredButtons>
-        
+      <React.Fragment>       
         {this.menus[this.state.currentMenu]()}        
       </React.Fragment>
     )

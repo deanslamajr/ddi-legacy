@@ -4,7 +4,7 @@ import styled from 'styled-components'
 const TitleContainer = styled.div`
   width: 250px;
   background: #f9f9f9;;
-  border-top: black solid 1px;
+  border-top: #CAD6DF solid 1px;
 `
 
 const TitleWidth = styled.div`
@@ -15,7 +15,7 @@ const TitleWidth = styled.div`
 const CellContainer = styled.div`
   margin: 1rem;
   background: white;
-  border: black solid 1px;
+  border: #CAD6DF solid 1px;
 `
 
 export default function Cell ({ imageUrl, title }) {

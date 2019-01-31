@@ -2,7 +2,29 @@ import { Component } from 'react'
 import { emojiIndex } from 'emoji-mart'
 import styled from 'styled-components'
 
-const initialEmojiSet = Object.values(emojiIndex.emojis).filter(emoji => emoji.native).map(o => o.native)
+// from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array#answer-2450976
+function shuffle (array) {
+  let currentIndex = array.length
+  let temporaryValue
+  let randomIndex
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex)
+    currentIndex -= 1
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex]
+    array[currentIndex] = array[randomIndex]
+    array[randomIndex] = temporaryValue
+  }
+
+  return array
+}
+
+const initialEmojiSet = shuffle(Object.values(emojiIndex.emojis).filter(emoji => emoji.native).map(o => o.native))
 
 const OuterContainer = styled.div`
   position: absolute;
@@ -58,7 +80,12 @@ const InnerContainer = styled.div`
 `
 
 const EmojiContainer = styled.span`
-  margin: 1rem;
+  width: 5rem;
+  height: 5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
 
 const Emoji = ({ emoji, onSelect }) => {

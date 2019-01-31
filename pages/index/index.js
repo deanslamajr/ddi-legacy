@@ -341,9 +341,9 @@ class Studio extends Component {
     const store = require('store2')
     const studioCache = store(STORAGEKEY_STUDIO)
 
-    studioCache.showLoadSpinner = false
-
     if (studioCache) {
+      studioCache.showLoadSpinner = false
+      
       this.restoreFromCache(studioCache)
     }
   }

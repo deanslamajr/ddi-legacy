@@ -1,30 +1,30 @@
 import styled from 'styled-components'
 
 const MenuButton = styled.span`
-  width: 15rem;
+  width: 250px;
   height: 2.75rem;
   margin: .25rem;
   cursor: pointer;
-  background-color: white;
-  color: black;
+  background-color: #F7FFF7;
+  color: #131B23;
   display: flex;
   align-items: center;
   justify-content: center;
 
   &:hover {
-    background-color: black;
+    background-color: #131B23;
     color: white;
   }
 `
 
 const RedMenuButton = styled(MenuButton)`
-  background-color: saddlebrown;
+  background-color: #FE4A49;
   color: white;
 `
 
 const GreenMenuButton = styled(MenuButton)`
-  background-color: limegreen;
-  color: black;
+  background-color: #679436;
+  color: #131B23;
 `
 
 export {

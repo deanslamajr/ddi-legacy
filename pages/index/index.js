@@ -74,7 +74,8 @@ const TitleInput = styled.textarea`
   font-size: 16px;
   margin: .5rem;
   height: 4rem;
-  width: 15rem;
+  width: 244px;
+  padding: 3px;
 `
 
 const LoadSpinner = styled.div`

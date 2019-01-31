@@ -143,38 +143,40 @@ class Studio extends Component {
   }
 
   saveCell = async (event) => {
-    // clears active emoji border
-    this.updateEmojiCache(undefined, false)
-    this.incrementField('red', 1, this.clearCache) // hack bc we need to get a konva image refresh for the canvas to get the 'remove border' update
+    this.setState({ showLoadSpinner: true }, () => {
+      // clears active emoji border
+      this.updateEmojiCache(undefined, false)
+      this.incrementField('red', 1, this.clearCache) // hack bc we need to get a konva image refresh for the canvas to get the 'remove border' update
 
-    this.setState({ showSaveButton: false }, () => {
-      this.stage.toCanvas().toBlob(async (blob) => {
-        const file = new File([blob], generateFilename(), {
-          type: 'image/png',
-        })
-  
-        try {
-          const {
-            id,
-            signedRequest } = await this.getSignedRequest(file)
-  
-          const xhr = new XMLHttpRequest()
-          xhr.open('PUT', signedRequest)
-          xhr.onreadystatechange = () => {
-            if(xhr.readyState === 4){
-              if(xhr.status === 200){
-                Router.pushRoute(`/i/${id}`)
-              }
-              else{
-                console.error('could not upload file!')
+      this.setState({ showSaveButton: false }, () => {
+        this.stage.toCanvas().toBlob(async (blob) => {
+          const file = new File([blob], generateFilename(), {
+            type: 'image/png',
+          })
+    
+          try {
+            const {
+              id,
+              signedRequest } = await this.getSignedRequest(file)
+    
+            const xhr = new XMLHttpRequest()
+            xhr.open('PUT', signedRequest)
+            xhr.onreadystatechange = () => {
+              if(xhr.readyState === 4){
+                if(xhr.status === 200){
+                  Router.pushRoute(`/i/${id}`)
+                }
+                else{
+                  console.error('could not upload file!')
+                }
               }
             }
+            xhr.send(file)
           }
-          xhr.send(file)
-        }
-        catch (e) {
-          console.error(e)
-        }
+          catch (e) {
+            console.error(e)
+          }
+        })
       })
     })
   }

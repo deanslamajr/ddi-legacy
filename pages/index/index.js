@@ -343,9 +343,11 @@ class Studio extends Component {
 
     if (studioCache) {
       studioCache.showLoadSpinner = false
-      
+
       this.restoreFromCache(studioCache)
     }
+
+    this.setState({ showLoadSpinner: false })
   }
 
   render () {

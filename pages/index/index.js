@@ -27,15 +27,6 @@ const konvaCacheConfig = {
   //drawBorder: true /// for debugging
 }
 
-const initialState = {
-  activeEmojiId: null,
-  currentEmojiId: 1,
-  showEmojiPicker: true,
-  showSaveButton: true,
-  emojis: {},
-  title: 'untitled'
-}
-
 //
 // Environment variables
 // @see {@link https://nextjs.org/docs/#exposing-configuration-to-the-server--client-side}
@@ -86,12 +77,35 @@ const TitleInput = styled.textarea`
   width: 15rem;
 `
 
+const LoadSpinner = styled.div`
+  z-index: 999999;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,.5);
+`
+
 //
 // Studio
 class Studio extends Component {
   constructor (props) {
     super(props)
     this.emojiRefs = []
+
+    this.initialState = {
+      activeEmojiId: null,
+      currentEmojiId: 1,
+      showEmojiPicker: true,
+      showLoadSpinner: false,
+      showSaveButton: true,
+      emojis: {},
+      title: 'untitled'
+    }
+
+    // initially show load spinner
+    const initialState = Object.assign({}, this.initialState, { showLoadSpinner: true })
 
     this.state = initialState
   }
@@ -292,7 +306,7 @@ class Studio extends Component {
 
   resetStudioSession = () => {
     this.clearCache()
-    this.setState(initialState)
+    this.setState(this.initialState)
   }
 
   updateCache = () => {
@@ -327,12 +341,16 @@ class Studio extends Component {
     const store = require('store2')
     const studioCache = store(STORAGEKEY_STUDIO)
 
+    studioCache.showLoadSpinner = false
+
     if (studioCache) {
       this.restoreFromCache(studioCache)
     }
   }
 
   render () {
+    const { showLoadSpinner } = this.state
+
     const activeEmoji = this.state.emojis[this.state.activeEmojiId]
 
     return (
@@ -401,6 +419,8 @@ class Studio extends Component {
               {this.state.showEmojiPicker && <EmojiPicker onSelect={this.onEmojiSelect} />}
             </React.Fragment>)}
         </CenteredContainer>
+
+        {showLoadSpinner && <LoadSpinner>TACO</LoadSpinner>}
       </div>
     )
   }

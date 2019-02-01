@@ -4,9 +4,9 @@ import axios from 'axios'
 
 import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
 import Cell from '../components/Cell'
-import NavigateToStudioButton from '../components/NavigateToStudioButton'
+import { NavButton, BOTTOM_RIGHT, GREEN, } from '../components/navigation'
 
-import { Link } from '../routes'
+import { Link, Router } from '../routes'
 import { getApi } from '../helpers'
 
 const CenteredContainer = styled.div`
@@ -40,6 +40,10 @@ class GalleryRoute extends Component {
     }
   }
 
+  navigateToStudio = () => {
+    Router.pushRoute('/..')
+  }
+
   render () {
     const { cells } = this.props
     
@@ -55,9 +59,14 @@ class GalleryRoute extends Component {
               </UnstyledLink>
             </Link>)
           )}
-
-          <NavigateToStudioButton />
         </CenteredContainer>
+        
+        <NavButton
+          value='CREATE'
+          color={GREEN}
+          cb={this.navigateToStudio}
+          position={BOTTOM_RIGHT}
+        />
       </div>
     )
   }

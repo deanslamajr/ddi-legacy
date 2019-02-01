@@ -23,9 +23,7 @@ app.prepare()
     server.get('/cell/:cellId', getCell)
     server.get('/cells', getCells)
 
-    server.get('*', (req, res) => {
-      return handler(req, res)
-    })
+    server.use(handler)
 
     server.listen(port, (err) => {
       if (err) throw err

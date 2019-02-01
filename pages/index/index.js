@@ -11,6 +11,7 @@ import pick from 'lodash/pick'
 
 import { GrayBackground, MobileViewportSettings } from '../../components/Layouts'
 import { GreenMenuButton, RedMenuButton } from '../../components/Buttons'
+import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, BLUE, GREEN, RED } from '../../components/navigation'
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
 
@@ -68,6 +69,7 @@ const CenteredContainer = styled.div`
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 6rem;
 `
 
 const TitleInput = styled.textarea`
@@ -180,6 +182,10 @@ class Studio extends Component {
         })
       })
     })
+  }
+
+  navigateToGallery = () => {
+    Router.pushRoute('/gallery')
   }
 
   openEmojiPicker = () => {
@@ -413,17 +419,28 @@ class Studio extends Component {
                 updateEmojiCache={this.updateEmojiCache}
               />}
 
-              <RedMenuButton onClick={this.resetStudioSession}>
-                START OVER
-              </RedMenuButton>
-
-              <GreenMenuButton onClick={this.saveCell}>
-                Save!
-              </GreenMenuButton>
-
               {this.state.showEmojiPicker && <EmojiPicker onSelect={this.onEmojiSelect} />}
             </React.Fragment>)}
         </CenteredContainer>
+
+        <NavButton
+          value='GALLERY'
+          color={BLUE}
+          cb={this.navigateToGallery}
+          position={BOTTOM_LEFT}
+        />
+        <NavButton
+          value='RESET'
+          color={RED}
+          cb={this.resetStudioSession}
+          position={BOTTOM_CENTER}
+        />
+        <NavButton
+          value='SAVE'
+          color={GREEN}
+          cb={this.saveCell}
+          position={BOTTOM_RIGHT}
+        />
 
         {showLoadSpinner && <LoadSpinner>TACO</LoadSpinner>}
       </div>

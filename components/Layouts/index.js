@@ -3,7 +3,8 @@ import Head from 'next/head'
 
 const GrayBackground = createGlobalStyle`
   body {
-    background-color: #C5D6D8
+    background-color: #C5D6D8;
+    margin: 0;
   }
 `
 

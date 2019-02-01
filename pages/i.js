@@ -7,9 +7,9 @@ import axios from 'axios'
 
 import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
 import Cell from '../components/Cell'
-import NavigateToStudioButton from '../components/NavigateToStudioButton'
+import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT, BLUE, GREEN } from '../components/navigation'
 
-import { Link } from '../routes'
+import { Router } from '../routes'
 import { getApi } from '../helpers'
 
 // Environment variables
@@ -58,6 +58,14 @@ class ImageRoute extends Component {
     }
   }
 
+  navigateToGallery = () => {
+    Router.pushRoute('/gallery')
+  }
+
+  navigateToStudio = () => {
+    Router.pushRoute('/..')
+  }
+
   render () {
     const { 
       imageUrl,
@@ -96,11 +104,21 @@ class ImageRoute extends Component {
         <GrayBackground />
         <CenteredContainer>
           <Cell imageUrl={imageUrl} title={title} />
-          <NavigateToStudioButton/>
-          <Link href='/gallery'>
-            <NavigateToGalleryButton>Gallery</NavigateToGalleryButton>
-          </Link>
         </CenteredContainer>
+
+        <NavButton
+          value='GALLERY'
+          color={BLUE}
+          cb={this.navigateToGallery}
+          position={BOTTOM_LEFT}
+        />
+
+        <NavButton
+          value='CREATE'
+          color={GREEN}
+          cb={this.navigateToStudio}
+          position={BOTTOM_RIGHT}
+        />
       </div>
     )
   }

@@ -7,7 +7,15 @@ import axios from 'axios'
 
 import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
 import Cell from '../components/Cell'
-import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT, BLUE, GREEN } from '../components/navigation'
+import {
+  NavButton,
+  BOTTOM_LEFT,
+  BOTTOM_CENTER,
+  BOTTOM_RIGHT,
+  BLUE,
+  GREEN,
+  ORANGE
+} from '../components/navigation'
 
 import { Router } from '../routes'
 import { getApi } from '../helpers'
@@ -53,6 +61,7 @@ class ImageRoute extends Component {
     const { data } = await axios.get(getApi(`/cell/${query.cellId}`, req))
 
     return {
+      canDuplicate: data.hasStudioState,
       imageUrl: data.image_url,
       title: data.title
     }
@@ -66,14 +75,17 @@ class ImageRoute extends Component {
     Router.pushRoute('/..')
   }
 
+  navigateToDuplicate = () => {
+    Router.pushRoute(`/studio/${this.props.router.query.cellId}`)
+  }
+
   render () {
-    const { 
+    const {
+      canDuplicate,
       imageUrl,
       router,
       title
     } = this.props
-    
-    const v = router.query.v || '0'
     
     return (
       <div>
@@ -112,6 +124,13 @@ class ImageRoute extends Component {
           cb={this.navigateToGallery}
           position={BOTTOM_LEFT}
         />
+
+        {canDuplicate && <NavButton
+          value='DUPLICATE'
+          color={ORANGE}
+          cb={this.navigateToDuplicate}
+          position={BOTTOM_CENTER}
+        />}
 
         <NavButton
           value='CREATE'

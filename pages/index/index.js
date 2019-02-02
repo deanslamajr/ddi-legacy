@@ -145,6 +145,18 @@ class Studio extends Component {
     }
   }
 
+  finishCellPublish = async (cellId) => {
+    const studioState = pick(this.state, ['currentEmojiId', 'emojis', 'title'])
+
+    try {
+      await axios.put(`/cell/${cellId}`, { studioState })
+      Router.pushRoute(`/i/${cellId}`)
+    }
+    catch (e) {
+      console.error(e)
+    }
+  }
+
   saveCell = async (event) => {
     this.setState({ showLoadSpinner: true }, () => {
       // clears active emoji border
@@ -164,10 +176,11 @@ class Studio extends Component {
     
             const xhr = new XMLHttpRequest()
             xhr.open('PUT', signedRequest)
-            xhr.onreadystatechange = () => {
+            xhr.onreadystatechange = async () => {
               if(xhr.readyState === 4){
                 if(xhr.status === 200){
-                  Router.pushRoute(`/i/${id}`)
+                  // update cell in DB
+                  await this.finishCellPublish(id)
                 }
                 else{
                   console.error('could not upload file!')

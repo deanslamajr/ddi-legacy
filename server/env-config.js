@@ -13,6 +13,7 @@ const serverSecrets = {
   // app
   PORT: fromProcessEnv('PORT'),
   NODE_ENV: fromProcessEnv('NODE_ENV'),
+  COOKIE_SECRET: fromProcessEnv('COOKIE_SECRET'),
   // AWS
   AWS_ACCESS_KEY_ID: fromProcessEnv('AWS_ACCESS_KEY_ID'),
   AWS_SECRET_ACCESS_KEY: fromProcessEnv('AWS_SECRET_ACCESS_KEY'),

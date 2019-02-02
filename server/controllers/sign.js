@@ -13,6 +13,7 @@ async function sign (req, res) {
 
     const id = shortid.generate()
     await Cells.create({
+      creator_user_id: req.session.userId,
       image_url: signData.url,
       title,
       url_id: id
@@ -20,8 +21,7 @@ async function sign (req, res) {
 
     signData.id = id
 
-    res.write(JSON.stringify(signData))
-    res.end()
+    res.json(signData)
   }
   catch (e) {
     console.error(e)

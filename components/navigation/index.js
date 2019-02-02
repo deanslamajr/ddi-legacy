@@ -7,6 +7,7 @@ export const BOTTOM_RIGHT = 'BOTTOM_RIGHT'
 export const RED = 'RED'
 export const GREEN = 'GREEN'
 export const BLUE = 'BLUE'
+export const ORANGE = 'ORANGE'
 
 const Button = styled.div`
   border: 1px solid #F7FFF7;
@@ -31,6 +32,9 @@ const Button = styled.div`
     }
     else if (props.color === BLUE) {
       return 'blue'
+    }
+    else if (props.color === ORANGE) {
+      return 'orange'
     }
     return 'white'
   }};

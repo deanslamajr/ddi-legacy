@@ -1,8 +1,16 @@
 const express = require('express')
 const next = require('next')
+const cookieSession = require('cookie-session')
+const bodyParser = require('body-parser')
+
+const handleUserSession = require('./middleware/userSession')
 
 const { sign } = require('./controllers/sign')
-const { all: getCells, get: getCell } = require('./controllers/cell')
+const {
+  all: getCells,
+  get: getCell,
+  update: updateCell
+} = require('./controllers/cell')
 
 const routes = require('../routes')
 
@@ -18,9 +26,20 @@ app.prepare()
   .then(() => {
     const server = express()
 
+    server.use(bodyParser.json())
+
+    // setup session cookie
+    server.use(cookieSession({
+      secret: serverEnvironment.COOKIE_SECRET,
+      expires: new Date(253402300000000)  // Approximately Friday, 31 Dec 9999 23:59:59 GMT
+    }))
+
+    server.use(handleUserSession)
+
     // @todo namespace data endpoints with /api
     server.get('/sign', sign)
     server.get('/cell/:cellId', getCell)
+    server.put('/cell/:cellId', updateCell)
     server.get('/cells', getCells)
 
     server.use(handler)

@@ -18,9 +18,15 @@ const Cells = sequelize.define('cells',
       type: Sequelize.STRING,
       allowNull: false
     },
+    studio_state: {
+      type: Sequelize.JSON
+    },
     title: {
       type: Sequelize.STRING,
       allowNull: false
+    },
+    creator_user_id: {
+      type: Sequelize.STRING
     }
   },
   {

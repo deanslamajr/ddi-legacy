@@ -6,9 +6,9 @@ import {
   MenuButton,
   RedMenuButton,
   GreenMenuButton
-} from './Buttons'
+} from '../../components/Buttons'
 
-import 'react-rangeslider/lib/index.css'
+//import 'react-rangeslider/lib/index.css'
 
 const CenteredButtons = styled.div`
   display: flex;

@@ -1,4 +1,4 @@
-import { Router } from '../routes'
+import { Router } from '../../routes'
 import { Component } from 'react'
 import styled from 'styled-components'
 import Konva from 'konva'
@@ -9,14 +9,14 @@ import shortid from 'shortid'
 import cloneDeep from 'lodash/cloneDeep'
 import pick from 'lodash/pick'
 
-import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
-import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, BLUE, GREEN, RED } from '../components/navigation'
-import EmojiPicker from '../components/EmojiPicker'
-import BuilderMenu from '../components/BuilderMenu'
+import { GrayBackground, MobileViewportSettings } from '../../components/Layouts'
+import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, BLUE, GREEN, RED } from '../../components/navigation'
+import EmojiPicker from './EmojiPicker'
+import BuilderMenu from './BuilderMenu'
 
-import { getApi } from '../helpers'
+import { getApi } from '../../helpers'
 
-import { STORAGEKEY_STUDIO } from '../config/constants.json'
+import { STORAGEKEY_STUDIO } from '../../config/constants.json'
 
 const RGBA = 'RGBA'
 const filters = {
@@ -109,7 +109,6 @@ class StudioRoute extends Component {
     }
 
     // initially show load spinner
-    console.log('this.props.studioState', this.props.studioState)
     const parentsStudioState = this.props.studioState || {}
     const initialState = Object.assign({}, this.initialState, { showLoadSpinner: true }, parentsStudioState)
 

@@ -31,28 +31,6 @@ const CenteredContainer = styled.div`
   align-items: center;
 `
 
-const TitleContainer = styled.div`
-  width: 250px;
-`
-
-const NavigateToGalleryButton = styled.a`
-  margin: 1rem;
-  padding: 1rem;
-  border-radius: 3px;
-  text-decoration: none;
-  background-color: white;
-  vertical-align: middle;
-  box-shadow: none;
-  text-shadow: none;
-  font-size: 1rem;
-  cursor: pointer;
-
-  &:hover {
-    background-color: black;
-    color: white;
-  }
-`
-
 class ImageRoute extends Component {
   state = {
   }
@@ -61,22 +39,22 @@ class ImageRoute extends Component {
     const { data } = await axios.get(getApi(`/cell/${query.cellId}`, req))
 
     return {
-      canDuplicate: data.hasStudioState,
+      canDuplicate: data.studioState ? true : false,
       imageUrl: data.image_url,
       title: data.title
     }
   }
 
   navigateToGallery = () => {
-    Router.pushRoute('/gallery')
+    Router.push('/gallery')
   }
 
   navigateToStudio = () => {
-    Router.pushRoute('/..')
+    Router.push('/studio/new')
   }
 
   navigateToDuplicate = () => {
-    Router.pushRoute(`/studio/${this.props.router.query.cellId}`)
+    Router.push(`/studio/${this.props.router.query.cellId}`)
   }
 
   render () {

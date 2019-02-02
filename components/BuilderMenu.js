@@ -6,7 +6,7 @@ import {
   MenuButton,
   RedMenuButton,
   GreenMenuButton
-} from '../../components/Buttons'
+} from './Buttons'
 
 import 'react-rangeslider/lib/index.css'
 

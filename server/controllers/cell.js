@@ -5,11 +5,10 @@ async function get (req, res) {
   const cellId = req.params.cellId
   const cell = await Cells.findOne({ where: { url_id: cellId }})
 
-  const hasStudioState = cell.studio_state ? true : false
   res.json({
     image_url: cell.image_url,
     title: cell.title,
-    hasStudioState
+    studioState: cell.studio_state
   })
 }
 
@@ -24,6 +23,11 @@ async function update (req, res) {
     const { studioState } = req.body
 
     const cell = await Cells.findOne({ where: { url_id: cellId }})
+
+    if (cell.creator_user_id !== req.session.userId) {
+      throw new Error('Unauthorized user!')
+    }
+
     await cell.update({ studio_state: studioState })
     res.sendStatus(200)
   }

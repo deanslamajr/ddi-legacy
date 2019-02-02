@@ -1,4 +1,4 @@
-import { Router } from '../../routes'
+import { Router } from '../routes'
 import { Component } from 'react'
 import styled from 'styled-components'
 import Konva from 'konva'
@@ -9,13 +9,14 @@ import shortid from 'shortid'
 import cloneDeep from 'lodash/cloneDeep'
 import pick from 'lodash/pick'
 
-import { GrayBackground, MobileViewportSettings } from '../../components/Layouts'
-import { GreenMenuButton, RedMenuButton } from '../../components/Buttons'
-import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, BLUE, GREEN, RED } from '../../components/navigation'
-import EmojiPicker from './EmojiPicker'
-import BuilderMenu from './BuilderMenu'
+import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
+import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, BLUE, GREEN, RED } from '../components/navigation'
+import EmojiPicker from '../components/EmojiPicker'
+import BuilderMenu from '../components/BuilderMenu'
 
-import { STORAGEKEY_STUDIO } from '../../config/constants.json'
+import { getApi } from '../helpers'
+
+import { STORAGEKEY_STUDIO } from '../config/constants.json'
 
 const RGBA = 'RGBA'
 const filters = {
@@ -92,7 +93,7 @@ const LoadSpinner = styled.div`
 
 //
 // Studio
-class Studio extends Component {
+class StudioRoute extends Component {
   constructor (props) {
     super(props)
     this.emojiRefs = []
@@ -100,7 +101,7 @@ class Studio extends Component {
     this.initialState = {
       activeEmojiId: null,
       currentEmojiId: 1,
-      showEmojiPicker: true,
+      showEmojiPicker: this.props.isNew ? true : false,
       showLoadSpinner: false,
       showSaveButton: true,
       emojis: {},
@@ -108,9 +109,26 @@ class Studio extends Component {
     }
 
     // initially show load spinner
-    const initialState = Object.assign({}, this.initialState, { showLoadSpinner: true })
+    console.log('this.props.studioState', this.props.studioState)
+    const parentsStudioState = this.props.studioState || {}
+    const initialState = Object.assign({}, this.initialState, { showLoadSpinner: true }, parentsStudioState)
 
     this.state = initialState
+  }
+
+  static async getInitialProps ({ query, req }) {
+    const isNew = query.cellId === 'new'
+    let studioState
+
+    if (!isNew) {
+      const { data } = await axios.get(getApi(`/cell/${query.cellId}`, req))
+      studioState = data.studioState
+    }
+
+    return {
+      isNew,
+      studioState
+    }
   }
 
   doPostEmojiSelect = () => {
@@ -145,8 +163,12 @@ class Studio extends Component {
     }
   }
 
+  getStudioState = () => {
+    return pick(this.state, ['activeEmojiId', 'currentEmojiId', 'emojis', 'showEmojiPicker', 'title'])
+  }
+
   finishCellPublish = async (cellId) => {
-    const studioState = pick(this.state, ['currentEmojiId', 'emojis', 'title'])
+    const studioState = this.getStudioState()
 
     try {
       await axios.put(`/cell/${cellId}`, { studioState })
@@ -332,7 +354,7 @@ class Studio extends Component {
   }
 
   updateCache = () => {
-    const latestState = pick(this.state, ['activeEmojiId', 'currentEmojiId', 'emojis', 'showEmojiPicker', 'title'])
+    const latestState = this.getStudioState()
 
     const store = require('store2')
     store(STORAGEKEY_STUDIO, latestState)
@@ -360,13 +382,16 @@ class Studio extends Component {
   }
 
   componentDidMount () {
-    const store = require('store2')
-    const studioCache = store(STORAGEKEY_STUDIO)
+    if (this.props.isNew) {
+      console.log('isNew')
+      const store = require('store2')
+      const studioCache = store(STORAGEKEY_STUDIO)
 
-    if (studioCache) {
-      studioCache.showLoadSpinner = false
+      if (studioCache) {
+        studioCache.showLoadSpinner = false
 
-      this.restoreFromCache(studioCache)
+        this.restoreFromCache(studioCache)
+      }
     }
 
     this.setState({ showLoadSpinner: false })
@@ -417,7 +442,7 @@ class Studio extends Component {
             <React.Fragment>
               <TitleInput type='text' value={this.state.title} onChange={this.handleTitleChange} />
 
-              {this.state.activeEmojiId && <BuilderMenu
+              <BuilderMenu
                 activeEmoji={activeEmoji}
                 changeActiveEmoji={this.changeActiveEmoji}
                 decreaseStackOrder={this.decreaseStackOrder}
@@ -430,7 +455,7 @@ class Studio extends Component {
                 toggleFilter={this.toggleFilter}
                 updateCache={this.updateCache}
                 updateEmojiCache={this.updateEmojiCache}
-              />}
+              />
 
               {this.state.showEmojiPicker && <EmojiPicker onSelect={this.onEmojiSelect} />}
             </React.Fragment>)}
@@ -461,4 +486,4 @@ class Studio extends Component {
   }
 }
 
-export default Studio 
+export default StudioRoute

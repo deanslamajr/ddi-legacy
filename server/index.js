@@ -9,6 +9,7 @@ const { sign } = require('./controllers/sign')
 const {
   all: getCells,
   get: getCell,
+  getParent,
   update: updateCell
 } = require('./controllers/cell')
 
@@ -38,6 +39,7 @@ app.prepare()
 
     // @todo namespace data endpoints with /api
     server.get('/sign', sign)
+    server.get('/cell/:cellId/parent', getParent)
     server.get('/cell/:cellId', getCell)
     server.put('/cell/:cellId', updateCell)
     server.get('/cells', getCells)

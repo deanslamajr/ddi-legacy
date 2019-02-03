@@ -7,6 +7,19 @@ function falsePositiveResponse (cellId, res) {
   return res.sendStatus(200)
 }
 
+/**
+ * /cell/:id/parent
+ * e.g.
+ * http://localhost:3000/cell/ZaYoy3LEW/parent
+ */
+async function getParent (req, res) {
+  const cellId = req.params.cellId
+  const cell = await Cells.findOne({ where: { url_id: cellId }})
+  const parent = await Cells.findOne({ where: { id: cell.parent_id }}) // get parent
+
+  res.json(parent)
+}
+
 async function get (req, res) {
   const cellId = req.params.cellId
   const cell = await Cells.findOne({ where: { url_id: cellId }})
@@ -57,5 +70,6 @@ async function update (req, res) {
 module.exports = {
   all,
   get,
+  getParent,
   update
 }

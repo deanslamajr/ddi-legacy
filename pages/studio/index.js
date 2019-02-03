@@ -101,7 +101,7 @@ class StudioRoute extends Component {
     this.initialState = {
       activeEmojiId: null,
       currentEmojiId: 1,
-      showEmojiPicker: this.props.isNew ? true : false,
+      showEmojiPicker: this.props.parentId ? false : true,
       showLoadSpinner: false,
       showSaveButton: true,
       emojis: {},
@@ -116,16 +116,19 @@ class StudioRoute extends Component {
   }
 
   static async getInitialProps ({ query, req }) {
-    const isNew = query.cellId === 'new'
+    const parentId = query.cellId && query.cellId !== 'new'
+      ? query.cellId
+      : null
+
     let studioState
 
-    if (!isNew) {
-      const { data } = await axios.get(getApi(`/cell/${query.cellId}`, req))
+    if (parentId) {
+      const { data } = await axios.get(getApi(`/cell/${parentId}`, req))
       studioState = data.studioState
     }
 
     return {
-      isNew,
+      parentId,
       studioState
     }
   }
@@ -153,8 +156,13 @@ class StudioRoute extends Component {
   }
 
   getSignedRequest = async (file) => {
+    let requestUrlPath = `/sign?file-name=${file.name}&file-type=${file.type}&title=${this.state.title}`
+
+    if (this.props.parentId) {
+      requestUrlPath = `${requestUrlPath}&parent-id=${this.props.parentId}`
+    }
     try {
-      const { data } = await axios.get(`/sign?file-name=${file.name}&file-type=${file.type}&title=${this.state.title}`)
+      const { data } = await axios.get(requestUrlPath)
       return data
     }
     catch (e) {
@@ -170,7 +178,7 @@ class StudioRoute extends Component {
     const studioState = this.getStudioState()
 
     try {
-      await axios.put(`/cell/${cellId}`, { studioState })
+      await axios.put(`/cell/${cellId}`, { studioState})
       Router.pushRoute(`/i/${cellId}`)
     }
     catch (e) {
@@ -381,8 +389,7 @@ class StudioRoute extends Component {
   }
 
   componentDidMount () {
-    if (this.props.isNew) {
-      console.log('isNew')
+    if (!this.props.parentId) {
       const store = require('store2')
       const studioCache = store(STORAGEKEY_STUDIO)
 

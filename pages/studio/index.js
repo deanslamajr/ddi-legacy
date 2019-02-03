@@ -123,7 +123,7 @@ class StudioRoute extends Component {
     let studioState
 
     if (parentId) {
-      const { data } = await axios.get(getApi(`/cell/${parentId}`, req))
+      const { data } = await axios.get(getApi(`/api/cell/${parentId}`, req))
       studioState = data.studioState
     }
 
@@ -156,7 +156,7 @@ class StudioRoute extends Component {
   }
 
   getSignedRequest = async (file) => {
-    let requestUrlPath = `/sign?file-name=${file.name}&file-type=${file.type}&title=${this.state.title}`
+    let requestUrlPath = `/api/sign?file-name=${file.name}&file-type=${file.type}&title=${this.state.title}`
 
     if (this.props.parentId) {
       requestUrlPath = `${requestUrlPath}&parent-id=${this.props.parentId}`
@@ -178,8 +178,8 @@ class StudioRoute extends Component {
     const studioState = this.getStudioState()
 
     try {
-      await axios.put(`/cell/${cellId}`, { studioState})
-      Router.pushRoute(`/i/${cellId}`)
+      await axios.put(`/api/cell/${cellId}`, { studioState})
+      Router.pushRoute(`/cell/${cellId}`)
     }
     catch (e) {
       console.error(e)

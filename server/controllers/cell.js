@@ -8,9 +8,9 @@ function falsePositiveResponse (cellId, res) {
 }
 
 /**
- * /cell/:id/parent
+ * /api/cell/:id/parent
  * e.g.
- * http://localhost:3000/cell/ZaYoy3LEW/parent
+ * http://localhost:3000/api/cell/ZaYoy3LEW/parent
  */
 async function getParent (req, res) {
   const cellId = req.params.cellId

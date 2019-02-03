@@ -31,12 +31,12 @@ const CenteredContainer = styled.div`
   align-items: center;
 `
 
-class ImageRoute extends Component {
+class CellRoute extends Component {
   state = {
   }
 
   static async getInitialProps ({ query, req }) {
-    const { data } = await axios.get(getApi(`/cell/${query.cellId}`, req))
+    const { data } = await axios.get(getApi(`/api/cell/${query.cellId}`, req))
 
     return {
       canDuplicate: data.studioState ? true : false,
@@ -121,4 +121,4 @@ class ImageRoute extends Component {
   }
 }
 
-export default withRouter(ImageRoute) 
+export default withRouter(CellRoute) 

@@ -1,5 +1,5 @@
 const routes = require('next-routes')
 
 module.exports = routes()
-  .add('cell', '/i/:cellId', 'i')
+  .add('cell', '/cell/:cellId', 'cell')
   .add('studio', '/studio/:cellId', 'studio')

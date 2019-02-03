@@ -33,7 +33,7 @@ class GalleryRoute extends Component {
   }
 
   static async getInitialProps ({ query, req }) {
-    const { data: cells } = await axios.get(getApi('/cells', req))
+    const { data: cells } = await axios.get(getApi('/api/cells', req))
 
     return {
       cells
@@ -53,7 +53,7 @@ class GalleryRoute extends Component {
         <GrayBackground />
         <CenteredContainer>
           {cells.sort(sortByUpdatedAt).map(({ id, image_url, title, url_id }) => (
-            <Link key={id} route={`/i/${url_id}`}>
+            <Link key={id} route={`/cell/${url_id}`}>
               <UnstyledLink>
                 <Cell key={id} imageUrl={image_url} title={title} />
               </UnstyledLink>

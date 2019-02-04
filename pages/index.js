@@ -1,6 +1,7 @@
-import { Component } from 'react'
+import { Component, Fragment } from 'react'
 
 import LoadSpinner from '../components/LoadSpinner'
+import { MobileViewportSettings } from '../components/Layouts'
 
 import { Router } from '../routes'
 
@@ -13,7 +14,10 @@ class MainMenu extends Component {
 
   render () {
     return (
-      <LoadSpinner/>
+      <Fragment>
+        <MobileViewportSettings />
+        <LoadSpinner/>
+      </Fragment>
     )
   }
 }

@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
+export const TOP_CENTER = 'TOP_CENTER'
 export const BOTTOM_LEFT = 'BOTTOM_LEFT'
 export const BOTTOM_CENTER = 'BOTTOM_CENTER'
 export const BOTTOM_RIGHT = 'BOTTOM_RIGHT'
@@ -56,10 +57,21 @@ const BottomRightButton = styled(Button)`
   right: 0;
 `
 
+const TopCenterButton = styled(Button)`
+  margin: 0 auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+` 
+
 function getButtonByPosition (position) {
   let Button
 
   switch (position) {
+    case TOP_CENTER:
+      Button = TopCenterButton
+      break
     case BOTTOM_LEFT:
       Button = BottomLeftButton
       break

@@ -11,6 +11,8 @@ import pick from 'lodash/pick'
 
 import { GrayBackground, MobileViewportSettings } from '../../components/Layouts'
 import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, BLUE, GREEN, RED } from '../../components/navigation'
+import LoadSpinner from '../../components/LoadSpinner'
+
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
 
@@ -79,16 +81,6 @@ const TitleInput = styled.textarea`
   height: 4rem;
   width: 244px;
   padding: 3px;
-`
-
-const LoadSpinner = styled.div`
-  z-index: 999999;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0,0,0,.5);
 `
 
 //
@@ -486,7 +478,7 @@ class StudioRoute extends Component {
           position={BOTTOM_RIGHT}
         />
 
-        {showLoadSpinner && <LoadSpinner>TACO</LoadSpinner>}
+        {showLoadSpinner && <LoadSpinner />}
       </div>
     )
   }

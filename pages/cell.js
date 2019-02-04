@@ -9,6 +9,7 @@ import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
 import Cell from '../components/Cell'
 import {
   NavButton,
+  TOP_CENTER,
   BOTTOM_LEFT,
   BOTTOM_CENTER,
   BOTTOM_RIGHT,
@@ -29,6 +30,8 @@ const CenteredContainer = styled.div`
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  width: 100vw;
+  height: 100vh;
 `
 
 class CellRoute extends Component {
@@ -41,6 +44,7 @@ class CellRoute extends Component {
     return {
       canDuplicate: data.studioState ? true : false,
       imageUrl: data.image_url,
+      parentId: data.parentId,
       title: data.title
     }
   }
@@ -55,6 +59,10 @@ class CellRoute extends Component {
 
   navigateToDuplicate = () => {
     Router.push(`/studio/${this.props.router.query.cellId}`)
+  }
+
+  navigateToParent = () => {
+    Router.push(`/cell/${this.props.parentId}`)
   }
 
   render () {
@@ -95,6 +103,13 @@ class CellRoute extends Component {
         <CenteredContainer>
           <Cell imageUrl={imageUrl} title={title} />
         </CenteredContainer>
+
+        {this.props.parentId && <NavButton
+          value='PARENT'
+          color={BLUE}
+          cb={this.navigateToParent}
+          position={TOP_CENTER}
+        />}
 
         <NavButton
           value='GALLERY'

@@ -7,6 +7,11 @@ function falsePositiveResponse (cellId, res) {
   return res.sendStatus(200)
 }
 
+async function getParentFromChild (cell) {
+  const parent = await Cells.findOne({ where: { id: cell.parent_id }}) // get parent
+  return parent
+}
+
 /**
  * /api/cell/:id/parent
  * e.g.
@@ -15,23 +20,26 @@ function falsePositiveResponse (cellId, res) {
 async function getParent (req, res) {
   const cellId = req.params.cellId
   const cell = await Cells.findOne({ where: { url_id: cellId }})
-  const parent = await Cells.findOne({ where: { id: cell.parent_id }}) // get parent
-
+  const parent = await getParentFromChild(cell)
   res.json(parent)
 }
 
 async function get (req, res) {
   const cellId = req.params.cellId
   const cell = await Cells.findOne({ where: { url_id: cellId }})
-
+  
   if (!cell) {
     return falsePositiveResponse(cellId, res)
   }
 
+  const parent = await getParentFromChild(cell)
+  const parentId = parent ? parent.url_id : null
+
   res.json({
     image_url: cell.image_url,
-    title: cell.title,
-    studioState: cell.studio_state
+    parentId,
+    studioState: cell.studio_state,
+    title: cell.title
   })
 }
 

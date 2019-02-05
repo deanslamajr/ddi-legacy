@@ -356,6 +356,9 @@ class StudioRoute extends Component {
 
   resetStudioSession = () => {
     this.clearCache()
+
+    delete this.initialState.parentId
+
     this.setState(this.initialState, () => this.toggleResetWarningModal(false))
   }
 

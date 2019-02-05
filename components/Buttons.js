@@ -25,7 +25,7 @@ const RedMenuButton = styled(MenuButton)`
 
 const GreenMenuButton = styled(MenuButton)`
   background-color: #679436;
-  color: #131B23;
+  color: #F7FFF7;
 `
 
 export {

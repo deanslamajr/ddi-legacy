@@ -97,6 +97,7 @@ class StudioRoute extends Component {
       showEmojiPicker: this.props.parentId ? false : true,
       showLoadSpinner: false,
       showResetWarningModal: false,
+      showSaveWarningModal: false,
       showSaveButton: true,
       emojis: {},
       title: 'untitled'
@@ -181,6 +182,7 @@ class StudioRoute extends Component {
   }
 
   saveCell = async (event) => {
+    this.toggleSaveWarningModal(false)
     this.setState({ showLoadSpinner: true }, () => {
       // clears active emoji border
       this.updateEmojiCache(undefined, false)
@@ -386,6 +388,10 @@ class StudioRoute extends Component {
     this.setState({ showResetWarningModal: newValue })
   }
 
+  toggleSaveWarningModal = (newValue = !this.state.showSaveWarningModal) => {
+    this.setState({ showSaveWarningModal: newValue })
+  }
+
   componentDidMount () {
     if (!this.props.parentId) {
       const store = require('store2')
@@ -402,7 +408,7 @@ class StudioRoute extends Component {
   }
 
   render () {
-    const { showLoadSpinner, showResetWarningModal } = this.state
+    const { showLoadSpinner, showResetWarningModal, showSaveWarningModal } = this.state
 
     const activeEmoji = this.state.emojis[this.state.activeEmojiId]
 
@@ -480,9 +486,17 @@ class StudioRoute extends Component {
         <NavButton
           value='SAVE'
           color={GREEN}
-          cb={this.saveCell}
+          cb={() => this.toggleSaveWarningModal(true)}
           position={BOTTOM_RIGHT}
         />
+
+        {showSaveWarningModal && <WarningModal
+          message='Save the Canvas?'
+          okButtonLabel='SAVE'
+          onCancelClick={() => this.toggleSaveWarningModal(false)}
+          onOkClick={() => this.saveCell()}
+          colorTheme='GREEN'
+        />}
 
         {showResetWarningModal && <WarningModal
           message='Clear the Canvas?'

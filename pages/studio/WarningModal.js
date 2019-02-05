@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { MenuButton, RedMenuButton } from '../../components/Buttons'
+import { MenuButton, RedMenuButton, GreenMenuButton } from '../../components/Buttons'
 
 const TransparentDarkBackground = styled.div`
   z-index: 999999;
@@ -17,7 +17,6 @@ const TransparentDarkBackground = styled.div`
 `
 
 const Modal = styled.div`
-  color: #FE4A49;
   background-color: #C5D6D8;
   width: 70vw;
   height: 30vh;
@@ -30,27 +29,41 @@ const Modal = styled.div`
 
 const CenteredButtons = styled.div`
   display: flex;
+  justify-content: center;
 `
 
 const MessageContainer = styled.div`
+  color: #FE4A49;
   font-size: 2rem;
   display: flex;
   justify-content: center;
 `
 
-function WarningModal ({ message, onCancelClick, onOkClick, okButtonLabel }) {
+const GreenMessageContainer = styled(MessageContainer)`
+  color: #679436;
+`
+
+function WarningModal ({ message, onCancelClick, onOkClick, okButtonLabel, colorTheme }) {
+  let OkButton = colorTheme
+    ? GreenMenuButton
+    : RedMenuButton
+
+  let Message = colorTheme
+    ? GreenMessageContainer
+    : MessageContainer
+
   return (<TransparentDarkBackground>
     <Modal>
-      <MessageContainer>
+      <Message>
         {message}
-      </MessageContainer>
+      </Message>
       <CenteredButtons>
         <MenuButton onClick={onCancelClick}>
           CANCEL
         </MenuButton>
-        <RedMenuButton onClick={onOkClick}>
+        <OkButton onClick={onOkClick}>
           {okButtonLabel}
-        </RedMenuButton>
+        </OkButton>
       </CenteredButtons>
     </Modal>
   </TransparentDarkBackground>)

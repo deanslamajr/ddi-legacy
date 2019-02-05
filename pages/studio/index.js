@@ -94,6 +94,7 @@ class StudioRoute extends Component {
     this.initialState = {
       activeEmojiId: null,
       currentEmojiId: 1,
+      parentId: this.props.parentId,
       showEmojiPicker: this.props.parentId ? false : true,
       showLoadSpinner: false,
       showResetWarningModal: false,
@@ -153,8 +154,8 @@ class StudioRoute extends Component {
   getSignedRequest = async (file) => {
     let requestUrlPath = `/api/sign?file-name=${file.name}&file-type=${file.type}&title=${this.state.title}`
 
-    if (this.props.parentId) {
-      requestUrlPath = `${requestUrlPath}&parent-id=${this.props.parentId}`
+    if (this.state.parentId) {
+      requestUrlPath = `${requestUrlPath}&parent-id=${this.state.parentId}`
     }
     try {
       const { data } = await axios.get(requestUrlPath)
@@ -166,14 +167,16 @@ class StudioRoute extends Component {
   }
 
   getStudioState = () => {
-    return pick(this.state, ['activeEmojiId', 'currentEmojiId', 'emojis', 'showEmojiPicker', 'title'])
+    return pick(this.state, ['activeEmojiId', 'currentEmojiId', 'emojis', 'showEmojiPicker', 'title', 'parentId'])
   }
 
   finishCellPublish = async (cellId) => {
     const studioState = this.getStudioState()
 
+    delete studioState.parentId
+
     try {
-      await axios.put(`/api/cell/${cellId}`, { studioState})
+      await axios.put(`/api/cell/${cellId}`, { studioState })
       Router.pushRoute(`/cell/${cellId}`)
     }
     catch (e) {
@@ -393,7 +396,7 @@ class StudioRoute extends Component {
   }
 
   componentDidMount () {
-    if (!this.props.parentId) {
+    if (!this.state.parentId) {
       const store = require('store2')
       const studioCache = store(STORAGEKEY_STUDIO)
 

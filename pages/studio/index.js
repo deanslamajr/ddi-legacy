@@ -15,6 +15,7 @@ import LoadSpinner from '../../components/LoadSpinner'
 
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
+import WarningModal from './WarningModal'
 
 import { getApi } from '../../helpers'
 
@@ -95,6 +96,7 @@ class StudioRoute extends Component {
       currentEmojiId: 1,
       showEmojiPicker: this.props.parentId ? false : true,
       showLoadSpinner: false,
+      showResetWarningModal: false,
       showSaveButton: true,
       emojis: {},
       title: 'untitled'
@@ -349,7 +351,7 @@ class StudioRoute extends Component {
 
   resetStudioSession = () => {
     this.clearCache()
-    this.setState(this.initialState)
+    this.setState(this.initialState, () => this.toggleResetWarningModal(false))
   }
 
   updateCache = () => {
@@ -380,6 +382,10 @@ class StudioRoute extends Component {
     }, this.updateCache)
   }
 
+  toggleResetWarningModal = (newValue = !this.state.showResetWarningModal) => {
+    this.setState({ showResetWarningModal: newValue })
+  }
+
   componentDidMount () {
     if (!this.props.parentId) {
       const store = require('store2')
@@ -396,7 +402,7 @@ class StudioRoute extends Component {
   }
 
   render () {
-    const { showLoadSpinner } = this.state
+    const { showLoadSpinner, showResetWarningModal } = this.state
 
     const activeEmoji = this.state.emojis[this.state.activeEmojiId]
 
@@ -468,7 +474,7 @@ class StudioRoute extends Component {
         <NavButton
           value='RESET'
           color={RED}
-          cb={this.resetStudioSession}
+          cb={() => this.toggleResetWarningModal(true)}
           position={BOTTOM_CENTER}
         />
         <NavButton
@@ -477,6 +483,13 @@ class StudioRoute extends Component {
           cb={this.saveCell}
           position={BOTTOM_RIGHT}
         />
+
+        {showResetWarningModal && <WarningModal
+          message='Clear the Canvas?'
+          okButtonLabel='CLEAR CANVAS'
+          onCancelClick={() => this.toggleResetWarningModal(false)}
+          onOkClick={() => this.resetStudioSession()}
+        />}
 
         {showLoadSpinner && <LoadSpinner />}
       </div>

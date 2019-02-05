@@ -10,6 +10,7 @@ const MenuButton = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1rem;
 
   &:hover {
     background-color: #131B23;
@@ -19,7 +20,7 @@ const MenuButton = styled.span`
 
 const RedMenuButton = styled(MenuButton)`
   background-color: #FE4A49;
-  color: white;
+  color: #F7FFF7;
 `
 
 const GreenMenuButton = styled(MenuButton)`

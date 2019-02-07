@@ -1,6 +1,8 @@
-import { Component } from 'react'
+import { Component, Fragment } from 'react'
 import { emojiIndex } from 'emoji-mart'
 import styled from 'styled-components'
+
+import { NavButton, BOTTOM_LEFT, RED } from '../../components/navigation'
 
 // from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array#answer-2450976
 function shuffle (array) {
@@ -112,27 +114,36 @@ class EmojiPicker extends Component {
 
   render () {
     return (
-      <OuterContainer>
-        <InnerContainer>
-          <SearchContainer>
-            <SearchInput
-              type='text'
-              name='search'
-              onChange={this.handleChange}
-              placeholder='search by keyword'
-            />
-          </SearchContainer>
-        
-          <EmojisContainer>
-            {this.state.emojis.map(emoji => (
-              <Emoji
-                key={emoji}
-                emoji={emoji}
-                onSelect={this.props.onSelect}
-              />))}
-          </EmojisContainer>
-        </InnerContainer>
-      </OuterContainer>
+      <Fragment>
+        <OuterContainer>
+          <InnerContainer>
+            <SearchContainer>
+              <SearchInput
+                type='text'
+                name='search'
+                onChange={this.handleChange}
+                placeholder='search by keyword'
+              />
+            </SearchContainer>
+          
+            <EmojisContainer>
+              {this.state.emojis.map(emoji => (
+                <Emoji
+                  key={emoji}
+                  emoji={emoji}
+                  onSelect={this.props.onSelect}
+                />))}
+            </EmojisContainer>
+          </InnerContainer>
+        </OuterContainer>
+
+        <NavButton
+          value='BACK'
+          color={RED}
+          cb={() => this.props.onCancel()}
+          position={BOTTOM_LEFT}
+        />
+      </Fragment>
     )
   }
 }

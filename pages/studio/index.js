@@ -82,6 +82,13 @@ const TitleInput = styled.textarea`
   height: 4rem;
   width: 244px;
   padding: 3px;
+  outline: none;
+  resize: none;
+
+  &::placeholder {
+    color: gray;
+    opacity: 0.5;
+  }
 `
 
 //
@@ -101,7 +108,7 @@ class StudioRoute extends Component {
       showSaveWarningModal: false,
       showSaveButton: true,
       emojis: {},
-      title: 'untitled'
+      title: ''
     }
 
     // initially show load spinner
@@ -231,6 +238,10 @@ class StudioRoute extends Component {
 
   openEmojiPicker = () => {
     this.setState({ showEmojiPicker: true })
+  }
+
+  closeEmojiPicker = () => {
+    this.setState({ showEmojiPicker: false })
   }
 
   increaseStackOrder = () => {
@@ -456,7 +467,12 @@ class StudioRoute extends Component {
 
           {this.state.showSaveButton && (
             <React.Fragment>
-              <TitleInput type='text' value={this.state.title} onChange={this.handleTitleChange} />
+              <TitleInput
+                type='text'
+                placeholder='add a caption'
+                value={this.state.title}
+                onChange={this.handleTitleChange}
+              />
 
               <BuilderMenu
                 activeEmoji={activeEmoji}
@@ -473,28 +489,33 @@ class StudioRoute extends Component {
                 updateEmojiCache={this.updateEmojiCache}
               />
 
-              {this.state.showEmojiPicker && <EmojiPicker onSelect={this.onEmojiSelect} />}
+              {this.state.showEmojiPicker && <EmojiPicker
+                onSelect={this.onEmojiSelect}
+                onCancel={this.state.activeEmojiId ? this.closeEmojiPicker : this.navigateToGallery}
+              />}
             </React.Fragment>)}
         </CenteredContainer>
 
-        <NavButton
-          value='GALLERY'
-          color={BLUE}
-          cb={this.navigateToGallery}
-          position={BOTTOM_LEFT}
-        />
-        <NavButton
-          value='RESET'
-          color={RED}
-          cb={() => this.toggleResetWarningModal(true)}
-          position={BOTTOM_CENTER}
-        />
-        <NavButton
-          value='SAVE'
-          color={GREEN}
-          cb={() => this.toggleSaveWarningModal(true)}
-          position={BOTTOM_RIGHT}
-        />
+        {!this.state.showEmojiPicker && <React.Fragment>
+          <NavButton
+            value='GALLERY'
+            color={BLUE}
+            cb={this.navigateToGallery}
+            position={BOTTOM_LEFT}
+          />
+          <NavButton
+            value='RESET'
+            color={RED}
+            cb={() => this.toggleResetWarningModal(true)}
+            position={BOTTOM_CENTER}
+          />
+          <NavButton
+            value='SAVE'
+            color={GREEN}
+            cb={() => this.toggleSaveWarningModal(true)}
+            position={BOTTOM_RIGHT}
+          />
+        </React.Fragment>}
 
         {showSaveWarningModal && <WarningModal
           message='Save the Canvas?'

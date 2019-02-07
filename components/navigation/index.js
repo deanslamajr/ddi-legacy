@@ -13,7 +13,7 @@ export const ORANGE = 'ORANGE'
 const Button = styled.div`
   border: 1px solid #F7FFF7;
   cursor: pointer;
-  z-index: 1;
+  z-index: 9999;
   height: 90px;
   width: 90px;
   margin: 0;
@@ -43,6 +43,7 @@ const Button = styled.div`
 
 const BottomLeftButton = styled(Button)`
   bottom: 0;
+  left: 0;
 `
 
 const BottomCenterButton = styled(Button)`

@@ -41,7 +41,7 @@ class GalleryRoute extends Component {
   }
 
   navigateToStudio = () => {
-    Router.push('/studio/new')
+    Router.push('/studio/new/new')
   }
 
   render () {

@@ -54,7 +54,7 @@ class CellRoute extends Component {
   }
 
   navigateToStudio = () => {
-    Router.push('/studio/new')
+    Router.push('/studio/new/new')
   }
 
   navigateToDuplicate = () => {

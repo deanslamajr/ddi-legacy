@@ -100,6 +100,7 @@ class StudioRoute extends Component {
 
     this.initialState = {
       activeEmojiId: null,
+      comicId: this.props.comicId,
       currentEmojiId: 1,
       parentId: this.props.parentId,
       showEmojiPicker: this.props.parentId ? false : true,
@@ -119,7 +120,11 @@ class StudioRoute extends Component {
   }
 
   static async getInitialProps ({ query, req }) {
-    const parentId = query.cellId && query.cellId !== 'new'
+    const comicId = query.comicId && query.comicId !== 'new'
+      ? query.comicId
+      : null
+
+    let parentId = query.cellId && query.cellId !== 'new'
       ? query.cellId
       : null
 
@@ -127,10 +132,20 @@ class StudioRoute extends Component {
 
     if (parentId) {
       const { data } = await axios.get(getApi(`/api/cell/${parentId}`, req))
-      studioState = data.studioState
+
+      if (data && data.studioState) {
+        studioState = data.studioState
+      }
+      // if data fetch returns no results, reset the parentId bc it is not valid
+      // @todo do a similar validation for comicId
+      else {
+        parentId = null
+      }
+      
     }
 
     return {
+      comicId,
       parentId,
       studioState
     }
@@ -164,6 +179,10 @@ class StudioRoute extends Component {
     if (this.state.parentId) {
       requestUrlPath = `${requestUrlPath}&parent-id=${this.state.parentId}`
     }
+    if (this.state.comicId) {
+      requestUrlPath = `${requestUrlPath}&comic-id=${this.state.comicId}`
+    }
+
     try {
       const { data } = await axios.get(requestUrlPath)
       return data

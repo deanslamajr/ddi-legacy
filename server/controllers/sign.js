@@ -1,7 +1,7 @@
 const shortid = require('shortid')
 
 const { sign: signViaS3 } = require('../adapters/s3')
-const { Cells } = require('../models/index')
+const { Cells, Comics } = require('../models/index')
 
 // purposeful incorrect response of 'OK' to not allow trolling of ids for validity
 function falsePositiveResponse (cellId, res) {
@@ -21,6 +21,7 @@ async function sign (req, res) {
     const filetype = req.query['file-type']
     const title = req.query['title']
     const parentId = req.query['parent-id']
+    const comicId = req.query['comic-id']
 
     const signData = await signViaS3(filename, filetype)
     const id = shortid.generate()
@@ -40,8 +41,16 @@ async function sign (req, res) {
       }
       await parentCell.createCell(newCellConfiguration)
     }
+    else if (!parentId && !comicId) {
+      const comic = await Comics.create({
+        creator_user_id: req.session.userId,
+        title: '',
+        url_id: shortid.generate()
+      })
+      await comic.createCell(newCellConfiguration)
+    }
     else {
-      await Cells.create(newCellConfiguration)
+      throw new Error('unsupported use case!!!')
     }
 
     res.json(signData)

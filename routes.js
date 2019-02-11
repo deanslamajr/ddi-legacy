@@ -2,4 +2,4 @@ const routes = require('next-routes')
 
 module.exports = routes()
   .add('cell', '/cell/:cellId', 'cell')
-  .add('studio', '/studio/:cellId', 'studio')
+  .add('studio', '/studio/:comicId/:cellId', 'studio')

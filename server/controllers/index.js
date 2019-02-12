@@ -7,6 +7,7 @@ const {
   getParent,
   update: updateCell
 } = require('./cell')
+const { get: getComic } = require('./comic')
 
 const router = express.Router()
 
@@ -16,5 +17,7 @@ router.get('/cell/:cellId/parent', getParent)
 router.get('/cell/:cellId', getCell)
 router.put('/cell/:cellId', updateCell)
 router.get('/cells', getCells)
+
+router.get('/comic/:comicId', getComic)
 
 module.exports = router

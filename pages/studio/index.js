@@ -196,16 +196,17 @@ class StudioRoute extends Component {
     return pick(this.state, ['activeEmojiId', 'currentEmojiId', 'emojis', 'showEmojiPicker', 'title', 'parentId'])
   }
 
-  finishCellPublish = async (cellId) => {
+  finishCellPublish = async (cellId, comicId) => {
     const studioState = this.getStudioState()
 
     delete studioState.parentId
 
     try {
       await axios.put(`/api/cell/${cellId}`, { studioState })
-      Router.pushRoute(`/cell/${cellId}`)
+      Router.pushRoute(`/comic/${comicId}`)
     }
     catch (e) {
+      // @todo better UX
       console.error(e)
     }
   }
@@ -225,8 +226,10 @@ class StudioRoute extends Component {
     
           try {
             const {
+              comicId,
               id,
-              signedRequest } = await this.getSignedRequest(file)
+              signedRequest
+            } = await this.getSignedRequest(file)
     
             const xhr = new XMLHttpRequest()
             xhr.open('PUT', signedRequest)
@@ -234,9 +237,10 @@ class StudioRoute extends Component {
               if(xhr.readyState === 4){
                 if(xhr.status === 200){
                   // update cell in DB
-                  await this.finishCellPublish(id)
+                  await this.finishCellPublish(id, comicId)
                 }
                 else{
+                  // @todo better UX
                   console.error('could not upload file!')
                 }
               }
@@ -244,6 +248,7 @@ class StudioRoute extends Component {
             xhr.send(file)
           }
           catch (e) {
+            // @todo better UX
             console.error(e)
           }
         })

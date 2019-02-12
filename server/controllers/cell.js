@@ -1,11 +1,5 @@
 const { Cells } = require('../models')
-
-// purposeful incorrect response of 'OK' to not allow trolling of ids for validity
-function falsePositiveResponse (cellId, res) {
-  // @todo proper log
-  console.error(`Cell Update Error: There is not a Cell with id:${cellId}`)
-  return res.sendStatus(200)
-}
+const { falsePositiveResponse } = require('./utils')
 
 async function getParentFromChild (cell) {
   const parent = await Cells.findOne({ where: { id: cell.parent_id }}) // get parent
@@ -29,7 +23,7 @@ async function get (req, res) {
   const cell = await Cells.findOne({ where: { url_id: cellId }})
   
   if (!cell) {
-    return falsePositiveResponse(cellId, res)
+    return falsePositiveResponse(`cell::get - There is not a Cell with id:${cellId}`, res)
   }
 
   const parent = await getParentFromChild(cell)
@@ -56,11 +50,12 @@ async function update (req, res) {
     const cell = await Cells.findOne({ where: { url_id: cellId }})
 
     if (!cell) {
-      return falsePositiveResponse(cellId, res)
+      return falsePositiveResponse(`cell::update - There is not a Cell with id:${cellId}`, res)
     }
 
     if (cell.creator_user_id !== req.session.userId) {
       // @todo proper log
+      // @todo this should probably provide some kind of false positive response
       console.error('Unauthorized user!')
       return res.sendStatus(401)
     }

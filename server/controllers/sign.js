@@ -2,17 +2,10 @@ const shortid = require('shortid')
 
 const { sign: signViaS3 } = require('../adapters/s3')
 const { Cells, Comics } = require('../models/index')
-
-// purposeful incorrect response of 'OK' to not allow trolling of ids for validity
-function falsePositiveResponse (cellId, res) {
-  // @todo proper log
-  console.error(`Sign Error: There is not a Cell with id:${cellId}`)
-  return res.json({})
-}
+const { falsePositiveResponse } = require('./utils')
 
 async function sign (req, res) {
   try {
-    console.log('req.query', req.query)
     if (!req.session.userId) {
       throw new Error('User session does not exist!')
     }
@@ -21,7 +14,7 @@ async function sign (req, res) {
     const filetype = req.query['file-type']
     const title = req.query['title']
     const parentId = req.query['parent-id']
-    const comicId = req.query['comic-id']
+    let comicId = req.query['comic-id']
 
     const signData = await signViaS3(filename, filetype)
     const id = shortid.generate()
@@ -37,17 +30,19 @@ async function sign (req, res) {
     if (parentId) {
       const parentCell = await Cells.findOne({ where: { url_id: parentId }})
       if (!parentCell) {
-        falsePositiveResponse(parentCell, res)
+        falsePositiveResponse(`sign::sign - There is not a Cell with parentId:${parentId}`, res)
       }
       await parentCell.createCell(newCellConfiguration)
     }
     else if (!parentId && !comicId) {
+      comicId = shortid.generate()
       const comic = await Comics.create({
         creator_user_id: req.session.userId,
         title: '',
-        url_id: shortid.generate()
+        url_id: comicId
       })
       await comic.createCell(newCellConfiguration)
+      signData.comicId = comicId
     }
     else {
       throw new Error('unsupported use case!!!')

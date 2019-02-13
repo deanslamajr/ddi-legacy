@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import { withRouter } from 'next/router'
 import { Component } from 'react'
 import styled from 'styled-components'
 import getConfig from 'next/config'
@@ -69,7 +68,6 @@ class CellRoute extends Component {
     const {
       canDuplicate,
       imageUrl,
-      router,
       title
     } = this.props
     
@@ -136,4 +134,4 @@ class CellRoute extends Component {
   }
 }
 
-export default withRouter(CellRoute) 
+export default CellRoute 

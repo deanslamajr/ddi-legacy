@@ -18,8 +18,8 @@ const CellContainer = styled.div`
   padding: 10px;
 `
 
-export default function Cell ({ imageUrl, title }) {
-  return (<CellContainer>
+export default function Cell ({ className, imageUrl, title, onClick = () => {} }) {
+  return (<CellContainer className={className} onClick={onClick}>
     <img src={imageUrl} />
     <TitleContainer>
       <TitleWidth>

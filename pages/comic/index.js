@@ -1,21 +1,20 @@
 import Head from 'next/head'
-import { withRouter } from 'next/router'
 import { Component } from 'react'
 import styled from 'styled-components'
 import axios from 'axios'
 
-import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
-import Cell from '../components/Cell'
+import { GrayBackground, MobileViewportSettings } from '../../components/Layouts'
+import Comic from './Comic'
 import {
   NavButton,
   BOTTOM_LEFT,
   BOTTOM_RIGHT,
   BLUE,
   GREEN
-} from '../components/navigation'
+} from '../../components/navigation'
 
-import { Router } from '../routes'
-import { getApi } from '../helpers'
+import { Router } from '../../routes'
+import { getApi } from '../../helpers'
 
 const CenteredContainer = styled.div`
   display: flex;
@@ -33,10 +32,9 @@ class ComicRoute extends Component {
   static async getInitialProps ({ query, req }) {
     const { data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req))
 
-    console.log('data', data)
-
     return {
-      comic: data.comic
+      cells: data.cells,
+      title: data.title
     }
   }
 
@@ -50,11 +48,13 @@ class ComicRoute extends Component {
 
   render () {
     const {
-      canDuplicate,
-      imageUrl,
-      router,
+      cells,
       title
     } = this.props
+
+    const imageUrl = cells.length
+      ? cells[0].imageUrl
+      : ''
     
     return (
       <div>
@@ -84,7 +84,7 @@ class ComicRoute extends Component {
         </Head>
         <GrayBackground />
         <CenteredContainer>
-          <Cell imageUrl={imageUrl} title={title} />
+          <Comic cells={cells} />
         </CenteredContainer>
 
         <NavButton
@@ -105,4 +105,4 @@ class ComicRoute extends Component {
   }
 }
 
-export default withRouter(ComicRoute) 
+export default ComicRoute

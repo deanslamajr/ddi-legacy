@@ -14,13 +14,20 @@ const PointerCursorContainer = styled(Cell)`
   }
 `
 
-function Comic ({ cells }) {
+const noop = () => {}
+
+function Comic ({ cells, clickable }) {
+  const Container = clickable
+    ? PointerCursorContainer
+    : Cell
+
   return (<div>
-    {cells.map(({ imageUrl, title, urlId }) => <PointerCursorContainer
-      onClick={() => navigateTo(urlId)}
-      imageUrl={imageUrl}
+    {/* @todo replace having to support both casings for imageUrl and urlId */}
+    {cells.map(({ imageUrl, image_url, title, urlId, url_id }) => <Container
+      onClick={() => clickable ? navigateTo(urlId || url_id) : noop}
+      imageUrl={imageUrl || image_url}
       title={title}
-      key={imageUrl}
+      key={imageUrl || image_url}
     />)}
   </div>)
 }

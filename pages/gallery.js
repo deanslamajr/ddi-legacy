@@ -6,6 +6,8 @@ import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
 import Cell from '../components/Cell'
 import { NavButton, BOTTOM_RIGHT, GREEN, } from '../components/navigation'
 
+import Comic from './comic/Comic'
+
 import { Link, Router } from '../routes'
 import { getApi } from '../helpers'
 
@@ -32,11 +34,11 @@ class GalleryRoute extends Component {
   state = {
   }
 
-  static async getInitialProps ({ query, req }) {
-    const { data: cells } = await axios.get(getApi('/api/cells', req))
+  static async getInitialProps ({ req }) {
+    const { data } = await axios.get(getApi('/api/comics', req))
 
     return {
-      cells
+      comics: data
     }
   }
 
@@ -45,17 +47,17 @@ class GalleryRoute extends Component {
   }
 
   render () {
-    const { cells } = this.props
+    const { comics = [] } = this.props
     
     return (
       <div>
         <MobileViewportSettings />
         <GrayBackground />
         <CenteredContainer>
-          {cells.sort(sortByUpdatedAt).map(({ id, image_url, title, url_id }) => (
-            <Link key={id} route={`/cell/${url_id}`}>
+          {comics.map(({ id, cells, url_id }) => (
+            <Link key={id} route={`/comic/${url_id}`}>
               <UnstyledLink>
-                <Cell key={id} imageUrl={image_url} title={title} />
+                <Comic cells={cells} />
               </UnstyledLink>
             </Link>)
           )}

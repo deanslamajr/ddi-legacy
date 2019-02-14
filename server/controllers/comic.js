@@ -1,5 +1,20 @@
-const { Comics } = require('../models')
+const { Cells, Comics } = require('../models')
 const { falsePositiveResponse } = require('./utils')
+
+async function all (req, res) {
+  // @todo make pagination variables settable
+  let offset = 0
+  let limit = 25
+
+  const comics = await Comics.findAll({
+    order: [['updated_at', 'DESC']],
+    offset,
+    limit,
+    include: [Cells]
+  })
+
+  res.json(comics)
+}
 
 async function get (req, res) {
   const comicId = req.params.comicId
@@ -24,5 +39,6 @@ async function get (req, res) {
 }
 
 module.exports = {
+  all,
   get
 }

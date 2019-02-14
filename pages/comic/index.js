@@ -84,7 +84,10 @@ class ComicRoute extends Component {
         </Head>
         <GrayBackground />
         <CenteredContainer>
-          <Comic cells={cells} />
+          <Comic
+            cells={cells}
+            clickable
+          />
         </CenteredContainer>
 
         <NavButton

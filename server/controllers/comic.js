@@ -4,7 +4,12 @@ const { falsePositiveResponse } = require('./utils')
 async function all (req, res) {
   // @todo make pagination variables settable
   let offset = 0
-  let limit = 25
+  let limit = 5
+
+  const offsetFromQueryString = req.query['offset']
+  if (offsetFromQueryString) {
+    offset = parseInt(offsetFromQueryString, 10)
+  }
 
   const comics = await Comics.findAll({
     order: [['updated_at', 'DESC']],
@@ -12,8 +17,12 @@ async function all (req, res) {
     limit,
     include: [Cells]
   })
+  const comicsCount = await Comics.count()
 
-  res.json(comics)
+  res.json({
+    comics,
+    hasMore: comicsCount > (offset + limit)
+  })
 }
 
 async function get (req, res) {

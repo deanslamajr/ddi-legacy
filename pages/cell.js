@@ -44,6 +44,7 @@ class CellRoute extends Component {
       canDuplicate: data.studioState ? true : false,
       imageUrl: data.image_url,
       parentId: data.parentId,
+      cellId: query.cellId,
       title: data.title
     }
   }
@@ -57,7 +58,7 @@ class CellRoute extends Component {
   }
 
   navigateToDuplicate = () => {
-    Router.push(`/studio/${this.props.router.query.cellId}`)
+    Router.push(`/studio/new/${this.props.cellId}`)
   }
 
   navigateToParent = () => {

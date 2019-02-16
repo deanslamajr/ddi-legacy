@@ -114,6 +114,7 @@ class StudioRoute extends Component {
 
     // initially show load spinner
     const parentsStudioState = this.props.studioState || {}
+    // duplicate initial state so that we don't modify the original
     const initialState = Object.assign({}, this.initialState, { showLoadSpinner: true }, parentsStudioState)
 
     this.state = initialState
@@ -188,6 +189,7 @@ class StudioRoute extends Component {
       return data
     }
     catch (e) {
+      // @todo improve UX
       throw e
     }
   }

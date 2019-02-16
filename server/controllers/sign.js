@@ -27,13 +27,28 @@ async function sign (req, res) {
       url_id: id
     }
 
+    // /:comicId||new/:parentId
     if (parentId) {
       const parentCell = await Cells.findOne({ where: { url_id: parentId }})
       if (!parentCell) {
         falsePositiveResponse(`sign::sign - There is not a Cell with parentId:${parentId}`, res)
       }
-      await parentCell.createCell(newCellConfiguration)
+      const cell = await parentCell.createCell(newCellConfiguration)
+      // /new/:parentId
+      if (!comicId) {
+        comicId = shortid.generate()
+        await cell.createComic({
+          creator_user_id: req.session.userId,
+          title: '',
+          url_id: comicId
+        })
+      }
+      // /:comic/:parentId
+      else {
+        throw new Error('/:comicId/:parentId unsupported')
+      }
     }
+    // /new/new
     else if (!parentId && !comicId) {
       comicId = shortid.generate()
       const comic = await Comics.create({
@@ -42,10 +57,14 @@ async function sign (req, res) {
         url_id: comicId
       })
       await comic.createCell(newCellConfiguration)
-      signData.comicId = comicId
     }
+    // /:comicId/new
     else {
-      throw new Error('unsupported use case!!!')
+      throw new Error('/:comicId/new unsupported')
+    }
+
+    if (comicId) {
+      signData.comicId = comicId
     }
 
     res.json(signData)

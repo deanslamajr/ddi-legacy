@@ -52,7 +52,7 @@ class ComicRoute extends Component {
       title
     } = this.props
 
-    const imageUrl = cells.length
+    const imageUrl = cells && cells.length
       ? cells[0].imageUrl
       : ''
     

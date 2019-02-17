@@ -2,9 +2,8 @@ const { Cells, Comics } = require('../models')
 const { falsePositiveResponse } = require('./utils')
 
 async function all (req, res) {
-  // @todo make pagination variables settable
   let offset = 0
-  let limit = 5
+  let limit = 10
 
   const offsetFromQueryString = req.query['offset']
   if (offsetFromQueryString) {

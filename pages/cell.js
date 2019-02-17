@@ -30,7 +30,7 @@ const CenteredContainer = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100vw;
-  height: 100vh;
+  margin-top: 6rem;
 `
 
 class CellRoute extends Component {

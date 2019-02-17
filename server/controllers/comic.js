@@ -27,9 +27,14 @@ async function all (req, res) {
 async function get (req, res) {
   const comicId = req.params.comicId
   const comic = await Comics.findOne({ where: { url_id: comicId }})
+  let userCanEdit = false
   
   if (!comic) {
     return falsePositiveResponse(`comic::get - There is not a Comic with id:${comicId}`, res)
+  }
+
+  if (comic.creator_user_id === req.session.userId) {
+    userCanEdit = true
   }
 
   const cellsData = await comic.getCells()
@@ -42,7 +47,8 @@ async function get (req, res) {
   res.json({
     cells,
     urlId: comic.url_id,
-    title: comic.title
+    title: comic.title,
+    userCanEdit
   })
 }
 

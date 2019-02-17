@@ -2,6 +2,7 @@ const express = require('express')
 const next = require('next')
 const cookieSession = require('cookie-session')
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 
 const handleUserSession = require('./middleware/userSession')
 
@@ -22,6 +23,7 @@ app.prepare()
     const server = express()
 
     server.use(bodyParser.json())
+    server.use(cookieParser())
 
     // setup session cookie
     server.use(cookieSession({

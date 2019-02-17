@@ -14,7 +14,7 @@ import {
 } from '../../components/navigation'
 
 import { Router } from '../../routes'
-import { getApi } from '../../helpers'
+import { getApi, forwardCookies } from '../../helpers'
 
 const CenteredContainer = styled.div`
   display: flex;
@@ -30,11 +30,12 @@ class ComicRoute extends Component {
   }
 
   static async getInitialProps ({ query, req }) {
-    const { data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req))
+    const { data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req), forwardCookies(req))
 
     return {
       cells: data.cells,
-      title: data.title
+      title: data.title,
+      userCanEdit: data.userCanEdit
     }
   }
 

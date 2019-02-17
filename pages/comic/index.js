@@ -7,10 +7,12 @@ import { GrayBackground, MobileViewportSettings } from '../../components/Layouts
 import Comic from './Comic'
 import {
   NavButton,
+  TOP_RIGHT,
   BOTTOM_LEFT,
   BOTTOM_RIGHT,
   BLUE,
-  GREEN
+  GREEN,
+  YELLOW
 } from '../../components/navigation'
 
 import { Router } from '../../routes'
@@ -34,6 +36,7 @@ class ComicRoute extends Component {
 
     return {
       cells: data.cells,
+      comicId: query.comicId,
       title: data.title,
       userCanEdit: data.userCanEdit
     }
@@ -47,10 +50,15 @@ class ComicRoute extends Component {
     Router.push('/studio/new/new')
   }
 
+  navigateToAddCell = () => {
+    Router.push(`/studio/${this.props.comicId}/new`)
+  }
+
   render () {
     const {
       cells,
-      title
+      title,
+      userCanEdit
     } = this.props
 
     const imageUrl = cells && cells.length
@@ -61,8 +69,6 @@ class ComicRoute extends Component {
       <div>
         <MobileViewportSettings />
         <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-
           {/* - iMessage/Messages https://developer.apple.com/library/archive/technotes/tn2444/_index.html
                 * Images should be at least 900px in width
               - android app Messages
@@ -90,6 +96,13 @@ class ComicRoute extends Component {
             clickable
           />
         </CenteredContainer>
+
+        {userCanEdit && <NavButton
+          value='ADD CELL'
+          color={YELLOW}
+          cb={this.navigateToAddCell}
+          position={TOP_RIGHT}
+        />}
 
         <NavButton
           value='GALLERY'

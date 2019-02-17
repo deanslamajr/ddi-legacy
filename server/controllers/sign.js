@@ -60,6 +60,7 @@ async function sign (req, res) {
     }
     // /:comicId/new
     else {
+      // @todo verify user is authorized to add a cell to this comic
       throw new Error('/:comicId/new unsupported')
     }
 

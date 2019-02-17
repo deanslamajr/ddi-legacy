@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 export const TOP_CENTER = 'TOP_CENTER'
+export const TOP_RIGHT = 'TOP_RIGHT'
 export const BOTTOM_LEFT = 'BOTTOM_LEFT'
 export const BOTTOM_CENTER = 'BOTTOM_CENTER'
 export const BOTTOM_RIGHT = 'BOTTOM_RIGHT'
@@ -9,6 +10,7 @@ export const RED = 'RED'
 export const GREEN = 'GREEN'
 export const BLUE = 'BLUE'
 export const ORANGE = 'ORANGE'
+export const YELLOW = 'YELLOW'
 
 const Button = styled.div`
   border: 1px solid #F7FFF7;
@@ -18,7 +20,12 @@ const Button = styled.div`
   width: 90px;
   margin: 0;
   user-select: none;
-  color: #F7FFF7;
+  color: ${props => {
+    if (props.color === YELLOW) {
+      return '#131B23' //black
+    }
+    return '#F7FFF7;'
+  }};
   position: fixed;
   display: flex;
   align-items: center;
@@ -36,6 +43,9 @@ const Button = styled.div`
     }
     else if (props.color === ORANGE) {
       return 'orange'
+    }
+    else if (props.color === YELLOW) {
+      return 'yellow'
     }
     return 'white'
   }};
@@ -66,12 +76,21 @@ const TopCenterButton = styled(Button)`
   right: 0;
 ` 
 
+const TopRightButton = styled(Button)`
+  position: fixed;
+  top: 0;
+  right: 0;
+` 
+
 function getButtonByPosition (position) {
   let Button
 
   switch (position) {
     case TOP_CENTER:
       Button = TopCenterButton
+      break
+    case TOP_RIGHT:
+      Button = TopRightButton
       break
     case BOTTOM_LEFT:
       Button = BottomLeftButton

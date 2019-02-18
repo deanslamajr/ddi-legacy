@@ -24,6 +24,7 @@ async function sign (req, res) {
       creator_user_id: req.session.userId,
       image_url: signData.url,
       title,
+      order: 0,
       url_id: id
     }
 
@@ -33,9 +34,9 @@ async function sign (req, res) {
       if (!parentCell) {
         falsePositiveResponse(`sign::sign - There is not a Cell with parentId:${parentId}`, res)
       }
-      const cell = await parentCell.createCell(newCellConfiguration)
       // /new/:parentId
       if (!comicId) {
+        const cell = await parentCell.createCell(newCellConfiguration)
         comicId = shortid.generate()
         await cell.createComic({
           creator_user_id: req.session.userId,
@@ -60,7 +61,7 @@ async function sign (req, res) {
     }
     // /:comicId/new
     else {
-      const comic = await Comics.findOne({ where: { url_id: comicId }})
+      const comic = await Comics.findOne({ where: { url_id: comicId }, include: [Cells]})
       if (!comic) {
         falsePositiveResponse(`sign::sign - There is not a Comic with url_id:${comicId}`, res)
       }
@@ -72,6 +73,10 @@ async function sign (req, res) {
         console.error('Unauthorized user!')
         return res.sendStatus(401)
       }
+
+      newCellConfiguration.order = comic.cells
+        ? comic.cells.length + 1
+        : 0
 
       await comic.createCell(newCellConfiguration)
     }

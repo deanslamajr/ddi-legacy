@@ -17,6 +17,19 @@ const ComicContainer = styled.div`
 
 const noop = () => {}
 
+function sortByOrder ({ order: orderA }, { order: orderB }) {
+  if (orderA === null && orderB === null) {
+    return -1
+  }
+  else if (orderA === null) {
+    return -1
+  }
+  else if (orderB === null) {
+    return 1
+  }
+  return orderA - orderB;
+}
+
 function Comic ({ cells, clickable }) {
   const Container = clickable
     ? PointerCursorContainer
@@ -24,7 +37,7 @@ function Comic ({ cells, clickable }) {
 
   return (<ComicContainer>
     {/* @todo replace having to support both casings for imageUrl and urlId */}
-    {cells.map(({ imageUrl, image_url, title, urlId, url_id }) => <Container
+    {cells.sort(sortByOrder).map(({ imageUrl, image_url, title, urlId, url_id }) => <Container
       onClick={() => clickable ? navigateTo(urlId || url_id) : noop}
       imageUrl={imageUrl || image_url}
       title={title}

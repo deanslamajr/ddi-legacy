@@ -27,6 +27,9 @@ const Cells = sequelize.define('cells',
     },
     creator_user_id: {
       type: Sequelize.STRING
+    },
+    order: {
+      type: Sequelize.INTEGER
     }
   },
   {

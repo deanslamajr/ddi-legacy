@@ -23,7 +23,7 @@ const UnstyledLink = styled.a`
   text-decoration: none;
   color: black;
   cursor: pointer;
-  overflow-x: scroll;
+  overflow-x: auto;
 `
 
 const ShowMoreButton = styled(MenuButton)`

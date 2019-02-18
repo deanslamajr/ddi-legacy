@@ -22,9 +22,9 @@ const CenteredContainer = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
-  align-items: center;
   width: 100vw;
   margin-top: 6rem;
+  overflow-x: scroll;
 `
 
 class ComicRoute extends Component {

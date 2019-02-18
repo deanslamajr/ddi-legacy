@@ -16,7 +16,6 @@ const CenteredContainer = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
-  align-items: center;
   margin-bottom: 6rem;
 `
 
@@ -24,6 +23,7 @@ const UnstyledLink = styled.a`
   text-decoration: none;
   color: black;
   cursor: pointer;
+  overflow-x: scroll;
 `
 
 const ShowMoreButton = styled(MenuButton)`

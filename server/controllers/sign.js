@@ -60,8 +60,20 @@ async function sign (req, res) {
     }
     // /:comicId/new
     else {
+      const comic = await Comics.findOne({ where: { url_id: comicId }})
+      if (!comic) {
+        falsePositiveResponse(`sign::sign - There is not a Comic with url_id:${comicId}`, res)
+      }
+
       // @todo verify user is authorized to add a cell to this comic
-      throw new Error('/:comicId/new unsupported')
+      if (comic.creator_user_id !== req.session.userId) {
+        // @todo proper log
+        // @todo this should probably provide some kind of false positive response
+        console.error('Unauthorized user!')
+        return res.sendStatus(401)
+      }
+
+      await comic.createCell(newCellConfiguration)
     }
 
     if (comicId) {

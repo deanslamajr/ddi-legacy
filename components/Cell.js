@@ -13,7 +13,7 @@ const TitleWidth = styled.div`
 `
 
 const CellContainer = styled.div`
-  margin: 1rem;
+  margin: 1rem 0 1rem;
   background: #F7FFF7;
   padding: 10px;
 `

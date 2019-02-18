@@ -8,10 +8,11 @@ const navigateTo = (urlId) => Router.push(`/cell/${urlId}`)
 
 const PointerCursorContainer = styled(Cell)`
   cursor: pointer;
+`
 
-  &:hover {
-    background-color: #C5D6D8;
-  }
+const ComicContainer = styled.div`
+  display: flex;
+  margin: 0 1rem 0;
 `
 
 const noop = () => {}
@@ -21,7 +22,7 @@ function Comic ({ cells, clickable }) {
     ? PointerCursorContainer
     : Cell
 
-  return (<div>
+  return (<ComicContainer>
     {/* @todo replace having to support both casings for imageUrl and urlId */}
     {cells.map(({ imageUrl, image_url, title, urlId, url_id }) => <Container
       onClick={() => clickable ? navigateTo(urlId || url_id) : noop}
@@ -29,7 +30,7 @@ function Comic ({ cells, clickable }) {
       title={title}
       key={imageUrl || image_url}
     />)}
-  </div>)
+  </ComicContainer>)
 }
 
 export default Comic

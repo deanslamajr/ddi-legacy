@@ -47,6 +47,9 @@ async function sign (req, res) {
       // /:comic/:parentId
       else {
         throw new Error('/:comicId/:parentId unsupported')
+        // bump the comic's updated_at value
+        //comic.changed('updated_at', true)
+        //await comic.save()
       }
     }
     // /new/new

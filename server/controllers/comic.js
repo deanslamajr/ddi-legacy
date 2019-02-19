@@ -38,9 +38,10 @@ async function get (req, res) {
   }
 
   const cellsData = await comic.getCells()
-  const cells = cellsData.map(({ url_id, image_url, title }) => ({
+  const cells = cellsData.map(({ url_id, image_url, order, title }) => ({
     urlId: url_id,
     imageUrl: image_url,
+    order,
     title
   }))
 

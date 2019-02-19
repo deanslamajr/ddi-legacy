@@ -79,6 +79,9 @@ async function sign (req, res) {
         : 0
 
       await comic.createCell(newCellConfiguration)
+      // bump the comic's updated_at value
+      comic.changed('updated_at', true)
+      await comic.save()
     }
 
     if (comicId) {

@@ -4,6 +4,11 @@ const { sequelize } = require('../adapters/db')
 
 const Comics = sequelize.define('comics',
   {
+    updated_at: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+      allowNull: false
+    },
     id: {
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4,

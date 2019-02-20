@@ -51,7 +51,10 @@ class ComicRoute extends Component {
   }
 
   navigateToAddCell = () => {
-    Router.push(`/studio/${this.props.comicId}/new`)
+    const { cells, comicId } = this.props
+    const latestCell = cells[cells.length - 1]
+
+    Router.push(`/studio/${comicId}/${latestCell.urlId}`)
   }
 
   render () {

@@ -46,10 +46,28 @@ async function sign (req, res) {
       }
       // /:comic/:parentId
       else {
-        throw new Error('/:comicId/:parentId unsupported')
+        const comic = await Comics.findOne({ where: { url_id: comicId }, include: [Cells]})
+        if (!comic) {
+          falsePositiveResponse(`sign::sign - There is not a Comic with url_id:${comicId}`, res)
+        }
+
+        if (comic.creator_user_id !== req.session.userId) {
+          // @todo proper log
+          // @todo this should probably provide some kind of false positive response
+          console.error('Unauthorized user!')
+          return res.sendStatus(401)
+        }
+
+        newCellConfiguration.order = comic.cells
+          ? comic.cells.length + 1
+          : 0
+
+        newCellConfiguration.comic_id = comic.id
+
+        await parentCell.createCell(newCellConfiguration)
         // bump the comic's updated_at value
-        //comic.changed('updated_at', true)
-        //await comic.save()
+        comic.changed('updated_at', true)
+        await comic.save()
       }
     }
     // /new/new

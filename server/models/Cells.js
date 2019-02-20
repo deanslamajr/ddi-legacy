@@ -30,6 +30,13 @@ const Cells = sequelize.define('cells',
     },
     order: {
       type: Sequelize.INTEGER
+    },
+    comic_id: {
+      type: Sequelize.UUID,
+      references: {
+        model: 'comics',
+        key: 'id'
+      }
     }
   },
   {

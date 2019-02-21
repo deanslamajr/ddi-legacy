@@ -12,10 +12,18 @@ import Comic from './comic/Comic'
 import { Link, Router } from '../routes'
 import { getApi } from '../helpers'
 
+const ComicsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+`
+
 const CenteredContainer = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
+  align-items: center;
+  width: 100vw;
   margin-bottom: 6rem;
 `
 
@@ -74,7 +82,7 @@ class GalleryRoute extends Component {
       <div>
         <MobileViewportSettings />
         <GrayBackground />
-        <CenteredContainer>
+        <ComicsContainer>
           {comics.map(({ id, cells, url_id }) => (
             <Link key={id} route={`/comic/${url_id}`}>
               <UnstyledLink>
@@ -82,11 +90,11 @@ class GalleryRoute extends Component {
               </UnstyledLink>
             </Link>)
           )}
-
+        </ComicsContainer>
+        <CenteredContainer>
           {hasMore && <ShowMoreButton onClick={this.showMoreComics}>
             SHOW MORE
           </ShowMoreButton>}
-
         </CenteredContainer>
         
         <NavButton

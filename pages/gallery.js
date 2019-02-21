@@ -23,7 +23,6 @@ const CenteredContainer = styled.div`
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  width: 100vw;
   margin-bottom: 6rem;
 `
 

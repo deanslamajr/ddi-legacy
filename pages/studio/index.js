@@ -4,13 +4,11 @@ import styled from 'styled-components'
 import Konva from 'konva'
 import { Stage, Layer, Rect, Text } from 'react-konva'
 import axios from 'axios'
-import getConfig from 'next/config'
 import shortid from 'shortid'
 import cloneDeep from 'lodash/cloneDeep'
 import pick from 'lodash/pick'
 import Head from 'next/head'
 
-import { GrayBackground, MobileViewportSettings } from '../../components/Layouts'
 import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, GREEN, RED } from '../../components/navigation'
 import LoadSpinner from '../../components/LoadSpinner'
 
@@ -33,11 +31,6 @@ const konvaCacheConfig = {
   pixelRatio: 1, /// fixes android graphics glitch
   //drawBorder: true /// for debugging
 }
-
-//
-// Environment variables
-// @see {@link https://nextjs.org/docs/#exposing-configuration-to-the-server--client-side}
-const { publicRuntimeConfig } = getConfig()
 
 function generateFilename () {
   return `${shortid.generate()}.png`
@@ -464,8 +457,7 @@ class StudioRoute extends Component {
         <Head>
           <title>DrawDrawInk - Studio</title>
         </Head>
-        <MobileViewportSettings />
-        <GrayBackground />
+
         <CenteredContainer>
           <Stage ref={ref => this.stage = ref} width={250} height={250}>
             <Layer>

@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import axios from 'axios'
 import queryString from 'query-string'
 
-import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
 import { NavButton, BOTTOM_RIGHT, GREEN, } from '../components/navigation'
 import { MenuButton } from '../components/Buttons'
 
@@ -79,8 +78,6 @@ class GalleryRoute extends Component {
     
     return (
       <div>
-        <MobileViewportSettings />
-        <GrayBackground />
         <ComicsContainer>
           {comics.map(({ id, cells, url_id }) => (
             <Link key={id} route={`/comic/${url_id}`}>

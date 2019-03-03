@@ -1,10 +1,8 @@
 import Head from 'next/head'
 import { Component } from 'react'
 import styled from 'styled-components'
-import getConfig from 'next/config'
 import axios from 'axios'
 
-import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
 import Cell from '../components/Cell'
 import {
   NavButton,
@@ -19,10 +17,6 @@ import {
 
 import { Router } from '../routes'
 import { getApi } from '../helpers'
-
-// Environment variables
-// @see {@link https://nextjs.org/docs/#exposing-configuration-to-the-server--client-side}
-const { publicRuntimeConfig } = getConfig()
 
 const CenteredContainer = styled.div`
   display: flex;
@@ -74,7 +68,6 @@ class CellRoute extends Component {
     
     return (
       <div>
-        <MobileViewportSettings />
         <Head>
           <title>DrawDrawInk - {title ? `${title}` : 'Cell'}</title>
           {/* - iMessage/Messages https://developer.apple.com/library/archive/technotes/tn2444/_index.html
@@ -97,7 +90,7 @@ class CellRoute extends Component {
           {/* Images for this Card support an aspect ratio of 1:1 with minimum dimensions of 144x144 or maximum of 4096x4096 pixels. Images must be less than 5MB in size. The image will be cropped to a square on all platforms. JPG, PNG, WEBP and GIF formats are supported. Only the first frame of an animated GIF will be used. SVG is not supported  */}
           <meta name="twitter:image" content={imageUrl} />
         </Head>
-        <GrayBackground />
+
         <CenteredContainer>
           <Cell imageUrl={imageUrl} title={title} />
         </CenteredContainer>

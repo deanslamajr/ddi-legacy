@@ -6,7 +6,6 @@ import axios from 'axios'
 import Comic from './Comic'
 import AddCellModal from './AddCellModal'
 
-import { GrayBackground, MobileViewportSettings } from '../../components/Layouts'
 import {
   NavButton,
   TOP_RIGHT,
@@ -88,9 +87,6 @@ class ComicRoute extends Component {
       <div>
         <Head>
           <title>DrawDrawInk - {title ? `${title}` : 'Comic'}</title>
-        </Head>
-        <MobileViewportSettings />
-        <Head>
           {/* - iMessage/Messages https://developer.apple.com/library/archive/technotes/tn2444/_index.html
                 * Images should be at least 900px in width
               - android app Messages
@@ -111,7 +107,7 @@ class ComicRoute extends Component {
           {/* Images for this Card support an aspect ratio of 1:1 with minimum dimensions of 144x144 or maximum of 4096x4096 pixels. Images must be less than 5MB in size. The image will be cropped to a square on all platforms. JPG, PNG, WEBP and GIF formats are supported. Only the first frame of an animated GIF will be used. SVG is not supported  */}
           <meta name="twitter:image" content={imageUrl} />
         </Head>
-        <GrayBackground />
+
         <CenteredContainer>
           <Comic
             cells={cells}

@@ -4,9 +4,10 @@ import React from 'react'
 import { ThemeProvider } from 'styled-components'
 import getConfig from 'next/config'
 
-const { publicRuntimeConfig } = getConfig()
-
 import theme from '../helpers/theme'
+import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
+
+const { publicRuntimeConfig } = getConfig()
 
 class MyApp extends App {
   render () {
@@ -25,6 +26,10 @@ class MyApp extends App {
           <meta name="msapplication-config" content={`${publicRuntimeConfig.FAVICON_ROOT_URL}/browserconfig.xml`}/>
           <meta name="theme-color" content="#ffffff"/>
         </Head>
+
+        <MobileViewportSettings />
+        <GrayBackground />
+
         <ThemeProvider theme={theme}>
           <Component {...pageProps} />
         </ThemeProvider>

@@ -12,7 +12,7 @@ const CELL_LIST = 'CELL_LIST'
 
 const DuplicateModal = styled(Modal)`
   height: 100%;
-  display: block;
+  /* display: block; */
   width: 315px;
 `
 
@@ -28,8 +28,8 @@ const CellContainer = styled.div`
 
 const CellsContainer = styled.div`
   overflow-y: auto;
-  height: 70%;
-  margin: 2rem auto;
+  height: 60%;
+  /* margin: 1rem auto; */
 `
 
 const MessageContainer = styled(Message)`

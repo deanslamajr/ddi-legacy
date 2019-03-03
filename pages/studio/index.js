@@ -8,6 +8,7 @@ import getConfig from 'next/config'
 import shortid from 'shortid'
 import cloneDeep from 'lodash/cloneDeep'
 import pick from 'lodash/pick'
+import Head from 'next/head'
 
 import { GrayBackground, MobileViewportSettings } from '../../components/Layouts'
 import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, GREEN, RED } from '../../components/navigation'
@@ -460,6 +461,9 @@ class StudioRoute extends Component {
 
     return (
       <div>
+        <Head>
+          <title>DrawDrawInk - Studio</title>
+        </Head>
         <MobileViewportSettings />
         <GrayBackground />
         <CenteredContainer>

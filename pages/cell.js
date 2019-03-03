@@ -76,6 +76,7 @@ class CellRoute extends Component {
       <div>
         <MobileViewportSettings />
         <Head>
+          <title>DrawDrawInk - {title ? `${title}` : 'Cell'}</title>
           {/* - iMessage/Messages https://developer.apple.com/library/archive/technotes/tn2444/_index.html
                 * Images should be at least 900px in width
               - android app Messages

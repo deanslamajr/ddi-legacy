@@ -86,6 +86,9 @@ class ComicRoute extends Component {
     
     return (
       <div>
+        <Head>
+          <title>DrawDrawInk - {title ? `${title}` : 'Comic'}</title>
+        </Head>
         <MobileViewportSettings />
         <Head>
           {/* - iMessage/Messages https://developer.apple.com/library/archive/technotes/tn2444/_index.html

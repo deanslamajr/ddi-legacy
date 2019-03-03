@@ -22,7 +22,6 @@ const HomeModal = styled(Modal)`
 
 const CellContainer = styled.div`
   width: 270px;
-  height: 300px;
   display: flex;
   margin: auto;
 `

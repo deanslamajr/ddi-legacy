@@ -3,8 +3,10 @@ import { Component } from 'react'
 import styled from 'styled-components'
 import axios from 'axios'
 
-import { GrayBackground, MobileViewportSettings } from '../../components/Layouts'
 import Comic from './Comic'
+import AddCellModal from './AddCellModal'
+
+import { GrayBackground, MobileViewportSettings } from '../../components/Layouts'
 import {
   NavButton,
   TOP_RIGHT,
@@ -29,6 +31,7 @@ const CenteredContainer = styled.div`
 
 class ComicRoute extends Component {
   state = {
+    showAddCellModal: false
   }
 
   static async getInitialProps ({ query, req }) {
@@ -50,11 +53,24 @@ class ComicRoute extends Component {
     Router.push('/studio/new/new')
   }
 
-  navigateToAddCell = () => {
-    const { cells, comicId } = this.props
-    const latestCell = cells[cells.length - 1]
+  navigateToAddCellFromNew = () => {
+    const { comicId } = this.props
 
-    Router.push(`/studio/${comicId}/${latestCell.urlId}`)
+    Router.push(`/studio/${comicId}/new`)
+  }
+
+  navigateToAddCell = (cellUrlId) => {
+    const { comicId } = this.props
+
+    Router.push(`/studio/${comicId}/${cellUrlId}`)
+  }
+
+  hideAddCellModal = () => {
+    this.setState({ showAddCellModal: false })
+  }
+
+  showAddCellModal = () => {
+    this.setState({ showAddCellModal: true })
   }
 
   render () {
@@ -103,8 +119,15 @@ class ComicRoute extends Component {
         {userCanEdit && <NavButton
           value='ADD CELL'
           color={YELLOW}
-          cb={this.navigateToAddCell}
+          cb={this.showAddCellModal}
           position={TOP_RIGHT}
+        />}
+
+        {this.state.showAddCellModal && <AddCellModal
+          onCancelClick={this.hideAddCellModal}
+          onAddCellFromNewClick={this.navigateToAddCellFromNew}
+          onAddCellFromDuplicate={this.navigateToAddCell}
+          cells={cells}
         />}
 
         <NavButton

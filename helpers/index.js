@@ -24,3 +24,16 @@ export const forwardCookies = (req) => {
 
   return options
 }
+
+export function sortByOrder ({ order: orderA }, { order: orderB }) {
+  if (orderA === null && orderB === null) {
+    return -1
+  }
+  else if (orderA === null) {
+    return -1
+  }
+  else if (orderB === null) {
+    return 1
+  }
+  return orderA - orderB;
+}

@@ -258,8 +258,8 @@ class StudioRoute extends Component {
     })
   }
 
-  navigateToGallery = () => {
-    Router.pushRoute('/gallery')
+  navigateBack = () => {
+    Router.back()
   }
 
   openEmojiPicker = () => {
@@ -517,16 +517,16 @@ class StudioRoute extends Component {
 
               {this.state.showEmojiPicker && <EmojiPicker
                 onSelect={this.onEmojiSelect}
-                onCancel={this.state.activeEmojiId ? this.closeEmojiPicker : this.navigateToGallery}
+                onCancel={this.state.activeEmojiId ? this.closeEmojiPicker : this.navigateBack}
               />}
             </React.Fragment>)}
         </CenteredContainer>
 
         {!this.state.showEmojiPicker && <React.Fragment>
           <NavButton
-            value='GALLERY'
-            color={BLUE}
-            cb={this.navigateToGallery}
+            value='BACK'
+            color={RED}
+            cb={this.navigateBack}
             position={BOTTOM_LEFT}
           />
           <NavButton

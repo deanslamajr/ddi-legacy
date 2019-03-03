@@ -4,6 +4,8 @@ import styled from 'styled-components'
 import { Router } from '../../routes'
 import Cell from '../../components/Cell'
 
+import { sortByOrder } from '../../helpers'
+
 const navigateTo = (urlId) => Router.push(`/cell/${urlId}`) 
 
 const PointerCursorContainer = styled(Cell)`
@@ -16,19 +18,6 @@ const ComicContainer = styled.div`
 `
 
 const noop = () => {}
-
-function sortByOrder ({ order: orderA }, { order: orderB }) {
-  if (orderA === null && orderB === null) {
-    return -1
-  }
-  else if (orderA === null) {
-    return -1
-  }
-  else if (orderB === null) {
-    return 1
-  }
-  return orderA - orderB;
-}
 
 function Comic ({ cells, clickable }) {
   const Container = clickable

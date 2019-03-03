@@ -5,7 +5,7 @@ import { MenuButton, RedMenuButton, GreenMenuButton } from '../../components/But
 import Modal, { CenteredButtons, MessageContainer } from '../../components/Modal'
 
 const RedMessageContainer = styled(MessageContainer)`
-  color: #FE4A49;
+  color: ${props => props.theme.colors.red};
 `
 
 function WarningModal ({ message, onCancelClick, onOkClick, okButtonLabel, colorTheme }) {

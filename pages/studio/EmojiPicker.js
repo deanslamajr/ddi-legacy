@@ -30,7 +30,7 @@ const initialEmojiSet = shuffle(Object.values(emojiIndex.emojis).filter(emoji =>
 
 const OuterContainer = styled.div`
   position: absolute;
-  background-color: white;
+  background-color: ${props => props.theme.colors.white};
   top: 0;
   bottom: 0;
   left: 0;
@@ -78,7 +78,7 @@ const EmojisContainer = styled.div`
 
 const InnerContainer = styled.div`
   position: relative;
-  background-color: white;
+  background-color: ${props => props.theme.colors.white};
 `
 
 const EmojiContainer = styled.span`

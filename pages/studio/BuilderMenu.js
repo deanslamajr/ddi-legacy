@@ -20,13 +20,13 @@ const SliderContainer = styled.div`
 `
 
 const SelectActiveEmojiButton = styled(MenuButton)`
-  background-color: white;
+  background-color: ${props => props.theme.colors.white};
   border: ${props => props.isActive ? '3px solid red' : 'none'};
   cursor: ${props => props.isActive ? 'default' : 'pointer'};
   font-size: 2rem;
 
   &:hover {
-    background-color: ${props => props.isActive ? 'white' : 'black'};
+    background-color: ${props => props.isActive ? props.theme.colors.white : props.theme.colors.black};
   }
 `
 

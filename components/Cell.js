@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 const TitleContainer = styled.div`
   width: 250px;
-  background: white;
+  background: ${props => props.theme.colors.white};
   margin-top: 7px;
 `
 
@@ -14,7 +14,7 @@ const TitleWidth = styled.div`
 
 const CellContainer = styled.div`
   margin: 1rem 0 1rem;
-  background: #F7FFF7;
+  background: ${props => props.theme.colors.lightGreen};
   padding: 10px;
 `
 

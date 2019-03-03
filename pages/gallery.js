@@ -28,7 +28,7 @@ const CenteredContainer = styled.div`
 
 const UnstyledLink = styled.a`
   text-decoration: none;
-  color: black;
+  color: ${props => props.theme.colors.black};
   cursor: pointer;
   overflow-x: auto;
 `

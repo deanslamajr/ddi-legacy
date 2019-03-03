@@ -7,7 +7,7 @@ const NavigateToStudioButton = styled.a`
   padding: 1rem;
   border-radius: 3px;
   text-decoration: none;
-  background-color: white;
+  background-color: ${props => props.theme.colors.white};
   vertical-align: middle;
   box-shadow: none;
   text-shadow: none;
@@ -15,8 +15,8 @@ const NavigateToStudioButton = styled.a`
   cursor: pointer;
 
   &:hover {
-    background-color: black;
-    color: white;
+    background-color: ${props => props.theme.colors.black};
+    color: ${props => props.theme.colors.white};
   }
 `
 

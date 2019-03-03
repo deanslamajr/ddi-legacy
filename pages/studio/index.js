@@ -10,7 +10,7 @@ import cloneDeep from 'lodash/cloneDeep'
 import pick from 'lodash/pick'
 
 import { GrayBackground, MobileViewportSettings } from '../../components/Layouts'
-import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, BLUE, GREEN, RED } from '../../components/navigation'
+import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, GREEN, RED } from '../../components/navigation'
 import LoadSpinner from '../../components/LoadSpinner'
 
 import EmojiPicker from './EmojiPicker'
@@ -18,6 +18,7 @@ import BuilderMenu from './BuilderMenu'
 import WarningModal from './WarningModal'
 
 import { getApi } from '../../helpers'
+import theme from '../../helpers/theme'
 
 import { STORAGEKEY_STUDIO } from '../../config/constants.json'
 
@@ -84,9 +85,11 @@ const TitleInput = styled.textarea`
   padding: 3px;
   outline: none;
   resize: none;
+  background-color: ${props => props.theme.colors.white};
+  border: none;
 
   &::placeholder {
-    color: gray;
+    color: ${props => props.theme.colors.gray};
     opacity: 0.5;
   }
 `
@@ -467,7 +470,7 @@ class StudioRoute extends Component {
                 y={0}
                 width={250}
                 height={250}
-                fill='white'
+                fill={theme.colors.white}
               />
               {Object.values(this.state.emojis).sort(sortByOrder).map(emoji => (<Text
                 draggable={emoji.id === this.state.activeEmojiId}

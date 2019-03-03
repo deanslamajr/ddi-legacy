@@ -13,7 +13,6 @@ export const ORANGE = 'ORANGE'
 export const YELLOW = 'YELLOW'
 
 const Button = styled.div`
-  border: 1px solid #F7FFF7;
   cursor: pointer;
   z-index: 9999;
   height: 90px;
@@ -22,9 +21,9 @@ const Button = styled.div`
   user-select: none;
   color: ${props => {
     if (props.color === YELLOW) {
-      return '#131B23' //black
+      return props.theme.colors.black
     }
-    return '#F7FFF7;'
+    return props.theme.colors.lightGreen
   }};
   position: fixed;
   display: flex;
@@ -33,22 +32,44 @@ const Button = styled.div`
 
   background-color: ${props => {
     if (props.color === GREEN) {
-      return '#679436'
+      return props.theme.colors.green
     }
     else if (props.color === RED) {
-      return '#FE4A49'
+      return props.theme.colors.red
     }
     else if (props.color === BLUE) {
-      return 'blue'
+      return props.theme.colors.blue
     }
     else if (props.color === ORANGE) {
-      return 'orange'
+      return props.theme.colors.orange
     }
     else if (props.color === YELLOW) {
-      return 'yellow'
+      return props.theme.colors.yellow
     }
-    return 'white'
+    return props.theme.colors.white
   }};
+
+  &:hover {
+    background-color: ${props => props.theme.colors.black};
+    color: ${props => {
+      if (props.color === GREEN) {
+        return props.theme.colors.green
+      }
+      else if (props.color === RED) {
+        return props.theme.colors.red
+      }
+      else if (props.color === BLUE) {
+        return props.theme.colors.blue
+      }
+      else if (props.color === ORANGE) {
+        return props.theme.colors.orange
+      }
+      else if (props.color === YELLOW) {
+        return props.theme.colors.yellow
+      }
+      return props.theme.colors.white
+    }};
+  }
 `
 
 const BottomLeftButton = styled(Button)`

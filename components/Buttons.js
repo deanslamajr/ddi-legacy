@@ -5,27 +5,27 @@ const MenuButton = styled.span`
   height: 2.75rem;
   margin: .25rem;
   cursor: pointer;
-  background-color: #F7FFF7;
-  color: #131B23;
+  background-color: ${props => props.theme.colors.lightGreen};
+  color: ${props => props.theme.colors.black};
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
 
   &:hover {
-    background-color: #131B23;
-    color: white;
+    background-color: ${props => props.theme.colors.black};
+    color: ${props => props.theme.colors.white};
   }
 `
 
 const RedMenuButton = styled(MenuButton)`
-  background-color: #FE4A49;
-  color: #F7FFF7;
+  background-color: ${props => props.theme.colors.red};
+  color: ${props => props.theme.colors.lightGreen};
 `
 
 const GreenMenuButton = styled(MenuButton)`
-  background-color: #679436;
-  color: #F7FFF7;
+  background-color: ${props => props.theme.colors.green};
+  color: ${props => props.theme.colors.lightGreen};
 `
 
 export {

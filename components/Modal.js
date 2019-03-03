@@ -31,7 +31,7 @@ export const CenteredButtons = styled.div`
 `
 
 export const MessageContainer = styled.div`
-  color: #679436;
+  color: ${props => props.theme.colors.green};
   font-size: 2rem;
   display: flex;
   justify-content: center;

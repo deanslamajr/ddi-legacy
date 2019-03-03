@@ -1,7 +1,5 @@
 import { Component } from 'react'
 
-import LoadSpinner from '../components/LoadSpinner'
-
 import { Router } from '../routes'
 
 //
@@ -12,7 +10,7 @@ class MainMenu extends Component {
   }
 
   render () {
-    return <LoadSpinner/>
+    return null
   }
 }
 

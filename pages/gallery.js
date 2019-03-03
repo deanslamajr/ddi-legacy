@@ -52,6 +52,7 @@ class GalleryRoute extends Component {
   }
 
   navigateToStudio = () => {
+    this.props.showSpinner()
     Router.push('/studio/new/new')
   }
 
@@ -73,6 +74,10 @@ class GalleryRoute extends Component {
     })
   }
 
+  componentDidMount () {
+    this.props.hideSpinner()
+  }
+
   render () {
     const { comics = [], hasMore } = this.state
     
@@ -80,8 +85,11 @@ class GalleryRoute extends Component {
       <div>
         <ComicsContainer>
           {comics.map(({ id, cells, url_id }) => (
-            <Link key={id} route={`/comic/${url_id}`}>
-              <UnstyledLink>
+            <Link
+              key={id}
+              route={`/comic/${url_id}`}
+            >
+              <UnstyledLink onClick={this.props.showSpinner}>
                 <Comic cells={cells} />
               </UnstyledLink>
             </Link>)

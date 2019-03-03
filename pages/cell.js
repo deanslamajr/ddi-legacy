@@ -44,19 +44,27 @@ class CellRoute extends Component {
   }
 
   navigateToGallery = () => {
+    this.props.showSpinner()
     Router.push('/gallery')
   }
 
   navigateToStudio = () => {
+    this.props.showSpinner()
     Router.push('/studio/new/new')
   }
 
   navigateToDuplicate = () => {
+    this.props.showSpinner()
     Router.push(`/studio/new/${this.props.cellId}`)
   }
 
   navigateToParent = () => {
+    this.props.showSpinner()
     Router.push(`/cell/${this.props.parentId}`)
+  }
+
+  componentDidMount () {
+    this.props.hideSpinner()
   }
 
   render () {

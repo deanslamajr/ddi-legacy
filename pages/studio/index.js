@@ -10,7 +10,6 @@ import pick from 'lodash/pick'
 import Head from 'next/head'
 
 import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, GREEN, RED } from '../../components/navigation'
-import LoadSpinner from '../../components/LoadSpinner'
 
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
@@ -101,7 +100,6 @@ class StudioRoute extends Component {
       currentEmojiId: 1,
       parentId: this.props.parentId,
       showEmojiPicker: this.props.parentId ? false : true,
-      showLoadSpinner: false,
       showResetWarningModal: false,
       showSaveWarningModal: false,
       showSaveButton: true,
@@ -109,10 +107,9 @@ class StudioRoute extends Component {
       title: ''
     }
 
-    // initially show load spinner
     const parentsStudioState = this.props.studioState || {}
     // duplicate initial state so that we don't modify the original
-    const initialState = Object.assign({}, this.initialState, { showLoadSpinner: true }, parentsStudioState)
+    const initialState = Object.assign({}, this.initialState, parentsStudioState)
 
     this.state = initialState
   }
@@ -211,46 +208,46 @@ class StudioRoute extends Component {
   }
 
   saveCell = async (event) => {
+    this.props.showSpinner()
     this.toggleSaveWarningModal(false)
-    this.setState({ showLoadSpinner: true }, () => {
-      // clears active emoji border
-      this.updateEmojiCache(undefined, false)
-      this.incrementField('red', 1, this.clearCache) // hack bc we need to get a konva image refresh for the canvas to get the 'remove border' update
 
-      this.setState({ showSaveButton: false }, () => {
-        this.stage.toCanvas().toBlob(async (blob) => {
-          const file = new File([blob], generateFilename(), {
-            type: 'image/png',
-          })
-    
-          try {
-            const {
-              comicId,
-              id,
-              signedRequest
-            } = await this.getSignedRequest(file)
-    
-            const xhr = new XMLHttpRequest()
-            xhr.open('PUT', signedRequest)
-            xhr.onreadystatechange = async () => {
-              if(xhr.readyState === 4){
-                if(xhr.status === 200){
-                  // update cell in DB
-                  await this.finishCellPublish(id, comicId)
-                }
-                else{
-                  // @todo better UX
-                  console.error('could not upload file!')
-                }
+    // clears active emoji border
+    this.updateEmojiCache(undefined, false)
+    this.incrementField('red', 1, this.clearCache) // hack bc we need to get a konva image refresh for the canvas to get the 'remove border' update
+
+    this.setState({ showSaveButton: false }, () => {
+      this.stage.toCanvas().toBlob(async (blob) => {
+        const file = new File([blob], generateFilename(), {
+          type: 'image/png',
+        })
+  
+        try {
+          const {
+            comicId,
+            id,
+            signedRequest
+          } = await this.getSignedRequest(file)
+  
+          const xhr = new XMLHttpRequest()
+          xhr.open('PUT', signedRequest)
+          xhr.onreadystatechange = async () => {
+            if(xhr.readyState === 4){
+              if(xhr.status === 200){
+                // update cell in DB
+                await this.finishCellPublish(id, comicId)
+              }
+              else{
+                // @todo better UX
+                console.error('could not upload file!')
               }
             }
-            xhr.send(file)
           }
-          catch (e) {
-            // @todo better UX
-            console.error(e)
-          }
-        })
+          xhr.send(file)
+        }
+        catch (e) {
+          // @todo better UX
+          console.error(e)
+        }
       })
     })
   }
@@ -438,17 +435,15 @@ class StudioRoute extends Component {
       const studioCache = store(STORAGEKEY_STUDIO)
 
       if (studioCache) {
-        studioCache.showLoadSpinner = false
-
         this.restoreFromCache(studioCache)
       }
     }
 
-    this.setState({ showLoadSpinner: false })
+    this.props.hideSpinner()
   }
 
   render () {
-    const { showLoadSpinner, showResetWarningModal, showSaveWarningModal } = this.state
+    const { showResetWarningModal, showSaveWarningModal } = this.state
 
     const activeEmoji = this.state.emojis[this.state.activeEmojiId]
 
@@ -556,8 +551,6 @@ class StudioRoute extends Component {
           onCancelClick={() => this.toggleResetWarningModal(false)}
           onOkClick={() => this.resetStudioSession()}
         />}
-
-        {showLoadSpinner && <LoadSpinner />}
       </div>
     )
   }

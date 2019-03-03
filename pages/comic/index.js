@@ -45,22 +45,26 @@ class ComicRoute extends Component {
   }
 
   navigateToGallery = () => {
+    this.props.showSpinner()
     Router.push('/gallery')
   }
 
   navigateToStudio = () => {
+    this.props.showSpinner()
     Router.push('/studio/new/new')
   }
 
   navigateToAddCellFromNew = () => {
     const { comicId } = this.props
 
+    this.props.showSpinner()
     Router.push(`/studio/${comicId}/new`)
   }
 
   navigateToAddCell = (cellUrlId) => {
     const { comicId } = this.props
 
+    this.props.showSpinner()
     Router.push(`/studio/${comicId}/${cellUrlId}`)
   }
 
@@ -70,6 +74,10 @@ class ComicRoute extends Component {
 
   showAddCellModal = () => {
     this.setState({ showAddCellModal: true })
+  }
+
+  componentDidMount () {
+    this.props.hideSpinner()
   }
 
   render () {
@@ -111,6 +119,7 @@ class ComicRoute extends Component {
         <CenteredContainer>
           <Comic
             cells={cells}
+            showSpinner={this.props.showSpinner}
             clickable
           />
         </CenteredContainer>

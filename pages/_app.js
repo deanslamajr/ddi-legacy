@@ -5,11 +5,25 @@ import { ThemeProvider } from 'styled-components'
 import getConfig from 'next/config'
 
 import theme from '../helpers/theme'
+
 import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
+import LoadSpinner from '../components/LoadSpinner'
 
 const { publicRuntimeConfig } = getConfig()
 
 class MyApp extends App {
+  state = {
+    showSpinner: true
+  }
+
+  hideSpinner = () => {
+    this.setState({ showSpinner: false })
+  }
+
+  showSpinner = () => {
+    this.setState({ showSpinner: true })
+  }
+
   render () {
     const { Component, pageProps } = this.props
     return (
@@ -30,8 +44,14 @@ class MyApp extends App {
         <MobileViewportSettings />
         <GrayBackground />
 
+        {this.state.showSpinner && <LoadSpinner/>}
+
         <ThemeProvider theme={theme}>
-          <Component {...pageProps} />
+          <Component
+            hideSpinner={this.hideSpinner}
+            showSpinner={this.showSpinner}
+            {...pageProps}
+          />
         </ThemeProvider>
       </Container>
     )

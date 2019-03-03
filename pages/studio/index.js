@@ -539,7 +539,7 @@ class StudioRoute extends Component {
             position={BOTTOM_CENTER}
           />
           <NavButton
-            value='SAVE'
+            value='PUBLISH'
             color={GREEN}
             cb={() => this.toggleSaveWarningModal(true)}
             position={BOTTOM_RIGHT}
@@ -547,8 +547,8 @@ class StudioRoute extends Component {
         </React.Fragment>}
 
         {showSaveWarningModal && <WarningModal
-          message='Save the Canvas?'
-          okButtonLabel='SAVE'
+          message='Publish this Canvas?'
+          okButtonLabel='PUBLISH'
           onCancelClick={() => this.toggleSaveWarningModal(false)}
           onOkClick={() => this.saveCell()}
           colorTheme='GREEN'

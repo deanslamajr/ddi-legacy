@@ -388,9 +388,11 @@ class StudioRoute extends Component {
   resetStudioSession = () => {
     this.clearCache()
 
-    delete this.initialState.parentId
+    const parentsStudioState = this.props.studioState || {}
+    // duplicate initial state so that we don't modify the original
+    const initialState = Object.assign({}, this.initialState, parentsStudioState)
 
-    this.setState(this.initialState, () => this.toggleResetWarningModal(false))
+    this.setState(initialState, () => this.toggleResetWarningModal(false))
   }
 
   updateCache = () => {
@@ -546,8 +548,8 @@ class StudioRoute extends Component {
         />}
 
         {showResetWarningModal && <WarningModal
-          message='Clear the Canvas?'
-          okButtonLabel='CLEAR CANVAS'
+          message='Reset the Canvas?'
+          okButtonLabel='RESET CANVAS'
           onCancelClick={() => this.toggleResetWarningModal(false)}
           onOkClick={() => this.resetStudioSession()}
         />}

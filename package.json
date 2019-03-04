@@ -39,7 +39,7 @@
     "next": "^7.0.2",
     "next-routes": "^1.4.2",
     "pg": "^7.7.1",
-    "query-string": "^6.2.0",
+    "query-string": "^6.3.0",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-konva": "^16.6.31",

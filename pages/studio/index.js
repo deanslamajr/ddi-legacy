@@ -8,6 +8,7 @@ import shortid from 'shortid'
 import cloneDeep from 'lodash/cloneDeep'
 import pick from 'lodash/pick'
 import Head from 'next/head'
+import qs from 'query-string'
 
 import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, GREEN, RED } from '../../components/navigation'
 
@@ -169,14 +170,21 @@ class StudioRoute extends Component {
   }
 
   getSignedRequest = async (file) => {
-    let requestUrlPath = `/api/sign?file-name=${file.name}&file-type=${file.type}&title=${this.state.title}`
+    let signData = {
+      'file-name': file.name,
+      'file-type': file.type,
+      title: this.state.title
+    }
 
     if (this.state.parentId) {
-      requestUrlPath = `${requestUrlPath}&parent-id=${this.state.parentId}`
+      signData['parent-id'] = this.state.parentId
     }
     if (this.state.comicId) {
-      requestUrlPath = `${requestUrlPath}&comic-id=${this.state.comicId}`
+      signData['comic-id'] = this.state.comicId
     }
+
+    const queryString = qs.stringify(signData)
+    const requestUrlPath = `/api/sign?${queryString}`
 
     try {
       const { data } = await axios.get(requestUrlPath)

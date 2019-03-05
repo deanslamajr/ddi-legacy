@@ -2,7 +2,7 @@ import { Component, Fragment } from 'react'
 import { emojiIndex } from 'emoji-mart'
 import styled from 'styled-components'
 
-import { NavButton, BOTTOM_LEFT, RED } from '../../components/navigation'
+import { NavButton, BOTTOM_LEFT, BLUE } from '../../components/navigation'
 
 // from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array#answer-2450976
 function shuffle (array) {
@@ -139,7 +139,7 @@ class EmojiPicker extends Component {
 
         <NavButton
           value='BACK'
-          color={RED}
+          color={BLUE}
           cb={() => this.props.onCancel()}
           position={BOTTOM_LEFT}
         />

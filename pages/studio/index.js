@@ -10,7 +10,7 @@ import pick from 'lodash/pick'
 import Head from 'next/head'
 import qs from 'query-string'
 
-import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, GREEN, RED } from '../../components/navigation'
+import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, GREEN, RED, BLUE } from '../../components/navigation'
 
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
@@ -261,6 +261,7 @@ class StudioRoute extends Component {
   }
 
   navigateBack = () => {
+    this.props.showSpinner()
     Router.back()
   }
 
@@ -440,11 +441,12 @@ class StudioRoute extends Component {
   }
 
   componentDidMount () {
-    if (!this.state.parentId) {
-      const store = require('store2')
-      const studioCache = store(STORAGEKEY_STUDIO)
+    const store = require('store2')
+    const studioCache = store(STORAGEKEY_STUDIO)
 
-      if (studioCache) {
+    if (studioCache) {
+      // if the cached parentId matches the current parentId, refresh from cache
+      if (!this.state.parentId || this.state.parentId === studioCache.parentId) {
         this.restoreFromCache(studioCache)
       }
     }
@@ -529,7 +531,7 @@ class StudioRoute extends Component {
         {!this.state.showEmojiPicker && <React.Fragment>
           <NavButton
             value='BACK'
-            color={RED}
+            color={BLUE}
             cb={this.navigateBack}
             position={BOTTOM_LEFT}
           />

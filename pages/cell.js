@@ -43,9 +43,9 @@ class CellRoute extends Component {
     }
   }
 
-  navigateToGallery = () => {
+  navigateBack = () => {
     this.props.showSpinner()
-    Router.push('/gallery')
+    Router.back()
   }
 
   navigateToStudio = () => {
@@ -111,9 +111,9 @@ class CellRoute extends Component {
         />}
 
         <NavButton
-          value='GALLERY'
+          value='BACK'
           color={BLUE}
-          cb={this.navigateToGallery}
+          cb={this.navigateBack}
           position={BOTTOM_LEFT}
         />
 

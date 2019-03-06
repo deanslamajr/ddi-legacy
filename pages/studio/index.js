@@ -73,7 +73,6 @@ const CenteredContainer = styled.div`
 
 const TitleInput = styled.textarea`
   font-size: 16px;
-  margin: .5rem;
   height: 4rem;
   width: 244px;
   padding: 3px;
@@ -86,6 +85,16 @@ const TitleInput = styled.textarea`
     color: ${props => props.theme.colors.gray};
     opacity: 0.5;
   }
+`
+
+const FixedCanvasContainer = styled.div`
+  position: fixed;
+  top: 0;
+  z-index: 999;
+`
+
+const EverythingElseContainer = styled.div`
+  margin-top: 255px;
 `
 
 //
@@ -466,39 +475,41 @@ class StudioRoute extends Component {
         </Head>
 
         <CenteredContainer>
-          <Stage ref={ref => this.stage = ref} width={250} height={250}>
-            <Layer>
-              <Rect
-                x={0}
-                y={0}
-                width={250}
-                height={250}
-                fill={theme.colors.white}
-              />
-              {Object.values(this.state.emojis).sort(sortByOrder).map(emoji => (<Text
-                draggable={emoji.id === this.state.activeEmojiId}
-                key={`${emoji.id}${emoji.emoji}`}
-                ref={ref => this.emojiRefs[emoji.id] = ref}
-                filters={emoji.filters && emoji.filters.map(filter => filters[filter])}
-                x={emoji.x}
-                y={emoji.y}
-                scaleX={emoji.scaleX}
-                scaleY={emoji.scaleY}
-                text={emoji.emoji}
-                fontSize={emoji.size}
-                rotation={emoji.rotation}
-                alpha={emoji.alpha}
-                red={emoji.red}
-                green={emoji.green}
-                blue={emoji.blue}
-                onDragEnd={this.handleDragEnd}
-                useCache
-              />))}
-            </Layer>
-          </Stage>
+          <FixedCanvasContainer>
+            <Stage ref={ref => this.stage = ref} width={250} height={250}>
+              <Layer>
+                <Rect
+                  x={0}
+                  y={0}
+                  width={250}
+                  height={250}
+                  fill={theme.colors.white}
+                />
+                {Object.values(this.state.emojis).sort(sortByOrder).map(emoji => (<Text
+                  draggable={emoji.id === this.state.activeEmojiId}
+                  key={`${emoji.id}${emoji.emoji}`}
+                  ref={ref => this.emojiRefs[emoji.id] = ref}
+                  filters={emoji.filters && emoji.filters.map(filter => filters[filter])}
+                  x={emoji.x}
+                  y={emoji.y}
+                  scaleX={emoji.scaleX}
+                  scaleY={emoji.scaleY}
+                  text={emoji.emoji}
+                  fontSize={emoji.size}
+                  rotation={emoji.rotation}
+                  alpha={emoji.alpha}
+                  red={emoji.red}
+                  green={emoji.green}
+                  blue={emoji.blue}
+                  onDragEnd={this.handleDragEnd}
+                  useCache
+                />))}
+              </Layer>
+            </Stage>
+          </FixedCanvasContainer>
 
           {this.state.showSaveButton && (
-            <React.Fragment>
+            <EverythingElseContainer>
               <TitleInput
                 type='text'
                 placeholder='add a caption'
@@ -525,7 +536,7 @@ class StudioRoute extends Component {
                 onSelect={this.onEmojiSelect}
                 onCancel={this.state.activeEmojiId ? this.closeEmojiPicker : this.navigateBack}
               />}
-            </React.Fragment>)}
+            </EverythingElseContainer>)}
         </CenteredContainer>
 
         {!this.state.showEmojiPicker && <React.Fragment>

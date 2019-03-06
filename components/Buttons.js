@@ -3,7 +3,7 @@ import styled from 'styled-components'
 const MenuButton = styled.span`
   width: 250px;
   height: 2.75rem;
-  margin: .25rem;
+  margin: 1px auto;
   cursor: pointer;
   background-color: ${props => props.theme.colors.lightGreen};
   color: ${props => props.theme.colors.black};

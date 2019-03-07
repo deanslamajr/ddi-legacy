@@ -11,10 +11,6 @@ const navigateTo = (urlId, showSpinner) => {
   Router.push(`/cell/${urlId}`)
 }
 
-const PointerCursorContainer = styled(Cell)`
-  cursor: pointer;
-`
-
 const ComicContainer = styled.div`
   display: flex;
   margin: 0 1rem 0;
@@ -23,13 +19,9 @@ const ComicContainer = styled.div`
 const noop = () => {}
 
 function Comic ({ cells, clickable, showSpinner = noop }) {
-  const Container = clickable
-    ? PointerCursorContainer
-    : Cell
-
   return (<ComicContainer>
     {/* @todo replace having to support both casings for imageUrl and urlId */}
-    {cells.sort(sortByOrder).map(({ imageUrl, image_url, title, urlId, url_id }) => <Container
+    {cells.sort(sortByOrder).map(({ imageUrl, image_url, title, urlId, url_id }) => <Cell
       onClick={() => clickable ? navigateTo(urlId || url_id, showSpinner) : noop()}
       imageUrl={imageUrl || image_url}
       title={title}

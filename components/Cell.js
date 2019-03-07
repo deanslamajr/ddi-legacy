@@ -16,6 +16,7 @@ const CellContainer = styled.div`
   margin: 1rem 0 1rem;
   background: ${props => props.theme.colors.lightGreen};
   padding: 10px;
+  cursor: pointer;
 `
 
 export default function Cell ({ className, imageUrl, title, onClick = () => {} }) {

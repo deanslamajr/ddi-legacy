@@ -5,6 +5,7 @@ import Slider from 'react-rangeslider'
 import {
   MenuButton,
   RedMenuButton,
+  BlueMenuButton,
   GreenMenuButton
 } from '../../components/Buttons'
 
@@ -12,11 +13,17 @@ import 'react-rangeslider/lib/index.css'
 
 const CenteredButtons = styled.div`
   display: flex;
+  align-items: center;
+  justify-content: center;
 `
 
 const SliderContainer = styled.div`
   width: 100%;
   display: block;
+`
+
+const HalfMenuButton = styled(MenuButton)`
+  width: 124px;
 `
 
 const SelectActiveEmojiButton = styled(MenuButton)`
@@ -31,14 +38,21 @@ const SelectActiveEmojiButton = styled(MenuButton)`
   }
 `
 
+const SliderLabel = styled.div`
+  margin: .1rem auto;
+  display: flex;
+  justify-content: center;
+  margin-bottom: -.9rem;
+`
+
+const Label = styled.div`
+  margin: .1rem auto;
+  display: flex;
+  justify-content: center;
+`
+
 const MAIN = 'MAIN'
-const POSITION = 'POSITION'
-const SELECT_ACTIVE_EMOJI = 'SELECT ACTIVE EMOJI'
-const SIZE = 'SIZE'
-const ROTATION = 'ROTATION'
-const FLIP = 'FLIP'
-const STACK_ORDER = 'STACK ORDER'
-const RGB = 'RGB'
+const SECONDARY = 'SECONDARY'
 
 class BuilderMenu extends React.Component {
   constructor (props) {
@@ -50,146 +64,69 @@ class BuilderMenu extends React.Component {
 
     this.menus = {
       [MAIN]: this.renderMainMenu,
-      [POSITION]: this.renderPositionMenu,
-      [SELECT_ACTIVE_EMOJI]: this.renderSelectActiveEmoji,
-      [SIZE]: this.renderSizeMenu,
-      [ROTATION]: this.renderRotationMenu,
-      [FLIP]: this.renderFlipMenu,
-      [STACK_ORDER]: this.renderStackOrderMenu,
-      [RGB]: this.renderRGBMenu
+      [SECONDARY]: this.renderSecondaryMenu
     }
   }
 
   renderReturnToMainMenuButton = () => {
-    return (<RedMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
-      RETURN TO MAIN MENU
-    </RedMenuButton>)
+    return (<BlueMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
+      LESS
+    </BlueMenuButton>)
+  }
+
+  renderToSecondaryMenuButton = () => {
+    return (<MenuButton onClick={() => this.setState({ currentMenu: SECONDARY })}>
+      MORE
+    </MenuButton>)
   }
 
   renderMainMenu = () => {
-    return (<React.Fragment>
-      <MenuButton onClick={this.props.openEmojiPicker}>
-        ADD EMOJI
-      </MenuButton>
-      <MenuButton onClick={() => this.setState({ currentMenu: SELECT_ACTIVE_EMOJI })}>
-        {SELECT_ACTIVE_EMOJI}
-      </MenuButton>
-      <MenuButton onClick={() => this.setState({ currentMenu: SIZE })}>
-        {SIZE}
-      </MenuButton>
-      <MenuButton onClick={() => this.setState({ currentMenu: ROTATION })}>
-        {ROTATION}
-      </MenuButton>
-      <MenuButton onClick={() => this.setState({ currentMenu: FLIP })}>
-        {FLIP}
-      </MenuButton>
-      <MenuButton onClick={() => this.setState({ currentMenu: STACK_ORDER })}>
-        {STACK_ORDER}
-      </MenuButton>
-      <MenuButton onClick={() => this.setState({ currentMenu: POSITION })}>
-        {POSITION}
-      </MenuButton>
-      <MenuButton onClick={() => this.setState({ currentMenu: RGB })}>
-        {RGB}
-      </MenuButton>
-    </React.Fragment>)
-  }
-
-  renderStackOrderMenu = () => {
-    const { increaseStackOrder, decreaseStackOrder } = this.props
-
-    return (<React.Fragment>
-      {this.renderReturnToMainMenuButton()}
-
-      {/* UP */}
-      <MenuButton onClick={() => increaseStackOrder()}>
-        MOVE UP
-      </MenuButton>
-      <MenuButton onClick={() => decreaseStackOrder()}>
-        MOVE DOWN
-      </MenuButton>
-    </React.Fragment>)
-  }
-
-  renderPositionMenu = () => {
-    const { incrementField } = this.props
-
-    return (<React.Fragment>
-      {this.renderReturnToMainMenuButton()}
-
-      {/* UP */}
-      <input type='button' onClick={() => incrementField('y', -10)} value='UP' />
-        <CenteredButtons>
-          {/* LEFT */}
-          <input type='button' onClick={() => incrementField('x', -10)} value='LEFT' />
-          {/* RIGHT */}
-          <input type='button' onClick={() => incrementField('x', 10)} value='RIGHT' />
-        </CenteredButtons>
-        {/* DOWN */}
-      <input type='button' onClick={() => incrementField('y', 10)} value='DOWN' />
-    </React.Fragment>)
-  }
-
-  renderSizeMenu = () => {
     const {
       activeEmoji,
+      changeActiveEmoji,
+      emojis,
       setField,
       updateCache
     } = this.props
 
     return (<React.Fragment>
-      {this.renderReturnToMainMenuButton()}
-      
+      <SliderLabel>SIZE</SliderLabel>
       <SliderContainer>
         <Slider
           min={1}
           max={256}
-          value={activeEmoji.size}
+          value={activeEmoji && activeEmoji.size}
           onChangeStart={() => {}}
           onChange={(value) => setField('size', value)}
           onChangeComplete={() => updateCache()}
         />
       </SliderContainer>
+
+      {this.renderToSecondaryMenuButton()}
+
+      <GreenMenuButton onClick={this.props.openEmojiPicker}>
+        +
+      </GreenMenuButton>
+
+      {Object.values(emojis).map(({ emoji, id }) => (<SelectActiveEmojiButton
+        key={`${id}${emoji}`}
+        type='button'
+        isActive={id === activeEmoji.id}
+        onClick={() => changeActiveEmoji(id)}
+        value={emoji}
+      >
+        {emoji}
+      </SelectActiveEmojiButton>))}
     </React.Fragment>)
   }
 
-  renderRotationMenu = () => {
-    const { activeEmoji, setField, updateCache } = this.props
-
-    return (<React.Fragment>
-      {this.renderReturnToMainMenuButton()}
-        <SliderContainer>
-          <Slider
-            min={-180}
-            max={180}
-            value={activeEmoji.rotation}
-            onChangeStart={() => {}}
-            onChange={(value) => setField('rotation', value)}
-            onChangeComplete={() => updateCache()}
-          />
-        </SliderContainer>
-    </React.Fragment>)
-  }
-
-  renderFlipMenu = () => {
-    const { scaleField } = this.props
-
-    return (<React.Fragment>
-      {this.renderReturnToMainMenuButton()}
-      {/* FLIP X */}
-      <MenuButton onClick={() => scaleField('scaleX', -1)}>
-        FLIP X
-      </MenuButton>
-      {/* FLIP Y */}
-      <MenuButton onClick={() => scaleField('scaleY', -1)}>
-        FLIP Y
-      </MenuButton>
-    </React.Fragment>)
-  }
-
-  renderRGBMenu = () => {
+  renderSecondaryMenu = () => {
     const {
       activeEmoji,
+      decreaseStackOrder,
+      increaseStackOrder,
+      incrementField,
+      scaleField,
       setField,
       toggleFilter,
       updateCache
@@ -197,11 +134,58 @@ class BuilderMenu extends React.Component {
 
     return (<React.Fragment>
       {this.renderReturnToMainMenuButton()}
-      
+
+      <Label>Z</Label>
+      <MenuButton onClick={() => increaseStackOrder()}>
+        +
+      </MenuButton>
+      <MenuButton onClick={() => decreaseStackOrder()}>
+        -
+      </MenuButton>
+
+      <SliderLabel>ROTATION</SliderLabel>
+      <SliderContainer>
+        <Slider
+          min={-180}
+          max={180}
+          value={activeEmoji.rotation}
+          onChangeStart={() => {}}
+          onChange={(value) => setField('rotation', value)}
+          onChangeComplete={() => updateCache()}
+        />
+      </SliderContainer>
+
+      <Label>FLIP</Label>
+      <MenuButton onClick={() => scaleField('scaleX', -1)}>
+        X
+      </MenuButton>
+      <MenuButton onClick={() => scaleField('scaleY', -1)}>
+        Y
+      </MenuButton>
+
+      <CenteredButtons>
+        <HalfMenuButton onClick={() => incrementField('y', -5)}>
+          UP
+        </HalfMenuButton>
+      </CenteredButtons>
+      <CenteredButtons>
+        <HalfMenuButton onClick={() => incrementField('x', -5)}>
+          LEFT
+        </HalfMenuButton>
+        <HalfMenuButton onClick={() => incrementField('x', 5)}>
+          RIGHT
+        </HalfMenuButton>
+      </CenteredButtons>
+      <CenteredButtons>
+        <HalfMenuButton onClick={() => incrementField('y', 5)}>
+          DOWN
+        </HalfMenuButton>
+      </CenteredButtons>
+
       {/* TOGGLE FILTER*/}
       {activeEmoji.filters
-        ? (<RedMenuButton onClick={toggleFilter}>TURN OFF</RedMenuButton>)
-        : (<GreenMenuButton onClick={toggleFilter}>TURN ON</GreenMenuButton>)
+        ? (<RedMenuButton onClick={toggleFilter}>RGB</RedMenuButton>)
+        : (<GreenMenuButton onClick={toggleFilter}>RGB</GreenMenuButton>)
       }
 
       {activeEmoji.filters && (<React.Fragment>
@@ -251,28 +235,6 @@ class BuilderMenu extends React.Component {
           />
         </SliderContainer>
       </React.Fragment>)}
-    </React.Fragment>)
-  }
-
-  renderSelectActiveEmoji = () => {
-    const {
-      activeEmoji,
-      changeActiveEmoji,
-      emojis
-    } = this.props
-
-    return (<React.Fragment>
-      {this.renderReturnToMainMenuButton()}
-      
-      {Object.values(emojis).map(({ emoji, id }) => (<SelectActiveEmojiButton
-        key={`${id}${emoji}`}
-        type='button'
-        isActive={id === activeEmoji.id}
-        onClick={() => changeActiveEmoji(id)}
-        value={emoji}
-      >
-        {emoji}
-      </SelectActiveEmojiButton>))}
     </React.Fragment>)
   }
 

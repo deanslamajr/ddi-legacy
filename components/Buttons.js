@@ -28,8 +28,14 @@ const GreenMenuButton = styled(MenuButton)`
   color: ${props => props.theme.colors.lightGreen};
 `
 
+const BlueMenuButton = styled(MenuButton)`
+  background-color: ${props => props.theme.colors.blue};
+  color: ${props => props.theme.colors.black};
+`
+
 export {
   MenuButton,
+  BlueMenuButton,
   RedMenuButton,
   GreenMenuButton
 }

@@ -46,26 +46,26 @@ class ComicRoute extends Component {
 
   navigateToGallery = () => {
     this.props.showSpinner()
-    Router.push('/gallery')
+    Router.pushRoute('/gallery')
   }
 
   navigateToStudio = () => {
     this.props.showSpinner()
-    Router.push('/studio/new/new')
+    Router.pushRoute('/studio/new/new')
   }
 
   navigateToAddCellFromNew = () => {
     const { comicId } = this.props
 
     this.props.showSpinner()
-    Router.push(`/studio/${comicId}/new`)
+    Router.pushRoute(`/studio/${comicId}/new`)
   }
 
   navigateToAddCell = (cellUrlId) => {
     const { comicId } = this.props
 
     this.props.showSpinner()
-    Router.push(`/studio/${comicId}/${cellUrlId}`)
+    Router.pushRoute(`/studio/${comicId}/${cellUrlId}`)
   }
 
   hideAddCellModal = () => {

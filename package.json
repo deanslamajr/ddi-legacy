@@ -24,6 +24,8 @@
     ]
   },
   "dependencies": {
+    "@material-ui/core": "^3.9.2",
+    "@material-ui/lab": "^3.0.0-alpha.30",
     "@zeit/next-css": "^1.0.1",
     "aws-sdk": "^2.374.0",
     "axios": "^0.18.0",

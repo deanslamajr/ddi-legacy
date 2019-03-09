@@ -52,7 +52,7 @@ class GalleryRoute extends Component {
 
   navigateToStudio = () => {
     this.props.showSpinner()
-    Router.push('/studio/new/new')
+    Router.pushRoute('/studio/new/new')
   }
 
   showMoreComics = async () => {

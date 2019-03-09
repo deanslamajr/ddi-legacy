@@ -69,6 +69,8 @@ const CenteredContainer = styled.div`
   flex-direction: column;
   align-items: center;
   margin-bottom: 6rem;
+  /* Hack to fix slider in fully right position making mobile view scroll :( */
+  overflow-x: hidden;
 `
 
 const TitleInput = styled.textarea`
@@ -464,9 +466,13 @@ class StudioRoute extends Component {
   }
 
   render () {
-    const { showResetWarningModal, showSaveWarningModal } = this.state
+    const {
+      activeEmojiId,
+      showResetWarningModal,
+      showSaveWarningModal
+    } = this.state
 
-    const activeEmoji = this.state.emojis[this.state.activeEmojiId]
+    const activeEmoji = this.state.emojis[activeEmojiId]
 
     return (
       <div>

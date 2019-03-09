@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import Slider from 'react-rangeslider'
 
 import {
   MenuButton,
@@ -9,7 +8,7 @@ import {
   GreenMenuButton
 } from '../../components/Buttons'
 
-import 'react-rangeslider/lib/index.css'
+import Slider from '@material-ui/lab/Slider'
 
 const CenteredButtons = styled.div`
   display: flex;
@@ -19,7 +18,7 @@ const CenteredButtons = styled.div`
 
 const SliderContainer = styled.div`
   width: 100%;
-  display: block;
+  padding: 2rem 0;
 `
 
 const HalfMenuButton = styled(MenuButton)`
@@ -78,6 +77,7 @@ class BuilderMenu extends React.Component {
     } = this.props
 
     return (<React.Fragment>
+
       <MenuButton onClick={() => this.setState({ currentMenu: SECONDARY })}>
         MORE
       </MenuButton>
@@ -85,10 +85,10 @@ class BuilderMenu extends React.Component {
         <Slider
           min={1}
           max={256}
-          value={activeEmoji && activeEmoji.size}
-          onChangeStart={() => {}}
-          onChange={(value) => setField('size', value)}
-          onChangeComplete={() => updateCache()}
+          step={1}
+          value={(activeEmoji && activeEmoji.size) || 0}
+          onDragEnd={() => updateCache()}
+          onChange={(event, value) => setField('size', value)}
         />
       </SliderContainer>
 
@@ -125,6 +125,17 @@ class BuilderMenu extends React.Component {
         LESS
       </BlueMenuButton>
 
+      <SliderContainer>
+        <Slider
+          min={-180}
+          max={180}
+          step={1}
+          value={(activeEmoji && activeEmoji.rotation) || 0}
+          onDragEnd={() => updateCache()}
+          onChange={(event, value) => setField('rotation', value)}
+        />
+      </SliderContainer>
+
       <Label>Z</Label>
       <MenuButton onClick={() => increaseStackOrder()}>
         +
@@ -132,18 +143,6 @@ class BuilderMenu extends React.Component {
       <MenuButton onClick={() => decreaseStackOrder()}>
         -
       </MenuButton>
-
-      <SliderLabel>ROTATION</SliderLabel>
-      <SliderContainer>
-        <Slider
-          min={-180}
-          max={180}
-          value={activeEmoji.rotation}
-          onChangeStart={() => {}}
-          onChange={(value) => setField('rotation', value)}
-          onChangeComplete={() => updateCache()}
-        />
-      </SliderContainer>
 
       <Label>FLIP</Label>
       <MenuButton onClick={() => scaleField('scaleX', -1)}>
@@ -179,49 +178,48 @@ class BuilderMenu extends React.Component {
       }
 
       {activeEmoji.filters && (<React.Fragment>
-        Amount
+        <Label>AMOUNT</Label>
         <SliderContainer>
           <Slider
             min={0}
             max={1}
             step={.01}
-            value={activeEmoji.alpha}
-            onChangeStart={() => {}}
-            onChange={(value) => setField('alpha', value)}
-            onChangeComplete={() => updateCache()}
+            value={(activeEmoji && activeEmoji.alpha) || 0}
+            onDragEnd={() => updateCache()}
+            onChange={(event, value) => setField('alpha', value)}
           />
         </SliderContainer>
-        Red
+        <Label>RED</Label>
         <SliderContainer>
           <Slider
             min={0}
             max={255}
-            value={activeEmoji.red}
-            onChangeStart={() => {}}
-            onChange={(value) => setField('red', value)}
-            onChangeComplete={() => updateCache()}
+            step={1}
+            value={(activeEmoji && activeEmoji.red) || 0}
+            onDragEnd={() => updateCache()}
+            onChange={(event, value) => setField('red', value)}
           />
         </SliderContainer>
-        Blue
+        <Label>BLUE</Label>
         <SliderContainer>
           <Slider
             min={0}
             max={255}
-            value={activeEmoji.blue}
-            onChangeStart={() => {}}
-            onChange={(value) => setField('blue', value)}
-            onChangeComplete={() => updateCache()}
+            step={1}
+            value={(activeEmoji && activeEmoji.blue) || 0}
+            onDragEnd={() => updateCache()}
+            onChange={(event, value) => setField('blue', value)}
           />
         </SliderContainer>
-        Green
+        <Label>GREEN</Label>
         <SliderContainer>
           <Slider
             min={0}
             max={255}
-            value={activeEmoji.green}
-            onChangeStart={() => {}}
-            onChange={(value) => setField('green', value)}
-            onChangeComplete={() => updateCache()}
+            step={1}
+            value={(activeEmoji && activeEmoji.green) || 0}
+            onDragEnd={() => updateCache()}
+            onChange={(event, value) => setField('green', value)}
           />
         </SliderContainer>
       </React.Fragment>)}

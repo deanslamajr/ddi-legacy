@@ -68,18 +68,6 @@ class BuilderMenu extends React.Component {
     }
   }
 
-  renderReturnToMainMenuButton = () => {
-    return (<BlueMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
-      LESS
-    </BlueMenuButton>)
-  }
-
-  renderToSecondaryMenuButton = () => {
-    return (<MenuButton onClick={() => this.setState({ currentMenu: SECONDARY })}>
-      MORE
-    </MenuButton>)
-  }
-
   renderMainMenu = () => {
     const {
       activeEmoji,
@@ -90,7 +78,9 @@ class BuilderMenu extends React.Component {
     } = this.props
 
     return (<React.Fragment>
-      <SliderLabel>SIZE</SliderLabel>
+      <MenuButton onClick={() => this.setState({ currentMenu: SECONDARY })}>
+        MORE
+      </MenuButton>
       <SliderContainer>
         <Slider
           min={1}
@@ -101,8 +91,6 @@ class BuilderMenu extends React.Component {
           onChangeComplete={() => updateCache()}
         />
       </SliderContainer>
-
-      {this.renderToSecondaryMenuButton()}
 
       <GreenMenuButton onClick={this.props.openEmojiPicker}>
         +
@@ -133,7 +121,9 @@ class BuilderMenu extends React.Component {
     } = this.props
 
     return (<React.Fragment>
-      {this.renderReturnToMainMenuButton()}
+      <BlueMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
+        LESS
+      </BlueMenuButton>
 
       <Label>Z</Label>
       <MenuButton onClick={() => increaseStackOrder()}>

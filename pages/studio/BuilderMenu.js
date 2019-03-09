@@ -19,6 +19,11 @@ const CenteredButtons = styled.div`
 const SliderContainer = styled.div`
   width: 100%;
   padding: 2rem 0;
+
+  button {
+    width: 2rem;
+    height: 2rem;
+  }
 `
 
 const HalfMenuButton = styled(MenuButton)`

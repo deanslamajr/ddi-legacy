@@ -37,17 +37,11 @@ const SelectActiveEmojiButton = styled(MenuButton)`
   }
 `
 
-const SliderLabel = styled.div`
-  margin: .1rem auto;
-  display: flex;
-  justify-content: center;
-  margin-bottom: -.9rem;
-`
-
 const Label = styled.div`
   margin: .1rem auto;
   display: flex;
   justify-content: center;
+  user-select: none;
 `
 
 const MAIN = 'MAIN'

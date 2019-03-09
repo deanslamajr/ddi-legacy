@@ -11,6 +11,7 @@ const MenuButton = styled.span`
   align-items: center;
   justify-content: center;
   font-size: 1rem;
+  user-select: none;
 
   &:hover {
     background-color: ${props => props.theme.colors.black};

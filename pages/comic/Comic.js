@@ -8,7 +8,7 @@ import { sortByOrder } from '../../helpers'
 
 const navigateTo = (urlId, showSpinner) => {
   showSpinner()
-  Router.push(`/cell/${urlId}`)
+  Router.pushRoute(`/cell/${urlId}`)
 }
 
 const ComicContainer = styled.div`

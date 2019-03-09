@@ -16,11 +16,11 @@ const CellContainer = styled.div`
   margin: 1rem 0 1rem;
   background: ${props => props.theme.colors.lightGreen};
   padding: 10px;
-  cursor: pointer;
+  cursor: ${props => props.clickable ? 'pointer' : 'default'};
 `
 
-export default function Cell ({ className, imageUrl, title, onClick = () => {} }) {
-  return (<CellContainer className={className} onClick={onClick}>
+export default function Cell ({ className, imageUrl, title, onClick }) {
+  return (<CellContainer className={className} clickable={onClick} onClick={onClick}>
     <img src={imageUrl} />
     <TitleContainer>
       <TitleWidth>

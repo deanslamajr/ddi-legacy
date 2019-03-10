@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import Slider from '@material-ui/lab/Slider'
 
 import {
   MenuButton,
@@ -8,7 +9,7 @@ import {
   GreenMenuButton
 } from '../../components/Buttons'
 
-import Slider from '@material-ui/lab/Slider'
+import { sortByOrder } from '../../helpers'
 
 const CenteredButtons = styled.div`
   display: flex;
@@ -95,7 +96,7 @@ class BuilderMenu extends React.Component {
         +
       </GreenMenuButton>
 
-      {Object.values(emojis).map(({ emoji, id }) => (<SelectActiveEmojiButton
+      {Object.values(emojis).sort(sortByOrder).reverse().map(({ emoji, id }) => (<SelectActiveEmojiButton
         key={`${id}${emoji}`}
         type='button'
         isActive={id === activeEmoji.id}

@@ -284,12 +284,12 @@ class StudioRoute extends Component {
     this.setState({ showEmojiPicker: false })
   }
 
-  increaseStackOrder = () => {
+  increaseStackOrder = (id) => {
     this.setState(({ activeEmojiId, emojis }) => {
       const clonedEmojis = cloneDeep(emojis)
 
       // get index of activeEmoji
-      const activeEmoji = clonedEmojis[activeEmojiId]
+      const activeEmoji = clonedEmojis[id || activeEmojiId]
       const activeEmojiOrder = activeEmoji.order
 
       if (activeEmojiOrder < Object.keys(this.state.emojis).length) {
@@ -307,12 +307,12 @@ class StudioRoute extends Component {
     }, this.updateCache)
   }
 
-  decreaseStackOrder = () => {
+  decreaseStackOrder = (id) => {
     this.setState(({ activeEmojiId, emojis }) => {
       const clonedEmojis = cloneDeep(emojis)
 
       // get index of activeEmoji
-      const activeEmoji = clonedEmojis[activeEmojiId]
+      const activeEmoji = clonedEmojis[id || activeEmojiId]
       const activeEmojiOrder = activeEmoji.order
 
       if (activeEmojiOrder > 1) {

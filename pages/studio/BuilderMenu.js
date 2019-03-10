@@ -37,9 +37,12 @@ const SelectActiveEmojiButton = styled(MenuButton)`
   cursor: ${props => props.isActive ? 'default' : 'pointer'};
   font-size: 2rem;
   width: ${props => props.isActive ? '246px' : '250px'};
+  display: flex;
+  justify-content: space-between;
 
   &:hover {
-    background-color: ${props => props.isActive ? props.theme.colors.white : props.theme.colors.black};
+    background-color: ${props => props.theme.colors.black};
+    color: ${props => props.theme.colors.white};
   }
 `
 
@@ -48,6 +51,29 @@ const Label = styled.div`
   display: flex;
   justify-content: center;
   user-select: none;
+`
+
+const ThirdOfAButton = styled.span`
+  height: 100%;
+  width: 20%;
+  justify-content: center;
+  display: flex;
+`
+
+const EmojiContainer = styled(ThirdOfAButton)`
+  width: 40%;
+`
+
+const ChangeLayerButton = styled(ThirdOfAButton)`
+  border: 1px solid ${props => props.isIncrease ? props.theme.colors.clearGreen : props.theme.colors.clearRed};
+  width: ${props => props.isActive ? 'calc(20% - 1px)' : '20%'};
+  background-color: ${props => props.isIncrease ? props.theme.colors.clearerGreen : props.theme.colors.clearerRed};
+  color: ${props => props.isIncrease ? props.theme.colors.clearGreen : props.theme.colors.clearRed};
+
+  &:hover {
+    background-color: ${props => props.isIncrease ? props.theme.colors.green : props.theme.colors.red};
+    color: ${props => props.theme.colors.black};
+  }
 `
 
 const MAIN = 'MAIN'
@@ -72,6 +98,8 @@ class BuilderMenu extends React.Component {
       activeEmoji,
       changeActiveEmoji,
       emojis,
+      increaseStackOrder,
+      decreaseStackOrder,
       setField,
       updateCache
     } = this.props
@@ -79,7 +107,7 @@ class BuilderMenu extends React.Component {
     return (<React.Fragment>
 
       <MenuButton onClick={() => this.setState({ currentMenu: SECONDARY })}>
-        MORE
+        ADVANCED
       </MenuButton>
       <SliderContainer>
         <Slider
@@ -96,14 +124,29 @@ class BuilderMenu extends React.Component {
         +
       </GreenMenuButton>
 
-      {Object.values(emojis).sort(sortByOrder).reverse().map(({ emoji, id }) => (<SelectActiveEmojiButton
+      {Object.values(emojis).sort(sortByOrder).reverse().map(({ emoji, id }, index) => (<SelectActiveEmojiButton
         key={`${id}${emoji}`}
         type='button'
         isActive={id === activeEmoji.id}
         onClick={() => changeActiveEmoji(id)}
         value={emoji}
       >
-        {emoji}
+        {index !== 0
+          ? (<ChangeLayerButton
+            isActive={id === activeEmoji.id}
+            onClick={() => increaseStackOrder(id)}
+            isIncrease
+          >
+            ↑
+          </ChangeLayerButton>)
+          : <ThirdOfAButton/>}
+        <EmojiContainer>{emoji}</EmojiContainer>
+        <ChangeLayerButton
+          isActive={id === activeEmoji.id}
+          onClick={() => decreaseStackOrder(id)}
+        >
+          ↓
+        </ChangeLayerButton>
       </SelectActiveEmojiButton>))}
     </React.Fragment>)
   }
@@ -111,8 +154,6 @@ class BuilderMenu extends React.Component {
   renderSecondaryMenu = () => {
     const {
       activeEmoji,
-      decreaseStackOrder,
-      increaseStackOrder,
       incrementField,
       scaleField,
       setField,
@@ -122,7 +163,7 @@ class BuilderMenu extends React.Component {
 
     return (<React.Fragment>
       <BlueMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
-        LESS
+        SIMPLE
       </BlueMenuButton>
 
       <SliderContainer>
@@ -135,14 +176,6 @@ class BuilderMenu extends React.Component {
           onChange={(event, value) => setField('rotation', value)}
         />
       </SliderContainer>
-
-      <Label>Z</Label>
-      <MenuButton onClick={() => increaseStackOrder()}>
-        +
-      </MenuButton>
-      <MenuButton onClick={() => decreaseStackOrder()}>
-        -
-      </MenuButton>
 
       <Label>FLIP</Label>
       <MenuButton onClick={() => scaleField('scaleX', -1)}>

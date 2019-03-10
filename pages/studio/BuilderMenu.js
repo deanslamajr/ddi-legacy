@@ -104,6 +104,8 @@ class BuilderMenu extends React.Component {
       updateCache
     } = this.props
 
+    const emojisArray = Object.values(emojis)
+
     return (<React.Fragment>
 
       <MenuButton onClick={() => this.setState({ currentMenu: SECONDARY })}>
@@ -124,7 +126,7 @@ class BuilderMenu extends React.Component {
         +
       </GreenMenuButton>
 
-      {Object.values(emojis).sort(sortByOrder).reverse().map(({ emoji, id }, index) => (<SelectActiveEmojiButton
+      {emojisArray.sort(sortByOrder).reverse().map(({ emoji, id }, index) => (<SelectActiveEmojiButton
         key={`${id}${emoji}`}
         type='button'
         isActive={id === activeEmoji.id}
@@ -133,20 +135,22 @@ class BuilderMenu extends React.Component {
       >
         {index !== 0
           ? (<ChangeLayerButton
-            isActive={id === activeEmoji.id}
-            onClick={() => increaseStackOrder(id)}
-            isIncrease
-          >
-            ↑
-          </ChangeLayerButton>)
+              isActive={id === activeEmoji.id}
+              onClick={() => increaseStackOrder(id)}
+              isIncrease
+            >
+              ↑
+            </ChangeLayerButton>)
           : <ThirdOfAButton/>}
         <EmojiContainer>{emoji}</EmojiContainer>
-        <ChangeLayerButton
-          isActive={id === activeEmoji.id}
-          onClick={() => decreaseStackOrder(id)}
-        >
-          ↓
-        </ChangeLayerButton>
+        {index !== emojisArray.length - 1 
+          ? (<ChangeLayerButton
+              isActive={id === activeEmoji.id}
+              onClick={() => decreaseStackOrder(id)}
+            >
+              ↓
+            </ChangeLayerButton>)
+          : <ThirdOfAButton/>}
       </SelectActiveEmojiButton>))}
     </React.Fragment>)
   }

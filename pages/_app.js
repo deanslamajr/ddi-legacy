@@ -50,6 +50,7 @@ class MyApp extends App {
           <Component
             hideSpinner={this.hideSpinner}
             showSpinner={this.showSpinner}
+            isShowingSpinner={this.state.showSpinner}
             {...pageProps}
           />
         </ThemeProvider>

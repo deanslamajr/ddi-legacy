@@ -16,3 +16,6 @@ public
 # secrets
 .env
 config/config.json
+
+# VS Code
+.vscode

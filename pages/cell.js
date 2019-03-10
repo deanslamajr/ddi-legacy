@@ -67,6 +67,12 @@ class CellRoute extends Component {
     this.props.hideSpinner()
   }
 
+  componentDidUpdate (prevProps, prevState, snapshot) {
+    if (this.props.isShowingSpinner) {
+      this.props.hideSpinner()
+    }
+  }
+
   render () {
     const {
       canDuplicate,

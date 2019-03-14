@@ -294,15 +294,23 @@ class StudioRoute extends Component {
       const activeEmoji = clonedEmojis[id || activeEmojiId]
       const activeEmojiOrder = activeEmoji.order
 
-      if (activeEmojiOrder < Object.keys(this.state.emojis).length) {
-        const clonedEmojisValues = Object.values(clonedEmojis)
-        const emojiToDecreaseOrder = clonedEmojisValues.find(({ order }) => order === activeEmojiOrder + 1)
+      const clonedEmojisValues = Object.values(clonedEmojis)
 
-        // increase the order of activeEmoji
-        activeEmoji.order = activeEmojiOrder + 1
-        
-        // decrease the order of the emoji with order === activeEmoji.order + 1
-        emojiToDecreaseOrder.order = activeEmojiOrder
+      if (clonedEmojisValues.length) {
+        const topStackOrder = clonedEmojisValues.sort(sortByOrder)[clonedEmojisValues.length - 1].order
+
+        if (activeEmojiOrder < topStackOrder) {        
+          let emojiToIncrease
+          let emojiToIncreaseOrder = activeEmojiOrder
+          do {
+            emojiToIncreaseOrder += 1
+            emojiToIncrease = clonedEmojisValues.find(({ order }) => order === emojiToIncreaseOrder)
+          } while (!emojiToIncrease)
+
+          // swap the order of the two emojis
+          activeEmoji.order = emojiToIncrease.order
+          emojiToIncrease.order = activeEmojiOrder
+        }
       }
 
       return { emojis: clonedEmojis }
@@ -319,13 +327,17 @@ class StudioRoute extends Component {
 
       if (activeEmojiOrder > 1) {
         const clonedEmojisValues = Object.values(clonedEmojis)
-        const emojiToDecreaseOrder = clonedEmojisValues.find(({ order }) => order === activeEmojiOrder - 1)
 
-        // decrease the order of activeEmoji
-        activeEmoji.order = activeEmojiOrder - 1
-        
-        // increase the order of the emoji with order === activeEmoji.order - 1
-        emojiToDecreaseOrder.order = activeEmojiOrder
+        let emojiToDecrease
+        let emojiToDecreaseOrder = activeEmojiOrder
+        do {
+          emojiToDecreaseOrder -= 1
+          emojiToDecrease = clonedEmojisValues.find(({ order }) => order === emojiToDecreaseOrder)
+        } while (!emojiToDecrease)
+
+        // swap the order of the two emojis
+        activeEmoji.order = emojiToDecrease.order
+        emojiToDecrease.order = activeEmojiOrder
       }
 
       return { emojis: clonedEmojis }
@@ -376,6 +388,7 @@ class StudioRoute extends Component {
 
   updateEmojiCache = (emojiId = this.state.activeEmojiId, useOutline = true) => {
     const activeEmojiRef = this.emojiRefs[emojiId]
+
     if (activeEmojiRef) {
       const cacheConfig = useOutline
         ? Object.assign({}, konvaCacheConfig, { drawBorder: true })
@@ -392,10 +405,14 @@ class StudioRoute extends Component {
   updateEmojiAndSessionCache = () => {
     this.updateAllEmojisCache()
     this.outlineActiveEmoji()
+    this.forceUpdate()
   }
 
   changeActiveEmoji = (id) => {
-    this.setState({ activeEmojiId: id }, this.updateEmojiAndSessionCache)
+    this.setState({ activeEmojiId: id }, () => {
+      this.updateEmojiAndSessionCache()
+      this.updateCache()
+    })
   }
 
   handleTitleChange = (event) => {
@@ -459,7 +476,7 @@ class StudioRoute extends Component {
 
   deleteActiveEmoji = (cb = () => {}) => {
     let actionsAfterStateUpdate
-    
+
     this.setState(({ activeEmojiId, emojis }) => {
       const clonedEmojis = cloneDeep(emojis)
       delete clonedEmojis[activeEmojiId]
@@ -489,6 +506,7 @@ class StudioRoute extends Component {
         emojis: clonedEmojis
       }
     }, () => {
+      this.updateEmojiAndSessionCache()
       this.updateCache()
       actionsAfterStateUpdate()
     })
@@ -508,11 +526,15 @@ class StudioRoute extends Component {
     const store = require('store2')
     const studioCache = store(STORAGEKEY_STUDIO)
 
-    if (studioCache) {
+    if (Object.keys(studioCache).length) {
       // if the cached parentId matches the current parentId, refresh from cache
       if (!this.state.parentId || this.state.parentId === studioCache.parentId) {
         this.restoreFromCache(studioCache)
       }
+    }
+    else {
+      this.outlineActiveEmoji()
+      this.forceUpdate()
     }
 
     this.props.hideSpinner()

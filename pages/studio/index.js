@@ -14,6 +14,7 @@ import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, GREEN, RED, BLUE }
 
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
+import ActionsModal from './ActionsModal'
 import WarningModal from './WarningModal'
 
 import { getApi } from '../../helpers'
@@ -112,6 +113,7 @@ class StudioRoute extends Component {
       currentEmojiId: 1,
       parentId: this.props.parentId,
       showEmojiPicker: this.props.parentId ? false : true,
+      showActionsModal: false,
       showResetWarningModal: false,
       showSaveWarningModal: false,
       showSaveButton: true,
@@ -451,6 +453,20 @@ class StudioRoute extends Component {
     this.setState({ showSaveWarningModal: newValue })
   }
 
+  toggleActionsModal = (newValue) => {
+    this.setState({ showActionsModal: newValue })
+  }
+
+  onResetClick = () => {
+    this.toggleActionsModal(false)
+    this.toggleResetWarningModal(true)
+  }
+
+  onPublishClick = () => {
+    this.toggleActionsModal(false)
+    this.toggleSaveWarningModal(true)
+  }
+
   componentDidMount () {
     const store = require('store2')
     const studioCache = store(STORAGEKEY_STUDIO)
@@ -468,6 +484,7 @@ class StudioRoute extends Component {
   render () {
     const {
       activeEmojiId,
+      showActionsModal,
       showResetWarningModal,
       showSaveWarningModal
     } = this.state
@@ -553,18 +570,18 @@ class StudioRoute extends Component {
             position={BOTTOM_LEFT}
           />
           <NavButton
-            value='RESET'
-            color={RED}
-            cb={() => this.toggleResetWarningModal(true)}
-            position={BOTTOM_CENTER}
-          />
-          <NavButton
-            value='PUBLISH'
+            value='ACTIONS'
             color={GREEN}
-            cb={() => this.toggleSaveWarningModal(true)}
+            cb={() => this.toggleActionsModal(true)}
             position={BOTTOM_RIGHT}
           />
         </React.Fragment>}
+
+        {showActionsModal && <ActionsModal
+          onCancelClick={() => this.toggleActionsModal(false)}
+          onResetClick={() => this.onResetClick()}
+          onPublishClick={() => this.onPublishClick()}
+        />}
 
         {showSaveWarningModal && <WarningModal
           message='Publish this Canvas?'

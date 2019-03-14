@@ -129,12 +129,12 @@ function getButtonByPosition (position) {
 
 class NavButton extends React.Component {
   render () {
-    const { position, cb, color, value } = this.props
+    const { position, cb, className, color, value } = this.props
 
     const PositionedButton = getButtonByPosition(position)
 
     return (
-      <PositionedButton color={color} onClick={cb}>
+      <PositionedButton className={className} color={color} onClick={cb}>
         {value}
       </PositionedButton>
     )

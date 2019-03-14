@@ -8,8 +8,19 @@ import {
   BlueMenuButton,
   GreenMenuButton
 } from '../../components/Buttons'
+import {
+  NavButton,
+  BOTTOM_CENTER,
+  BLUE
+} from '../../components/navigation'
 
 import { sortByOrder } from '../../helpers'
+
+import EmojiEditModal from './EmojiEditModal'
+
+const EmojiNavButton = styled(NavButton)`
+  font-size: 3rem;
+`
 
 const CenteredButtons = styled.div`
   display: flex;
@@ -84,7 +95,8 @@ class BuilderMenu extends React.Component {
     super(props)
 
     this.state = {
-      currentMenu: MAIN
+      currentMenu: MAIN,
+      showEmojiEditModal: false
     }
 
     this.menus = {
@@ -263,10 +275,29 @@ class BuilderMenu extends React.Component {
     </React.Fragment>)
   }
 
+  toggleEmojiEditModal = (newValue) => {
+    this.setState({ showEmojiEditModal: newValue })
+  }
+
   render () {
+    const { activeEmoji } = this.props
+    const { showEmojiEditModal } = this.state
+
     return (
       <React.Fragment>       
-        {this.menus[this.state.currentMenu]()}        
+        {this.menus[this.state.currentMenu]()}
+        
+        {activeEmoji && <EmojiNavButton
+          value={activeEmoji.emoji}
+          color={BLUE}
+          cb={() => this.toggleEmojiEditModal(true)}
+          position={BOTTOM_CENTER}
+        />}
+
+        {showEmojiEditModal && <EmojiEditModal
+          emoji={activeEmoji}
+          onCancelClick={() => this.toggleEmojiEditModal(false)}
+        />}
       </React.Fragment>
     )
   }

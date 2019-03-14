@@ -457,6 +457,43 @@ class StudioRoute extends Component {
     this.setState({ showActionsModal: newValue })
   }
 
+  deleteActiveEmoji = (cb = () => {}) => {
+    let actionsAfterStateUpdate
+    
+    this.setState(({ activeEmojiId, emojis }) => {
+      const clonedEmojis = cloneDeep(emojis)
+      delete clonedEmojis[activeEmojiId]
+      
+      const clonedEmojisValues = Object.values(clonedEmojis)
+
+      let newActiveEmojiId
+      // if this deletes the last emoji
+      // 1. clear active emoji
+      // 2. bind show emojiPicker function to cb
+      if (!clonedEmojisValues.length) {
+        // 1.
+        newActiveEmojiId = null
+        // 2. 
+        actionsAfterStateUpdate = () => {
+          cb()
+          this.openEmojiPicker()
+        }
+      }
+      else {
+        newActiveEmojiId = clonedEmojisValues[0].id
+        actionsAfterStateUpdate = cb
+      }
+
+      return {
+        activeEmojiId: newActiveEmojiId,
+        emojis: clonedEmojis
+      }
+    }, () => {
+      this.updateCache()
+      actionsAfterStateUpdate()
+    })
+  }
+
   onResetClick = () => {
     this.toggleActionsModal(false)
     this.toggleResetWarningModal(true)
@@ -547,6 +584,7 @@ class StudioRoute extends Component {
                 emojis={this.state.emojis}
                 increaseStackOrder={this.increaseStackOrder}
                 incrementField={this.incrementField}
+                onDeleteClick={this.deleteActiveEmoji}
                 openEmojiPicker={this.openEmojiPicker}
                 scaleField={this.scaleField}
                 setField={this.setField}

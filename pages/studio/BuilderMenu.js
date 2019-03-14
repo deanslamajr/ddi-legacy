@@ -280,7 +280,10 @@ class BuilderMenu extends React.Component {
   }
 
   render () {
-    const { activeEmoji } = this.props
+    const {
+      activeEmoji,
+      onDeleteClick
+    } = this.props
     const { showEmojiEditModal } = this.state
 
     return (
@@ -297,6 +300,7 @@ class BuilderMenu extends React.Component {
         {showEmojiEditModal && <EmojiEditModal
           emoji={activeEmoji}
           onCancelClick={() => this.toggleEmojiEditModal(false)}
+          onDeleteClick={() => onDeleteClick(this.toggleEmojiEditModal.bind(this, false))}
         />}
       </React.Fragment>
     )

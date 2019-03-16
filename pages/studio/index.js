@@ -526,7 +526,7 @@ class StudioRoute extends Component {
     const store = require('store2')
     const studioCache = store(STORAGEKEY_STUDIO)
 
-    if (Object.keys(studioCache).length) {
+    if (studioCache && Object.keys(studioCache).length) {
       // if the cached parentId matches the current parentId, refresh from cache
       if (!this.state.parentId || this.state.parentId === studioCache.parentId) {
         this.restoreFromCache(studioCache)

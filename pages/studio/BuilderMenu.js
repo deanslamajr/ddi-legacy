@@ -288,6 +288,7 @@ class BuilderMenu extends React.Component {
   render () {
     const {
       activeEmoji,
+      onChangeClick,
       onDeleteClick,
       onDuplicateClick
     } = this.props
@@ -300,6 +301,7 @@ class BuilderMenu extends React.Component {
         {showEmojiEditModal && <EmojiEditModal
           emoji={activeEmoji}
           onCancelClick={() => this.toggleEmojiEditModal(false)}
+          onChangeClick={() => onChangeClick(this.toggleEmojiEditModal.bind(this, false))}
           onDeleteClick={() => onDeleteClick(this.toggleEmojiEditModal.bind(this, false))}
           onDuplicateClick={() => onDuplicateClick(this.toggleEmojiEditModal.bind(this, false))}
         />}

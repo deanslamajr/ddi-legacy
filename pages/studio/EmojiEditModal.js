@@ -2,7 +2,11 @@ import React from 'react'
 import styled from 'styled-components'
 
 import Modal, { CenteredButtons, MessageContainer } from '../../components/Modal'
-import { RedMenuButton, GreenMenuButton } from '../../components/Buttons'
+import { 
+  BlueMenuButton,
+  RedMenuButton,
+  GreenMenuButton
+} from '../../components/Buttons'
 
 const HomeModal = styled(Modal)`
   width: 315px;
@@ -13,6 +17,7 @@ export default class ActionsModal extends React.Component {
     const {
       emoji,
       onCancelClick,
+      onChangeClick,
       onDeleteClick,
       onDuplicateClick
     } = this.props
@@ -21,6 +26,11 @@ export default class ActionsModal extends React.Component {
       <MessageContainer>
         {emoji ? emoji.emoji : ''}
       </MessageContainer>
+      <CenteredButtons>
+        <BlueMenuButton onClick={onChangeClick}>
+          CHANGE
+        </BlueMenuButton>
+      </CenteredButtons>
       <CenteredButtons>
         <GreenMenuButton onClick={onDuplicateClick}>
           DUPLICATE

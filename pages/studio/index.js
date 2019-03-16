@@ -112,6 +112,7 @@ class StudioRoute extends Component {
       comicId: this.props.comicId,
       currentEmojiId: 1,
       parentId: this.props.parentId,
+      onEmojiSelect: this.createNewEmoji,
       showEmojiPicker: this.props.parentId ? false : true,
       showActionsModal: false,
       showResetWarningModal: false,
@@ -166,7 +167,7 @@ class StudioRoute extends Component {
     this.outlineActiveEmoji()
   }
 
-  onEmojiSelect = (emoji) => {
+  createNewEmoji = (emoji) => {
     this.setState(({ currentEmojiId, emojis }) => {
       const newEmoji = createNewEmoji(emoji, currentEmojiId)
 
@@ -279,7 +280,10 @@ class StudioRoute extends Component {
   }
 
   openEmojiPicker = () => {
-    this.setState({ showEmojiPicker: true })
+    this.setState({
+      onEmojiSelect: this.createNewEmoji,
+      showEmojiPicker: true
+    })
   }
 
   closeEmojiPicker = () => {
@@ -474,6 +478,27 @@ class StudioRoute extends Component {
     this.setState({ showActionsModal: newValue })
   }
 
+  openEmojiPickerToChangeEmoji = (cb = () => {}) => {
+    this.setState({
+      onEmojiSelect: this.changeEmoji,
+      showEmojiPicker: true
+    }, cb)
+  }
+
+  changeEmoji = (emoji) => {
+    this.setState(({ activeEmojiId, emojis }) => {
+      const clonedEmojis = cloneDeep(emojis)
+      const activeEmoji = clonedEmojis[activeEmojiId]
+
+      activeEmoji.emoji = emoji
+
+      return {
+        emojis: clonedEmojis,
+        showEmojiPicker: false
+      }
+    }, this.doPostEmojiSelect)
+  } 
+
   duplicateActiveEmoji = (cb = () => {}) => {
     this.setState(({ activeEmojiId, currentEmojiId, emojis }) => {
       const clonedEmojis = cloneDeep(emojis)
@@ -487,6 +512,7 @@ class StudioRoute extends Component {
       clonedEmojis[currentEmojiId] = duplicatedActiveEmoji
 
       return {
+        activeEmojiId: currentEmojiId,
         currentEmojiId: currentEmojiId + 1,
         emojis: clonedEmojis
       }
@@ -629,6 +655,7 @@ class StudioRoute extends Component {
                 emojis={this.state.emojis}
                 increaseStackOrder={this.increaseStackOrder}
                 incrementField={this.incrementField}
+                onChangeClick={this.openEmojiPickerToChangeEmoji}
                 onDeleteClick={this.deleteActiveEmoji}
                 onDuplicateClick={this.duplicateActiveEmoji}
                 openEmojiPicker={this.openEmojiPicker}
@@ -640,7 +667,7 @@ class StudioRoute extends Component {
               />
 
               {this.state.showEmojiPicker && <EmojiPicker
-                onSelect={this.onEmojiSelect}
+                onSelect={this.state.onEmojiSelect}
                 onCancel={this.state.activeEmojiId ? this.closeEmojiPicker : this.navigateBack}
               />}
             </EverythingElseContainer>)}

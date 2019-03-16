@@ -13,13 +13,19 @@ export default class ActionsModal extends React.Component {
     const {
       emoji,
       onCancelClick,
-      onDeleteClick
+      onDeleteClick,
+      onDuplicateClick
     } = this.props
 
     return (<HomeModal>
       <MessageContainer>
         {emoji ? emoji.emoji : ''}
       </MessageContainer>
+      <CenteredButtons>
+        <GreenMenuButton onClick={onDuplicateClick}>
+          DUPLICATE
+        </GreenMenuButton>
+      </CenteredButtons>
       <CenteredButtons>
         <RedMenuButton onClick={onDeleteClick}>
           DELETE

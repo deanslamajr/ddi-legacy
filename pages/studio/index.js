@@ -474,6 +474,29 @@ class StudioRoute extends Component {
     this.setState({ showActionsModal: newValue })
   }
 
+  duplicateActiveEmoji = (cb = () => {}) => {
+    this.setState(({ activeEmojiId, currentEmojiId, emojis }) => {
+      const clonedEmojis = cloneDeep(emojis)
+      const activeEmoji = clonedEmojis[activeEmojiId]
+      const duplicatedActiveEmoji = cloneDeep(activeEmoji)
+
+      // update the duplicate's unique information
+      duplicatedActiveEmoji.id = currentEmojiId
+      duplicatedActiveEmoji.order = currentEmojiId
+
+      clonedEmojis[currentEmojiId] = duplicatedActiveEmoji
+
+      return {
+        currentEmojiId: currentEmojiId + 1,
+        emojis: clonedEmojis
+      }
+    }, () => {
+      this.updateEmojiAndSessionCache()
+      this.updateCache()
+      cb()
+    })
+  }
+
   deleteActiveEmoji = (cb = () => {}) => {
     let actionsAfterStateUpdate
 
@@ -607,6 +630,7 @@ class StudioRoute extends Component {
                 increaseStackOrder={this.increaseStackOrder}
                 incrementField={this.incrementField}
                 onDeleteClick={this.deleteActiveEmoji}
+                onDuplicateClick={this.duplicateActiveEmoji}
                 openEmojiPicker={this.openEmojiPicker}
                 scaleField={this.scaleField}
                 setField={this.setField}

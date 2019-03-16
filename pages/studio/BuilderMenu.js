@@ -8,19 +8,11 @@ import {
   BlueMenuButton,
   GreenMenuButton
 } from '../../components/Buttons'
-import {
-  NavButton,
-  BOTTOM_CENTER,
-  BLUE
-} from '../../components/navigation'
+import { NavButton } from '../../components/navigation'
 
 import { sortByOrder } from '../../helpers'
 
 import EmojiEditModal from './EmojiEditModal'
-
-const EmojiNavButton = styled(NavButton)`
-  font-size: 3rem;
-`
 
 const CenteredButtons = styled.div`
   display: flex;
@@ -105,13 +97,27 @@ class BuilderMenu extends React.Component {
     }
   }
 
+  increaseStackOrder = (e, id) => {
+    // Don't open the "edit emoji" modal
+    e.stopPropagation()
+    e.preventDefault()
+
+    this.props.increaseStackOrder(id)
+  }
+
+  decreaseStackOrder = (e, id) => {
+    // Don't open the "edit emoji" modal
+    e.stopPropagation()
+    e.preventDefault()
+
+    this.props.decreaseStackOrder(id)
+  }
+
   renderMainMenu = () => {
     const {
       activeEmoji,
       changeActiveEmoji,
       emojis,
-      increaseStackOrder,
-      decreaseStackOrder,
       setField,
       updateCache
     } = this.props
@@ -142,13 +148,13 @@ class BuilderMenu extends React.Component {
         key={`${id}${emoji}`}
         type='button'
         isActive={id === activeEmoji.id}
-        onClick={() => changeActiveEmoji(id)}
+        onClick={() => id === activeEmoji.id ? this.toggleEmojiEditModal(true) : changeActiveEmoji(id)}
         value={emoji}
       >
         {index !== 0
           ? (<ChangeLayerButton
               isActive={id === activeEmoji.id}
-              onClick={() => increaseStackOrder(id)}
+              onClick={(e) => this.increaseStackOrder(e, id)}
               isIncrease
             >
               ↑
@@ -158,7 +164,7 @@ class BuilderMenu extends React.Component {
         {index !== emojisArray.length - 1 
           ? (<ChangeLayerButton
               isActive={id === activeEmoji.id}
-              onClick={() => decreaseStackOrder(id)}
+              onClick={(e) => this.decreaseStackOrder(e, id)}
             >
               ↓
             </ChangeLayerButton>)
@@ -289,13 +295,6 @@ class BuilderMenu extends React.Component {
     return (
       <React.Fragment>       
         {this.menus[this.state.currentMenu]()}
-        
-        {activeEmoji && <EmojiNavButton
-          value={activeEmoji.emoji}
-          color={BLUE}
-          cb={() => this.toggleEmojiEditModal(true)}
-          position={BOTTOM_CENTER}
-        />}
 
         {showEmojiEditModal && <EmojiEditModal
           emoji={activeEmoji}

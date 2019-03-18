@@ -56,6 +56,8 @@ class GalleryRoute extends Component {
   }
 
   showMoreComics = async () => {
+    this.props.showSpinner()
+
     const paginationData = {
       offset: this.state.comics.length
     }
@@ -70,7 +72,7 @@ class GalleryRoute extends Component {
     this.setState({
       comics: newComics,
       hasMore: data.hasMore
-    })
+    }, () => this.props.hideSpinner())
   }
 
   componentDidMount () {

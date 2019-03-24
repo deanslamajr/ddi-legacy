@@ -27,6 +27,11 @@ const SliderContainer = styled.div`
   button {
     width: 2rem;
     height: 2rem;
+    background-color: ${props => props.theme.colors.blue};
+  }
+
+  & div {
+    background-color: ${props => props.theme.colors.blue};
   }
 `
 

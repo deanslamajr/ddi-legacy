@@ -4,6 +4,8 @@ const { sign: signViaS3 } = require('../adapters/s3')
 const { Cells, Comics } = require('../models/index')
 const { falsePositiveResponse } = require('./utils')
 
+const { S3_ASSET_FILETYPE } = require('../../config/constants.json')
+
 async function sign (req, res) {
   try {
     if (!req.session.userId) {
@@ -11,12 +13,11 @@ async function sign (req, res) {
     }
 
     const filename = req.query['file-name']
-    const filetype = req.query['file-type']
     const title = req.query['title']
     const parentId = req.query['parent-id']
     let comicId = req.query['comic-id']
 
-    const signData = await signViaS3(filename, filetype)
+    const signData = await signViaS3(filename, S3_ASSET_FILETYPE)
     const id = shortid.generate()
     signData.id = id
 

@@ -20,7 +20,10 @@ import WarningModal from './WarningModal'
 import { getApi } from '../../helpers'
 import theme from '../../helpers/theme'
 
-import { STORAGEKEY_STUDIO } from '../../config/constants.json'
+import {
+  S3_ASSET_FILETYPE,
+  STORAGEKEY_STUDIO
+} from '../../config/constants.json'
 
 const RGBA = 'RGBA'
 const filters = {
@@ -186,7 +189,6 @@ class StudioRoute extends Component {
   getSignedRequest = async (file) => {
     let signData = {
       'file-name': file.name,
-      'file-type': file.type,
       title: this.state.title
     }
 
@@ -240,7 +242,7 @@ class StudioRoute extends Component {
     this.setState({ showSaveButton: false }, () => {
       this.stage.toCanvas().toBlob(async (blob) => {
         const file = new File([blob], generateFilename(), {
-          type: 'image/png',
+          type: S3_ASSET_FILETYPE,
         })
   
         try {

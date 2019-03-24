@@ -113,6 +113,12 @@ class BuilderMenu extends React.Component {
     this.props.decreaseStackOrder(id)
   }
 
+  onDragEnd = (a, b) => {
+    // Hack to force the canvas to redraw with the latest active emoji values
+    // Need to pass a new value to a field that is passed to the konva <Text /> instance associated with the active emoji
+    this.props.setField('red', this.props.activeEmoji.red + .01)
+  }
+
   renderMainMenu = () => {
     const {
       activeEmoji,
@@ -125,17 +131,18 @@ class BuilderMenu extends React.Component {
     const emojisArray = Object.values(emojis)
 
     return (<React.Fragment>
-
       <MenuButton onClick={() => this.setState({ currentMenu: SECONDARY })}>
         ADVANCED
       </MenuButton>
+
+      {/* SIZE */}
       <SliderContainer>
         <Slider
           min={1}
           max={256}
           step={1}
           value={(activeEmoji && activeEmoji.size) || 0}
-          onDragEnd={() => updateCache()}
+          onDragEnd={this.onDragEnd}
           onChange={(event, value) => setField('size', value)}
         />
       </SliderContainer>
@@ -194,7 +201,7 @@ class BuilderMenu extends React.Component {
           max={180}
           step={1}
           value={(activeEmoji && activeEmoji.rotation) || 0}
-          onDragEnd={() => updateCache()}
+          onDragEnd={this.onDragEnd}
           onChange={(event, value) => setField('rotation', value)}
         />
       </SliderContainer>
@@ -240,7 +247,7 @@ class BuilderMenu extends React.Component {
             max={1}
             step={.01}
             value={(activeEmoji && activeEmoji.alpha) || 0}
-            onDragEnd={() => updateCache()}
+            onDragEnd={this.onDragEnd}
             onChange={(event, value) => setField('alpha', value)}
           />
         </SliderContainer>
@@ -251,7 +258,7 @@ class BuilderMenu extends React.Component {
             max={255}
             step={1}
             value={(activeEmoji && activeEmoji.red) || 0}
-            onDragEnd={() => updateCache()}
+            onDragEnd={this.onDragEnd}
             onChange={(event, value) => setField('red', value)}
           />
         </SliderContainer>
@@ -262,7 +269,7 @@ class BuilderMenu extends React.Component {
             max={255}
             step={1}
             value={(activeEmoji && activeEmoji.blue) || 0}
-            onDragEnd={() => updateCache()}
+            onDragEnd={this.onDragEnd}
             onChange={(event, value) => setField('blue', value)}
           />
         </SliderContainer>
@@ -273,7 +280,7 @@ class BuilderMenu extends React.Component {
             max={255}
             step={1}
             value={(activeEmoji && activeEmoji.green) || 0}
-            onDragEnd={() => updateCache()}
+            onDragEnd={this.onDragEnd}
             onChange={(event, value) => setField('green', value)}
           />
         </SliderContainer>

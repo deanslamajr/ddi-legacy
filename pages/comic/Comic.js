@@ -13,7 +13,7 @@ const navigateTo = (urlId, showSpinner) => {
 
 const ComicContainer = styled.div`
   display: flex;
-  margin: 0 1rem 0;
+  margin: 0;
 `
 
 const noop = () => {}

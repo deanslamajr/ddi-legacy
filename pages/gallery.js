@@ -29,6 +29,7 @@ const UnstyledLink = styled.a`
   text-decoration: none;
   color: ${props => props.theme.colors.black};
   overflow-x: auto;
+  margin: 1rem 0 1rem 1rem;
 `
 
 const ShowMoreButton = styled(MenuButton)`

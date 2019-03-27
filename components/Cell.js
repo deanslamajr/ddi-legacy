@@ -17,6 +17,14 @@ const CellContainer = styled.div`
   background: ${props => props.theme.colors.lightGreen};
   padding: 10px;
   cursor: ${props => props.clickable ? 'pointer' : 'default'};
+
+  &:first-of-type {
+    margin-left: 1rem;
+  }
+
+  &:last-of-type {
+    border-right: 1rem solid #C5D6D8;
+  }
 `
 
 export default function Cell ({ className, imageUrl, title, onClick }) {

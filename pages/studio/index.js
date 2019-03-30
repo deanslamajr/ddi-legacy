@@ -10,7 +10,7 @@ import pick from 'lodash/pick'
 import Head from 'next/head'
 import qs from 'query-string'
 
-import { NavButton, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, GREEN, RED, BLUE } from '../../components/navigation'
+import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT, GREEN, BLUE } from '../../components/navigation'
 
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
@@ -18,6 +18,7 @@ import ActionsModal from './ActionsModal'
 import WarningModal from './WarningModal'
 
 import { getApi } from '../../helpers'
+import { validateTitle } from '../../shared/validators'
 import theme from '../../helpers/theme'
 
 import {
@@ -423,13 +424,8 @@ class StudioRoute extends Component {
   }
 
   handleTitleChange = (event) => {
-    let newTitle = event.target.value
-
-    if (newTitle && newTitle.length > MAX_CAPTION_LENGTH) {
-      newTitle = newTitle.substring(0, MAX_CAPTION_LENGTH)
-    }
-
-    this.setState({ title: newTitle}, this.updateCache)
+    let newTitle = validateTitle(event.target.value)
+    this.setState({ title: newTitle }, this.updateCache)
   }
 
   clearCache = () => {

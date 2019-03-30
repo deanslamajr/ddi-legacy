@@ -10,6 +10,7 @@ const TitleContainer = styled.div`
 const TitleWidth = styled.div`
   margin-left: .25rem;
   margin-right: .25rem;
+  overflow-wrap: break-word;
 `
 
 const CellContainer = styled.div`

@@ -1,5 +1,6 @@
 const { Cells } = require('../models')
 const { falsePositiveResponse } = require('./utils')
+const { validateStudioState } = require('../../shared/validators')
 
 async function getParentFromChild (cell) {
   const parent = await Cells.findOne({ where: { id: cell.parent_id }}) // get parent
@@ -45,7 +46,8 @@ async function all (req, res) {
 async function update (req, res) {
   try {
     const cellId = req.params.cellId
-    const studioState = req.body.studioState || null
+
+    const studioState = validateStudioState(req.body.studioState)
 
     const cell = await Cells.findOne({ where: { url_id: cellId }})
 
@@ -67,7 +69,6 @@ async function update (req, res) {
     console.error(e)
     throw e
   }
-  
 }
 
 module.exports = {

@@ -6,7 +6,9 @@
     "dev": "nodemon server/index.js",
     "start": "next build && node server/index.js",
     "migrate": "sequelize db:migrate",
-    "migrate:undo": "sequelize db:migrate:undo"
+    "migrate:undo": "sequelize db:migrate:undo",
+    "test": "jest --watch",
+    "test:nowatch": "jest"
   },
   "repository": {
     "type": "git",
@@ -53,6 +55,7 @@
   },
   "devDependencies": {
     "babel-plugin-styled-components": "^1.9.2",
+    "jest": "^24.5.0",
     "nodemon": "^1.18.7",
     "sequelize-cli": "^5.4.0"
   }

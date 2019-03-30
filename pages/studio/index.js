@@ -22,7 +22,8 @@ import theme from '../../helpers/theme'
 
 import {
   S3_ASSET_FILETYPE,
-  STORAGEKEY_STUDIO
+  STORAGEKEY_STUDIO,
+  MAX_CAPTION_LENGTH
 } from '../../config/constants.json'
 
 const RGBA = 'RGBA'
@@ -422,7 +423,13 @@ class StudioRoute extends Component {
   }
 
   handleTitleChange = (event) => {
-    this.setState({ title: event.target.value}, this.updateCache)
+    let newTitle = event.target.value
+
+    if (newTitle && newTitle.length > MAX_CAPTION_LENGTH) {
+      newTitle = newTitle.substring(0, MAX_CAPTION_LENGTH)
+    }
+
+    this.setState({ title: newTitle}, this.updateCache)
   }
 
   clearCache = () => {

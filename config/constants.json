@@ -1,4 +1,5 @@
 {
   "STORAGEKEY_STUDIO": "STUDIO_STATE",
-  "S3_ASSET_FILETYPE": "image/png"
+  "S3_ASSET_FILETYPE": "image/png",
+  "MAX_CAPTION_LENGTH": 255
 }

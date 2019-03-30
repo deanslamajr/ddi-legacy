@@ -4,7 +4,10 @@ const { sign: signViaS3 } = require('../adapters/s3')
 const { Cells, Comics } = require('../models/index')
 const { falsePositiveResponse } = require('./utils')
 
-const { S3_ASSET_FILETYPE } = require('../../config/constants.json')
+const {
+  MAX_CAPTION_LENGTH,
+  S3_ASSET_FILETYPE
+} = require('../../config/constants.json')
 
 async function sign (req, res) {
   try {
@@ -13,7 +16,12 @@ async function sign (req, res) {
     }
 
     const filename = req.query['file-name']
-    const title = req.query['title']
+    
+    let title = req.query['title']
+    if (title && title.length > MAX_CAPTION_LENGTH) {
+      title = title.substring(0, MAX_CAPTION_LENGTH)
+    }
+
     const parentId = req.query['parent-id']
     let comicId = req.query['comic-id']
 

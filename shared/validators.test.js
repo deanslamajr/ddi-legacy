@@ -1,34 +1,91 @@
+import cloneDeep from 'lodash/cloneDeep'
+
 import {
   ERR_MUST_BE_A_NUMBER,
   ERR_CANNOT_BE_NEGATIVE,
+  validateEmojis,
   validateId,
   validateStudioState,
   validateTitle
 } from './validators'
 
-describe('validators', () => {
-  const validStudioState = {
-    activeEmojiId: 1,
-    currentEmojiId: 2,
-    emojis: 
-     { '1': 
-        { emoji: '🈵',
-          id: 1,
-          order: 1,
-          x: 100,
-          y: 100,
-          scaleX: 1,
-          scaleY: 1,
-          rotation: 0,
-          size: 100,
-          alpha: 0.5,
-          red: 126,
-          green: 0,
-          blue: 0 } },
-    showEmojiPicker: false,
-    title: ''
-  }
+import {
+  MIN_POSITION,
+  MAX_POSITION
+} from '../config/constants.json'
 
+const validStudioState = {
+  activeEmojiId: 1,
+  currentEmojiId: 2,
+  emojis: {
+    '1': {
+      emoji: '🦔',
+      id: 1,
+      order: 2,
+      x: 15,
+      y: 10,
+      scaleX: 1,
+      scaleY: 1,
+      rotation: -48,
+      size: 181,
+      alpha: 0.5,
+      red: 129.18999999999983,
+      green: 0,
+      blue: 0
+    },
+    '5': {
+      emoji: '🦔',
+      id: 5,
+      order: 5,
+      x: 8,
+      y: 2,
+      scaleX: 1,
+      scaleY: 1,
+      rotation: 0,
+      size: 256,
+      alpha: 0.88,
+      red: 255.01,
+      green: 255,
+      blue: 255,
+      filters: ['RGBA']
+    },
+  '6': {
+      emoji: 'T',
+      id: 6,
+      order: 6,
+      x: 34,
+      y: 37,
+      scaleX: 1,
+      scaleY: 1,
+      rotation: 0,
+      size: 256,
+      alpha: 0.5,
+      red: 125.01,
+      green: 0,
+      blue: 0
+    },
+  '7': {
+      emoji: '&',
+      id: 7,
+      order: 7,
+      filters: ['RGBA'],
+      x: 121,
+      y: 84,
+      scaleX: 1,
+      scaleY: 1,
+      rotation: 0,
+      size: 100,
+      alpha: 1,
+      red: 257.01,
+      green: 0,
+      blue: 0
+    }
+  },
+  showEmojiPicker: false,
+  title: ''
+}
+
+describe('validators', () => {
   describe('validateTitle', () => {
     describe('if value is longer than 255 characters', () => {
       it('should be clipped to the first 255 characters', () => {
@@ -148,6 +205,134 @@ describe('validators', () => {
           const validatedStudioState = validateStudioState(incorrectStudioState)
 
           expect(validatedStudioState.title.length).toEqual(255)
+        })
+      })
+    })
+
+    describe('emojis', () => {
+      let emojis
+
+      beforeEach(() => {
+        emojis = cloneDeep(validStudioState.emojis)
+      })
+
+      it('should strip any unrecognized fields from the emojis object', () => {
+        // add invalid field to each emoji
+        Object.values(emojis).forEach(emoji => emoji.taco = 'taco')
+
+        const validatedEmojis = validateEmojis(emojis)
+
+        expect(validatedEmojis).toEqual(validStudioState.emojis)
+      })
+
+      it('should fail tests if emoji field is added to validator but validator tests havent been updated. This is a possible security issue: verify this new studio field has proper validations.', () => {
+        const validatedEmojis = validateEmojis(emojis)
+        const validatedEmojiKeys = Object.values(validatedEmojis).map(emoji => Object.keys(emoji).sort()) // sort to ignore array order
+        const testDataEmojiKeys = Object.values(validStudioState.emojis).map(emoji => Object.keys(emoji).sort()) // sort to ignore array order
+        expect(testDataEmojiKeys.sort()).toEqual(validatedEmojiKeys.sort()) // sort to ignore array order
+      })
+
+      describe('emoji.x', () => {
+        describe('if not a number', () => {
+          it('should throw ERR_MUST_BE_A_NUMBER', () => {
+            Object.values(emojis).forEach(emoji => emoji.x = 'taco')
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.x ${ERR_MUST_BE_A_NUMBER}`)
+          })
+        })
+
+        describe('if less than MIN_POSITION', () => {
+          it('should set to MIN_POSITION', () => {
+            Object.values(emojis).forEach(emoji => emoji.x = MIN_POSITION - 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].x).toEqual(MIN_POSITION)
+          })
+        })
+
+        describe('if more than MAX_POSITION', () => {
+          it('should set to MAX_POSITION', () => {
+            Object.values(emojis).forEach(emoji => emoji.x = MAX_POSITION + 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].x).toEqual(MAX_POSITION)
+          })
+        })
+      })
+
+      describe('emoji.y', () => {
+        describe('if not a number', () => {
+          it('should throw ERR_MUST_BE_A_NUMBER', () => {
+            Object.values(emojis).forEach(emoji => emoji.y = 'taco')
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.y ${ERR_MUST_BE_A_NUMBER}`)
+          })
+        })
+
+        describe('if less than MIN_POSITION', () => {
+          it('should set to MIN_POSITION', () => {
+            Object.values(emojis).forEach(emoji => emoji.y = MIN_POSITION - 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].y).toEqual(MIN_POSITION)
+          })
+        })
+
+        describe('if more than MAX_POSITION', () => {
+          it('should set to MAX_POSITION', () => {
+            Object.values(emojis).forEach(emoji => emoji.y = MAX_POSITION + 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].y).toEqual(MAX_POSITION)
+          })
+        })
+      })
+
+      describe('emoji.id', () => {
+        describe('if not a Number type', () => {
+          it('should throw ERR_MUST_BE_A_NUMBER', () => {
+            Object.values(emojis).forEach(emoji => emoji.id = 'taco')
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.id ${ERR_MUST_BE_A_NUMBER}`)
+          })
+        })
+  
+        describe('if negative value', () => {
+          it('should throw ERR_CANNOT_BE_NEGATIVE', () => {
+            Object.values(emojis).forEach(emoji => emoji.id = -1)
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.id ${ERR_CANNOT_BE_NEGATIVE}`)
+          })
+        })
+      })
+
+      describe('emoji.order', () => {
+        describe('if not a Number type', () => {
+          it('should throw ERR_MUST_BE_A_NUMBER', () => {
+            Object.values(emojis).forEach(emoji => emoji.order = 'taco')
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.order ${ERR_MUST_BE_A_NUMBER}`)
+          })
+        })
+  
+        describe('if negative value', () => {
+          it('should throw ERR_CANNOT_BE_NEGATIVE', () => {
+            Object.values(emojis).forEach(emoji => emoji.order = -1)
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.order ${ERR_CANNOT_BE_NEGATIVE}`)
+          })
         })
       })
     })

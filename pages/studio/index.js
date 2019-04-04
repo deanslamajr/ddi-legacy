@@ -62,7 +62,8 @@ function createNewEmoji (emoji, currentEmojiId) {
     alpha: .5,
     red: 125,
     green: 0,
-    blue: 0
+    blue: 0,
+    opacity: 1
   }
 }
 
@@ -638,6 +639,7 @@ class StudioRoute extends Component {
                   green={emoji.green}
                   blue={emoji.blue}
                   onDragEnd={this.handleDragEnd}
+                  opacity={typeof emoji.opacity !== 'undefined' ? emoji.opacity : 1 /* backwards compatibility */}
                   useCache
                 />))}
               </Layer>

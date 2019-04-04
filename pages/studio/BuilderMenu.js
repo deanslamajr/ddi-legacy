@@ -54,7 +54,7 @@ const SelectActiveEmojiButton = styled(MenuButton)`
   }
 `
 
-const Label = styled.div`
+const Label = styled.span`
   margin: .1rem auto;
   display: flex;
   justify-content: center;
@@ -86,6 +86,18 @@ const ChangeLayerButton = styled(ThirdOfAButton)`
 
 const MAIN = 'MAIN'
 const SECONDARY = 'SECONDARY'
+const FILTERS = 'FILTERS'
+
+function getOpacity (activeEmoji) {
+  const defaultOpacity = 1
+
+  // Backwards compatibility
+  if (!activeEmoji || typeof activeEmoji.opacity === 'undefined') {
+    return defaultOpacity
+  }
+
+  return activeEmoji.opacity
+}
 
 class BuilderMenu extends React.Component {
   constructor (props) {
@@ -98,7 +110,8 @@ class BuilderMenu extends React.Component {
 
     this.menus = {
       [MAIN]: this.renderMainMenu,
-      [SECONDARY]: this.renderSecondaryMenu
+      [SECONDARY]: this.renderSecondaryMenu,
+      [FILTERS]: this.renderFiltersMenu
     }
   }
 
@@ -238,15 +251,45 @@ class BuilderMenu extends React.Component {
         </HalfMenuButton>
       </CenteredButtons>
 
+      <GreenMenuButton onClick={() => this.setState({ currentMenu: FILTERS })}>
+        FILTERS
+      </GreenMenuButton>
+    </React.Fragment>)
+  }
+
+  renderFiltersMenu = () => {
+    const {
+      activeEmoji,
+      setField,
+      toggleFilter
+    } = this.props
+
+    return (<React.Fragment>
+      <BlueMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
+        BACK
+      </BlueMenuButton>
+
+      <SliderContainer>
+        <Label>OPACITY</Label>
+        <Slider
+          min={0}
+          max={1}
+          step={.01}
+          value={getOpacity(activeEmoji)}
+          onDragEnd={this.onDragEnd}
+          onChange={(event, value) => setField('opacity', value)}
+        />
+      </SliderContainer>
+
       {/* TOGGLE FILTER*/}
       {activeEmoji.filters
-        ? (<RedMenuButton onClick={toggleFilter}>RGB</RedMenuButton>)
-        : (<GreenMenuButton onClick={toggleFilter}>RGB</GreenMenuButton>)
+        ? (<RedMenuButton onClick={toggleFilter}>INACTIVATE RGB</RedMenuButton>)
+        : (<GreenMenuButton onClick={toggleFilter}>ACTIVATE RGB </GreenMenuButton>)
       }
 
       {activeEmoji.filters && (<React.Fragment>
-        <Label>AMOUNT</Label>
         <SliderContainer>
+          <Label>AMOUNT</Label>
           <Slider
             min={0}
             max={1}
@@ -256,8 +299,9 @@ class BuilderMenu extends React.Component {
             onChange={(event, value) => setField('alpha', value)}
           />
         </SliderContainer>
-        <Label>RED</Label>
+        
         <SliderContainer>
+          <Label>RED</Label>
           <Slider
             min={0}
             max={255}
@@ -267,8 +311,9 @@ class BuilderMenu extends React.Component {
             onChange={(event, value) => setField('red', value)}
           />
         </SliderContainer>
-        <Label>BLUE</Label>
+        
         <SliderContainer>
+          <Label>BLUE</Label>
           <Slider
             min={0}
             max={255}
@@ -278,8 +323,9 @@ class BuilderMenu extends React.Component {
             onChange={(event, value) => setField('blue', value)}
           />
         </SliderContainer>
-        <Label>GREEN</Label>
+        
         <SliderContainer>
+          <Label>GREEN</Label>
           <Slider
             min={0}
             max={255}

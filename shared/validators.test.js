@@ -1,8 +1,11 @@
 import cloneDeep from 'lodash/cloneDeep'
 
 import {
-  ERR_MUST_BE_A_NUMBER,
   ERR_CANNOT_BE_NEGATIVE,
+  ERR_INCORRECT_SCALE_VALUE,
+  ERR_MUST_BE_A_NUMBER,
+  ERR_MUST_BE_A_STRING,
+  ERR_VALUE_MUST_BE_SET,
   validateEmojis,
   validateId,
   validateStudioState,
@@ -232,6 +235,68 @@ describe('validators', () => {
         expect(testDataEmojiKeys.sort()).toEqual(validatedEmojiKeys.sort()) // sort to ignore array order
       })
 
+      describe('emoji.emoji', () => {
+        it('should allow an emoji to pass', () => {
+          Object.values(emojis).forEach(emoji => emoji.emoji = '🦔')
+          const validatedEmojis = validateEmojis(emojis)
+          const arrayOfEmojis = Object.values(validatedEmojis)
+          expect(arrayOfEmojis[0].emoji).toEqual('🦔')
+        })
+
+        it('should allow a single char to pass', () => {
+          Object.values(emojis).forEach(emoji => emoji.emoji = 'T')
+          const validatedEmojis = validateEmojis(emojis)
+          const arrayOfEmojis = Object.values(validatedEmojis)
+          expect(arrayOfEmojis[0].emoji).toEqual('T')
+        })
+
+        describe('if value is not a string type', () => {
+          it('should throw ERR_MUST_BE_A_STRING', () => {
+            Object.values(emojis).forEach(emoji => emoji.emoji = true)
+            
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.emoji ${ERR_MUST_BE_A_STRING}`)
+          })
+
+          it('should throw ERR_MUST_BE_A_STRING', () => {
+            Object.values(emojis).forEach(emoji => emoji.emoji = undefined)
+            
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.emoji ${ERR_MUST_BE_A_STRING}`)
+          })
+        })
+
+        describe('if value is empty string', () => {
+          it('should throw ERR_VALUE_MUST_BE_SET', () => {
+            Object.values(emojis).forEach(emoji => emoji.emoji = '')
+            
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.emoji ${ERR_VALUE_MUST_BE_SET}`)
+          })
+        })
+
+        describe('if value contains an emoji', () => {
+          it('should clip the value to only contain the emoji part', () => {
+            Object.values(emojis).forEach(emoji => emoji.emoji = 'abcd🦔sdf🤣')
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].emoji).toEqual('🦔')
+          })
+        })
+
+        describe('if value does not contain an emoji', () => {
+          it('should clip the value to only contain the first char', () => {
+            Object.values(emojis).forEach(emoji => emoji.emoji = 'ab')
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].emoji).toEqual('a')
+          })
+        })
+      })
+
       describe('emoji.x', () => {
         describe('if not a number', () => {
           it('should throw ERR_MUST_BE_A_NUMBER', () => {
@@ -332,6 +397,94 @@ describe('validators', () => {
             expect(() => {
               validateEmojis(emojis)
             }).toThrow(`emoji.order ${ERR_CANNOT_BE_NEGATIVE}`)
+          })
+        })
+      })
+
+      describe('emoji.scaleX', () => {
+        it('should pass a value of -1', () => {
+          Object.values(emojis).forEach(emoji => emoji.scaleX = -1)
+          const validatedEmojis = validateEmojis(emojis)
+          const arrayOfEmojis = Object.values(validatedEmojis)
+          expect(arrayOfEmojis[0].scaleX).toEqual(-1)
+        })
+
+        it('should pass a value of 1', () => {
+          Object.values(emojis).forEach(emoji => emoji.scaleX = 1)
+          const validatedEmojis = validateEmojis(emojis)
+          const arrayOfEmojis = Object.values(validatedEmojis)
+          expect(arrayOfEmojis[0].scaleX).toEqual(1)
+        })
+
+        describe('if not a number', () => {
+          it('should throw ERR_MUST_BE_A_NUMBER', () => {
+            Object.values(emojis).forEach(emoji => emoji.scaleX = 'taco')
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.scaleX ${ERR_MUST_BE_A_NUMBER}`)
+          })
+        })
+
+        describe('if value is not -1 or 1', () => {
+          it('2, should throw ERR_INCORRECT_SCALE_VALUE', () => {
+            Object.values(emojis).forEach(emoji => emoji.scaleX = 2)
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.scaleX ${ERR_INCORRECT_SCALE_VALUE}`)
+          })
+
+          it('-2, should throw ERR_INCORRECT_SCALE_VALUE', () => {
+            Object.values(emojis).forEach(emoji => emoji.scaleX = -22)
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.scaleX ${ERR_INCORRECT_SCALE_VALUE}`)
+          })
+        })
+      })
+
+      describe('emoji.scaleY', () => {
+        it('should pass a value of -1', () => {
+          Object.values(emojis).forEach(emoji => emoji.scaleY = -1)
+          const validatedEmojis = validateEmojis(emojis)
+          const arrayOfEmojis = Object.values(validatedEmojis)
+          expect(arrayOfEmojis[0].scaleY).toEqual(-1)
+        })
+
+        it('should pass a value of 1', () => {
+          Object.values(emojis).forEach(emoji => emoji.scaleY = 1)
+          const validatedEmojis = validateEmojis(emojis)
+          const arrayOfEmojis = Object.values(validatedEmojis)
+          expect(arrayOfEmojis[0].scaleY).toEqual(1)
+        })
+
+        describe('if not a number', () => {
+          it('should throw ERR_MUST_BE_A_NUMBER', () => {
+            Object.values(emojis).forEach(emoji => emoji.scaleY = 'taco')
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.scaleY ${ERR_MUST_BE_A_NUMBER}`)
+          })
+        })
+
+        describe('if value is not -1 or 1', () => {
+          it('2, should throw ERR_INCORRECT_SCALE_VALUE', () => {
+            Object.values(emojis).forEach(emoji => emoji.scaleY = 2)
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.scaleY ${ERR_INCORRECT_SCALE_VALUE}`)
+          })
+
+          it('-2, should throw ERR_INCORRECT_SCALE_VALUE', () => {
+            Object.values(emojis).forEach(emoji => emoji.scaleY = -22)
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.scaleY ${ERR_INCORRECT_SCALE_VALUE}`)
           })
         })
       })

@@ -20,16 +20,21 @@ const CellContainer = styled.div`
   cursor: ${props => props.clickable ? 'pointer' : 'default'};
 
   &:first-of-type {
-    margin-left: 1rem;
+    margin-left: ${props => props.removeBorders ? 'inherit' : '1rem'};
   }
 
   &:last-of-type {
-    border-right: 1rem solid #C5D6D8;
+    border-right: ${props => props.removeBorders ? 'inherit' : '1rem solid #C5D6D8'};
   }
 `
 
-export default function Cell ({ className, imageUrl, title, onClick }) {
-  return (<CellContainer className={className} clickable={onClick} onClick={onClick}>
+export default function Cell ({ className, imageUrl, title, onClick, removeBorders }) {
+  return (<CellContainer
+    className={className}
+    clickable={onClick}
+    onClick={onClick}
+    removeBorders={removeBorders}
+  >
     <img src={imageUrl} />
     <TitleContainer>
       <TitleWidth>

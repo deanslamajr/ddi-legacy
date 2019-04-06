@@ -28,7 +28,11 @@ function PreviewModal ({
       Publish this Canvas?
     </MessageContainer>
     <CenteredContainer>
-      <Cell imageUrl={canvasImageUrl} title={title} />
+      <Cell
+        imageUrl={canvasImageUrl}
+        removeBorders
+        title={title}
+      />
     </CenteredContainer>
     <CenteredButtons>
       <MenuButton onClick={onCancelClick}>

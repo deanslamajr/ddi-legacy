@@ -204,14 +204,17 @@ class BuilderMenu extends React.Component {
       incrementField,
       scaleField,
       setField,
-      toggleFilter,
-      updateCache
+      toggleCaptionModal
     } = this.props
 
     return (<React.Fragment>
       <BlueMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
         SIMPLE
       </BlueMenuButton>
+
+      <MenuButton onClick={() => toggleCaptionModal(true)}>
+        CAPTION
+      </MenuButton>
 
       <SliderContainer>
         <Slider

@@ -15,17 +15,16 @@ import { NavButton, BOTTOM_RIGHT, GREEN } from '../../components/navigation'
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
 import ActionsModal from './ActionsModal'
+import CaptionModal from './CaptionModal'
 import WarningModal from './WarningModal'
 import PreviewModal from './PreviewModal'
 
 import { getApi } from '../../helpers'
-import { validateTitle } from '../../shared/validators'
 import theme from '../../helpers/theme'
 
 import {
   S3_ASSET_FILETYPE,
-  STORAGEKEY_STUDIO,
-  MAX_CAPTION_LENGTH
+  STORAGEKEY_STUDIO
 } from '../../config/constants.json'
 
 const RGBA = 'RGBA'
@@ -81,22 +80,6 @@ const CenteredContainer = styled.div`
   overflow-x: hidden;
 `
 
-const TitleInput = styled.textarea`
-  font-size: 16px;
-  height: 4rem;
-  width: 244px;
-  padding: 3px;
-  outline: none;
-  resize: none;
-  background-color: ${props => props.theme.colors.white};
-  border: none;
-
-  &::placeholder {
-    color: ${props => props.theme.colors.gray};
-    opacity: 0.5;
-  }
-`
-
 const FixedCanvasContainer = styled.div`
   position: fixed;
   top: 0;
@@ -105,6 +88,7 @@ const FixedCanvasContainer = styled.div`
 
 const EverythingElseContainer = styled.div`
   margin-top: 255px;
+  width: 250px;
 `
 
 //
@@ -121,6 +105,7 @@ class StudioRoute extends Component {
       parentId: this.props.parentId,
       onEmojiSelect: this.createNewEmoji,
       showEmojiPicker: this.props.parentId ? false : true,
+      showCaptionModal: false,
       showActionsModal: false,
       showResetWarningModal: false,
       showPublishPreviewModal: false,
@@ -417,11 +402,6 @@ class StudioRoute extends Component {
     })
   }
 
-  handleTitleChange = (event) => {
-    let newTitle = validateTitle(event.target.value)
-    this.setState({ title: newTitle }, this.updateCache)
-  }
-
   clearCache = () => {
     const store = require('store2')
     store(STORAGEKEY_STUDIO, {})
@@ -475,6 +455,10 @@ class StudioRoute extends Component {
 
   toggleActionsModal = (newValue) => {
     this.setState({ showActionsModal: newValue })
+  }
+
+  toggleCaptionModal = (newValue) => {
+    this.setState({ showCaptionModal: newValue })
   }
 
   openEmojiPickerToChangeEmoji = (cb = () => {}) => {
@@ -590,6 +574,11 @@ class StudioRoute extends Component {
     })
   }
 
+  onCaptionModalSave = (newTitle) => {
+    this.setState({ title: newTitle }, this.updateCache)
+    this.toggleCaptionModal(false)
+  }
+
   componentDidMount () {
     const store = require('store2')
     const studioCache = store(STORAGEKEY_STUDIO)
@@ -661,13 +650,6 @@ class StudioRoute extends Component {
 
           {this.state.showSaveButton && (
             <EverythingElseContainer>
-              <TitleInput
-                type='text'
-                placeholder='add a caption'
-                value={this.state.title}
-                onChange={this.handleTitleChange}
-              />
-
               <BuilderMenu
                 activeEmoji={activeEmoji}
                 changeActiveEmoji={this.changeActiveEmoji}
@@ -682,6 +664,7 @@ class StudioRoute extends Component {
                 scaleField={this.scaleField}
                 setField={this.setField}
                 toggleFilter={this.toggleFilter}
+                toggleCaptionModal={this.toggleCaptionModal}
                 updateCache={this.updateCache}
                 updateEmojiCache={this.updateEmojiCache}
               />
@@ -701,6 +684,12 @@ class StudioRoute extends Component {
             position={BOTTOM_RIGHT}
           />
         </React.Fragment>}
+
+        {this.state.showCaptionModal && <CaptionModal
+          onCancelClick={() => this.toggleCaptionModal(false)}
+          onUpdateClick={this.onCaptionModalSave}
+          title={this.state.title || ''}
+        />}
 
         {showActionsModal && <ActionsModal
           onCancelClick={() => this.toggleActionsModal(false)}

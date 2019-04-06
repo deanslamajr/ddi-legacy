@@ -10,7 +10,7 @@ import pick from 'lodash/pick'
 import Head from 'next/head'
 import qs from 'query-string'
 
-import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT, GREEN, BLUE } from '../../components/navigation'
+import { NavButton, BOTTOM_RIGHT, GREEN } from '../../components/navigation'
 
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
@@ -695,12 +695,6 @@ class StudioRoute extends Component {
 
         {!this.state.showEmojiPicker && <React.Fragment>
           <NavButton
-            value='BACK'
-            color={BLUE}
-            cb={this.navigateBack}
-            position={BOTTOM_LEFT}
-          />
-          <NavButton
             value='ACTIONS'
             color={GREEN}
             cb={() => this.toggleActionsModal(true)}
@@ -710,6 +704,7 @@ class StudioRoute extends Component {
 
         {showActionsModal && <ActionsModal
           onCancelClick={() => this.toggleActionsModal(false)}
+          onExitClick={() => this.navigateBack()}
           onResetClick={() => this.onResetClick()}
           onPublishClick={() => this.onPublishClick()}
         />}

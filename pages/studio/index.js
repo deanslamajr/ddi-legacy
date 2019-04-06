@@ -16,6 +16,7 @@ import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
 import ActionsModal from './ActionsModal'
 import WarningModal from './WarningModal'
+import PreviewModal from './PreviewModal'
 
 import { getApi } from '../../helpers'
 import { validateTitle } from '../../shared/validators'
@@ -122,7 +123,7 @@ class StudioRoute extends Component {
       showEmojiPicker: this.props.parentId ? false : true,
       showActionsModal: false,
       showResetWarningModal: false,
-      showSaveWarningModal: false,
+      showPublishPreviewModal: false,
       showSaveButton: true,
       emojis: {},
       title: ''
@@ -225,6 +226,7 @@ class StudioRoute extends Component {
     delete studioState.parentId
 
     try {
+      this.clearCache()
       await axios.put(`/api/cell/${cellId}`, { studioState })
       Router.pushRoute(`/comic/${comicId}`)
     }
@@ -236,46 +238,37 @@ class StudioRoute extends Component {
 
   saveCell = async (event) => {
     this.props.showSpinner()
-    this.toggleSaveWarningModal(false)
+    this.togglePublishPreviewModal(false)
 
-    // clears active emoji border
-    this.updateEmojiCache(undefined, false)
-    this.incrementField('red', 1, this.clearCache) // hack bc we need to get a konva image refresh for the canvas to get the 'remove border' update
+    this.setState({ showSaveButton: false }, async () => {
+      try {
+        const {
+          comicId,
+          id,
+          signedRequest
+        } = await this.getSignedRequest(this.renderedImageFile)
 
-    this.setState({ showSaveButton: false }, () => {
-      this.stage.toCanvas().toBlob(async (blob) => {
-        const file = new File([blob], generateFilename(), {
-          type: S3_ASSET_FILETYPE,
-        })
-  
-        try {
-          const {
-            comicId,
-            id,
-            signedRequest
-          } = await this.getSignedRequest(file)
-  
-          const xhr = new XMLHttpRequest()
-          xhr.open('PUT', signedRequest)
-          xhr.onreadystatechange = async () => {
-            if(xhr.readyState === 4){
-              if(xhr.status === 200){
-                // update cell in DB
-                await this.finishCellPublish(id, comicId)
-              }
-              else{
-                // @todo better UX
-                console.error('could not upload file!')
-              }
+        const xhr = new XMLHttpRequest()
+        xhr.open('PUT', signedRequest)
+        xhr.onreadystatechange = async () => {
+          if(xhr.readyState === 4){
+            if(xhr.status === 200){
+              // update cell in DB
+              await this.finishCellPublish(id, comicId)
+            }
+            else{
+              // @todo better UX
+              console.error('could not upload file!')
             }
           }
-          xhr.send(file)
         }
-        catch (e) {
-          // @todo better UX
-          console.error(e)
-        }
-      })
+        xhr.send(this.renderedImageFile)
+      }
+      catch (e) {
+        // @todo better UX
+        console.error(e)
+      }
+
     })
   }
 
@@ -476,8 +469,8 @@ class StudioRoute extends Component {
     this.setState({ showResetWarningModal: newValue })
   }
 
-  toggleSaveWarningModal = (newValue = !this.state.showSaveWarningModal) => {
-    this.setState({ showSaveWarningModal: newValue })
+  togglePublishPreviewModal = (newValue = !this.state.showPublishPreviewModal) => {
+    this.setState({ showPublishPreviewModal: newValue })
   }
 
   toggleActionsModal = (newValue) => {
@@ -574,7 +567,27 @@ class StudioRoute extends Component {
 
   onPublishClick = () => {
     this.toggleActionsModal(false)
-    this.toggleSaveWarningModal(true)
+    this.props.showSpinner()
+
+    // generate preview
+    // clears active emoji border
+    this.updateEmojiCache(undefined, false)
+    this.incrementField('red', 1) // hack bc we need to get a konva image refresh for the canvas to get the 'remove border' update
+    
+    this.stage.toCanvas().toBlob((blob) => {
+      const file = new File([blob], generateFilename(), {
+        type: S3_ASSET_FILETYPE,
+      })
+
+      this.renderedImageFile = file
+
+      this.setState({
+        renderedImageUrl: URL.createObjectURL(this.renderedImageFile)
+      }, () => {
+        this.togglePublishPreviewModal(true)
+        this.props.hideSpinner()
+      })
+    })
   }
 
   componentDidMount () {
@@ -600,7 +613,7 @@ class StudioRoute extends Component {
       activeEmojiId,
       showActionsModal,
       showResetWarningModal,
-      showSaveWarningModal
+      showPublishPreviewModal
     } = this.state
 
     const activeEmoji = this.state.emojis[activeEmojiId]
@@ -701,12 +714,11 @@ class StudioRoute extends Component {
           onPublishClick={() => this.onPublishClick()}
         />}
 
-        {showSaveWarningModal && <WarningModal
-          message='Publish this Canvas?'
-          okButtonLabel='PUBLISH'
-          onCancelClick={() => this.toggleSaveWarningModal(false)}
+        {showPublishPreviewModal && <PreviewModal
+          canvasImageUrl={this.state.renderedImageUrl}
+          onCancelClick={() => this.togglePublishPreviewModal(false)}
           onOkClick={() => this.saveCell()}
-          colorTheme='GREEN'
+          title={this.state.title || ''}
         />}
 
         {showResetWarningModal && <WarningModal

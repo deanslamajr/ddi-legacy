@@ -36,7 +36,7 @@ const SliderContainer = styled.div`
 `
 
 const HalfMenuButton = styled(MenuButton)`
-  width: 124px;
+  max-width: 124px;
 `
 
 const SelectActiveEmojiButton = styled(MenuButton)`

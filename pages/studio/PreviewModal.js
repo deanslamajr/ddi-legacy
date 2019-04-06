@@ -15,6 +15,7 @@ const CenteredContainer = styled.div`
 
 const PreviewModalContainer = styled(Modal)`
   height: inherit;
+  width: inherit;
 `
 
 function PreviewModal ({

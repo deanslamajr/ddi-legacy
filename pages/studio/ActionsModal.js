@@ -6,6 +6,7 @@ import { RedMenuButton, GreenMenuButton } from '../../components/Buttons'
 
 const HomeModal = styled(Modal)`
   width: 315px;
+  height: inherit;
 `
 
 export default class ActionsModal extends React.Component {

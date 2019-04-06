@@ -1,7 +1,8 @@
 import styled from 'styled-components'
 
 const MenuButton = styled.span`
-  width: 250px;
+  flex-grow: 1;
+  max-width: 250px;
   height: 2.75rem;
   margin: 1px auto;
   cursor: pointer;

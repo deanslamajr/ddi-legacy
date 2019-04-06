@@ -723,7 +723,7 @@ class StudioRoute extends Component {
 
         {showResetWarningModal && <WarningModal
           message='Reset the Canvas?'
-          okButtonLabel='RESET CANVAS'
+          okButtonLabel='RESET'
           onCancelClick={() => this.toggleResetWarningModal(false)}
           onOkClick={() => this.resetStudioSession()}
         />}

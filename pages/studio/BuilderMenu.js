@@ -8,7 +8,11 @@ import {
   BlueMenuButton,
   GreenMenuButton
 } from '../../components/Buttons'
-import { NavButton } from '../../components/navigation'
+
+import {
+  MIN_SIZE,
+  MAX_SIZE
+} from '../../config/constants.json'
 
 import { sortByOrder } from '../../helpers'
 
@@ -156,8 +160,8 @@ class BuilderMenu extends React.Component {
       {/* SIZE */}
       <SliderContainer>
         <Slider
-          min={1}
-          max={256}
+          min={MIN_SIZE}
+          max={MAX_SIZE}
           step={1}
           value={(activeEmoji && activeEmoji.size) || 0}
           onDragEnd={this.onDragEnd}

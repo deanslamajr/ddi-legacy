@@ -5,6 +5,14 @@ const { emojiRegex } = require('../pages/studio/EmojiPicker')
 const {
   MIN_POSITION,
   MAX_POSITION,
+  MIN_ROTATION,
+  MAX_ROTATION,
+  MIN_SIZE,
+  MAX_SIZE,
+  MIN_ALPHA,
+  MAX_ALPHA,
+  MIN_RGB,
+  MAX_RGB,
   MAX_CAPTION_LENGTH
 } = require('../config/constants.json')
 
@@ -91,6 +99,66 @@ function validateScale (value, field) {
   return value
 }
 
+function validateRotation (value, field) {
+  // Must be a number
+  if (typeof value !== 'number') {
+    throw new Error(`${field} ${ERR_MUST_BE_A_NUMBER}`)
+  }
+
+  if (value < MIN_ROTATION) {
+    return MIN_ROTATION
+  } else if (value > MAX_ROTATION) {
+    return MAX_ROTATION
+  } else {
+    return value
+  }
+}
+
+function validateSize (value, field) {
+  // Must be a number
+  if (typeof value !== 'number') {
+    throw new Error(`${field} ${ERR_MUST_BE_A_NUMBER}`)
+  }
+
+  if (value < MIN_SIZE) {
+    return MIN_SIZE
+  } else if (value > MAX_SIZE) {
+    return MAX_SIZE
+  } else {
+    return value
+  }
+}
+
+function validateAlpha (value, field) {
+  // Must be a number
+  if (typeof value !== 'number') {
+    throw new Error(`${field} ${ERR_MUST_BE_A_NUMBER}`)
+  }
+
+  if (value < MIN_ALPHA) {
+    return MIN_ALPHA
+  } else if (value > MAX_ALPHA) {
+    return MAX_ALPHA
+  } else {
+    return value
+  }
+}
+
+function validateRGB (value, field) {
+  // Must be a number
+  if (typeof value !== 'number') {
+    throw new Error(`${field} ${ERR_MUST_BE_A_NUMBER}`)
+  }
+
+  if (value < MIN_RGB) {
+    return MIN_RGB
+  } else if (value > MAX_RGB) {
+    return MAX_RGB
+  } else {
+    return value
+  }
+}
+
 function validateEmojiDatastructure (validatedEmojis, {
   emoji,
   id,
@@ -115,13 +183,14 @@ function validateEmojiDatastructure (validatedEmojis, {
     y: validatePosition(y, 'emoji.y'),
     scaleX: validateScale(scaleX, 'emoji.scaleX'),
     scaleY: validateScale(scaleY, 'emoji.scaleY'),
-    rotation,
-    size,
-    alpha,
-    red,
-    green,
-    blue
+    rotation: validateRotation(rotation, 'emoji.rotation'),
+    size: validateSize(size, 'emoji.size'),
+    alpha: validateAlpha(alpha, 'emoji.alpha'),
+    red: validateRGB(red, 'emoji.red'),
+    green, // range: 0-255
+    blue // range: 0-255
     // don't forget to add validations for filters (line 128)
+    // also, opacity
   }
 
   if (filters) {

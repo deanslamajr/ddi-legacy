@@ -14,7 +14,15 @@ import {
 
 import {
   MIN_POSITION,
-  MAX_POSITION
+  MAX_POSITION,
+  MIN_ROTATION,
+  MAX_ROTATION,
+  MIN_SIZE,
+  MAX_SIZE,
+  MIN_ALPHA,
+  MAX_ALPHA,
+  MIN_RGB,
+  MAX_RGB
 } from '../config/constants.json'
 
 const validStudioState = {
@@ -47,7 +55,7 @@ const validStudioState = {
       rotation: 0,
       size: 256,
       alpha: 0.88,
-      red: 255.01,
+      red: 255,
       green: 255,
       blue: 255,
       filters: ['RGBA']
@@ -79,7 +87,7 @@ const validStudioState = {
       rotation: 0,
       size: 100,
       alpha: 1,
-      red: 257.01,
+      red: 255,
       green: 0,
       blue: 0
     }
@@ -485,6 +493,126 @@ describe('validators', () => {
             expect(() => {
               validateEmojis(emojis)
             }).toThrow(`emoji.scaleY ${ERR_INCORRECT_SCALE_VALUE}`)
+          })
+        })
+      })
+
+      describe('emoji.rotation', () => {
+        describe('if not a number', () => {
+          it('should throw ERR_MUST_BE_A_NUMBER', () => {
+            Object.values(emojis).forEach(emoji => emoji.rotation = 'taco')
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.rotation ${ERR_MUST_BE_A_NUMBER}`)
+          })
+        })
+
+        describe('if less than MIN_ROTATION', () => {
+          it('should set to MIN_ROTATION', () => {
+            Object.values(emojis).forEach(emoji => emoji.rotation = MIN_ROTATION - 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].rotation).toEqual(MIN_ROTATION)
+          })
+        })
+
+        describe('if more than MAX_ROTATION', () => {
+          it('should set to MAX_ROTATION', () => {
+            Object.values(emojis).forEach(emoji => emoji.rotation = MAX_ROTATION + 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].rotation).toEqual(MAX_ROTATION)
+          })
+        })
+      })
+
+      describe('emoji.size', () => {
+        describe('if not a number', () => {
+          it('should throw ERR_MUST_BE_A_NUMBER', () => {
+            Object.values(emojis).forEach(emoji => emoji.size = 'taco')
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.size ${ERR_MUST_BE_A_NUMBER}`)
+          })
+        })
+
+        describe('if less than MIN_SIZE', () => {
+          it('should set to MIN_SIZE', () => {
+            Object.values(emojis).forEach(emoji => emoji.size = MIN_SIZE - 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].size).toEqual(MIN_SIZE)
+          })
+        })
+
+        describe('if more than MAX_SIZE', () => {
+          it('should set to MAX_SIZE', () => {
+            Object.values(emojis).forEach(emoji => emoji.size = MAX_SIZE + 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].size).toEqual(MAX_SIZE)
+          })
+        })
+      })
+
+      describe('emoji.alpha', () => {
+        describe('if not a number', () => {
+          it('should throw ERR_MUST_BE_A_NUMBER', () => {
+            Object.values(emojis).forEach(emoji => emoji.alpha = 'taco')
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.alpha ${ERR_MUST_BE_A_NUMBER}`)
+          })
+        })
+
+        describe('if less than MIN_ALPHA', () => {
+          it('should set to MIN_ALPHA', () => {
+            Object.values(emojis).forEach(emoji => emoji.alpha = MIN_ALPHA - 1)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].alpha).toEqual(MIN_ALPHA)
+          })
+        })
+
+        describe('if more than MAX_ALPHA', () => {
+          it('should set to MAX_ALPHA', () => {
+            Object.values(emojis).forEach(emoji => emoji.alpha = MAX_ALPHA + 1)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].alpha).toEqual(MAX_ALPHA)
+          })
+        })
+      })
+
+      describe('emoji.red', () => {
+        describe('if not a number', () => {
+          it('should throw ERR_MUST_BE_A_NUMBER', () => {
+            Object.values(emojis).forEach(emoji => emoji.red = 'taco')
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.red ${ERR_MUST_BE_A_NUMBER}`)
+          })
+        })
+
+        describe('if less than MIN_RGB', () => {
+          it('should set to MIN_RGB', () => {
+            Object.values(emojis).forEach(emoji => emoji.red = MIN_RGB - 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].red).toEqual(MIN_RGB)
+          })
+        })
+
+        describe('if more than MAX_RGB', () => {
+          it('should set to MAX_RGB', () => {
+            Object.values(emojis).forEach(emoji => emoji.red = MAX_RGB + 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].red).toEqual(MAX_RGB)
           })
         })
       })

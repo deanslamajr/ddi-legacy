@@ -19,6 +19,8 @@ const Button = styled.div`
   width: 60px;
   height: 60px;
   margin: .5rem;
+  font-size: .9rem;
+  text-align: center;
   user-select: none;
   color: ${props => {
     if (props.color === YELLOW) {
@@ -26,6 +28,7 @@ const Button = styled.div`
     }
     return props.theme.colors.lightGreen
   }};
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
   position: fixed;
   display: flex;
   align-items: center;

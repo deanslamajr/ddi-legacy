@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import { MenuButton, GreenMenuButton } from '../../components/Buttons'
-import Modal, { CenteredButtons, MessageContainer } from '../../components/Modal'
+import Modal, { CenteredButtons } from '../../components/Modal'
 import { validateTitle } from '../../shared/validators'
 
 const CenteredContainer = styled.div`

@@ -259,6 +259,7 @@ class StudioRoute extends Component {
 
   navigateBack = () => {
     this.props.showSpinner()
+    this.toggleActionsModal(false)
     Router.back()
   }
 

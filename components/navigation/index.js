@@ -15,9 +15,10 @@ export const YELLOW = 'YELLOW'
 const Button = styled.div`
   cursor: pointer;
   z-index: 9999;
-  height: 90px;
-  width: 90px;
-  margin: 0;
+  border-radius: 5rem;
+  width: 60px;
+  height: 60px;
+  margin: .5rem;
   user-select: none;
   color: ${props => {
     if (props.color === YELLOW) {

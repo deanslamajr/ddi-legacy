@@ -82,7 +82,7 @@ const BottomLeftButton = styled(Button)`
 `
 
 const BottomCenterButton = styled(Button)`
-  margin: 0 auto;
+  margin: .5rem auto;
   bottom: 0;
   left: 0;
   right: 0;
@@ -94,7 +94,7 @@ const BottomRightButton = styled(Button)`
 `
 
 const TopCenterButton = styled(Button)`
-  margin: 0 auto;
+  margin: .5rem auto;
   position: fixed;
   top: 0;
   left: 0;

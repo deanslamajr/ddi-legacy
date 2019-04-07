@@ -124,7 +124,7 @@ class CellRoute extends Component {
         />
 
         {canDuplicate && <NavButton
-          value='DUPLICATE'
+          value='COPY'
           color={ORANGE}
           cb={this.navigateToDuplicate}
           position={BOTTOM_CENTER}

@@ -84,10 +84,11 @@ export default class AddCellModal extends React.Component {
         <CellsContainer>
           {cells.sort(sortByOrder).map(({ imageUrl, image_url, title, urlId, url_id }) => <CellContainer>
             <Cell
-              onClick={() => onAddCellFromDuplicate(urlId || url_id)}
               imageUrl={imageUrl || image_url}
-              title={title}
               key={imageUrl || image_url}
+              onClick={() => onAddCellFromDuplicate(urlId || url_id)}
+              removeBorders
+              title={title}
             />
           </CellContainer>)}
         </CellsContainer>

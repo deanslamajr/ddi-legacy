@@ -1,6 +1,7 @@
 {
   "STORAGEKEY_STUDIO": "STUDIO_STATE",
   "S3_ASSET_FILETYPE": "image/png",
+  "MAX_EMOJIS_COUNT": 1000,
   "MAX_CAPTION_LENGTH": 255,
   "MIN_POSITION": -1000,
   "MAX_POSITION": 1000,
@@ -11,5 +12,10 @@
   "MIN_ALPHA": 0,
   "MAX_ALPHA": 1,
   "MIN_RGB": 0,
-  "MAX_RGB": 255
+  "MAX_RGB": 255,
+  "MIN_OPACITY": 0,
+  "MAX_OPACITY": 1,
+  "FILTERS_LIST": [
+    "RGBA"
+  ]
 }

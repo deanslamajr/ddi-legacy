@@ -6,6 +6,7 @@ import {
   ERR_MUST_BE_A_NUMBER,
   ERR_MUST_BE_A_STRING,
   ERR_VALUE_MUST_BE_SET,
+  ERR_EXCEED_MAX_EMOJIS,
   validateEmojis,
   validateId,
   validateStudioState,
@@ -22,8 +23,30 @@ import {
   MIN_ALPHA,
   MAX_ALPHA,
   MIN_RGB,
-  MAX_RGB
+  MAX_RGB,
+  MIN_OPACITY,
+  MAX_OPACITY,
+  MAX_EMOJIS_COUNT
 } from '../config/constants.json'
+
+function generateEmoji (newId) {
+  return {
+    emoji: '🦔',
+    id: newId,
+    order: newId,
+    x: 15,
+    y: 10,
+    scaleX: 1,
+    scaleY: 1,
+    rotation: 0,
+    size: 180,
+    alpha: 0,
+    red: 0,
+    green: 0,
+    blue: 0,
+    opacity: 1
+  }
+}
 
 const validStudioState = {
   activeEmojiId: 1,
@@ -42,7 +65,9 @@ const validStudioState = {
       alpha: 0.5,
       red: 129.18999999999983,
       green: 0,
-      blue: 0
+      blue: 0,
+      opacity: 1,
+      filters: ['RGBA']
     },
     '5': {
       emoji: '🦔',
@@ -58,6 +83,7 @@ const validStudioState = {
       red: 255,
       green: 255,
       blue: 255,
+      opacity: 1,
       filters: ['RGBA']
     },
   '6': {
@@ -73,7 +99,9 @@ const validStudioState = {
       alpha: 0.5,
       red: 125.01,
       green: 0,
-      blue: 0
+      blue: 0,
+      opacity: 1,
+      filters: ['RGBA']
     },
   '7': {
       emoji: '&',
@@ -89,7 +117,8 @@ const validStudioState = {
       alpha: 1,
       red: 255,
       green: 0,
-      blue: 0
+      blue: 0,
+      opacity: 1
     }
   },
   showEmojiPicker: false,
@@ -241,6 +270,20 @@ describe('validators', () => {
         const validatedEmojiKeys = Object.values(validatedEmojis).map(emoji => Object.keys(emoji).sort()) // sort to ignore array order
         const testDataEmojiKeys = Object.values(validStudioState.emojis).map(emoji => Object.keys(emoji).sort()) // sort to ignore array order
         expect(testDataEmojiKeys.sort()).toEqual(validatedEmojiKeys.sort()) // sort to ignore array order
+      })
+
+      describe('if count of emojis exceeds MAX_EMOJIS_COUNT', () => {
+        it('should throw ERR_EXCEED_MAX_EMOJIS', () => {
+          const tooManyEmojis = {}
+
+          for(let i = 0; i < (2 * MAX_EMOJIS_COUNT); i++) {
+            tooManyEmojis[i] = generateEmoji(i)
+          }
+            
+          expect(() => {
+            validateEmojis(tooManyEmojis)
+          }).toThrow(ERR_EXCEED_MAX_EMOJIS)
+        })
       })
 
       describe('emoji.emoji', () => {
@@ -613,6 +656,144 @@ describe('validators', () => {
             const validatedEmojis = validateEmojis(emojis)
             const arrayOfEmojis = Object.values(validatedEmojis)
             expect(arrayOfEmojis[0].red).toEqual(MAX_RGB)
+          })
+        })
+      })
+
+      describe('emoji.blue', () => {
+        describe('if not a number', () => {
+          it('should throw ERR_MUST_BE_A_NUMBER', () => {
+            Object.values(emojis).forEach(emoji => emoji.blue = 'taco')
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.blue ${ERR_MUST_BE_A_NUMBER}`)
+          })
+        })
+
+        describe('if less than MIN_RGB', () => {
+          it('should set to MIN_RGB', () => {
+            Object.values(emojis).forEach(emoji => emoji.blue = MIN_RGB - 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].blue).toEqual(MIN_RGB)
+          })
+        })
+
+        describe('if more than MAX_RGB', () => {
+          it('should set to MAX_RGB', () => {
+            Object.values(emojis).forEach(emoji => emoji.blue = MAX_RGB + 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].blue).toEqual(MAX_RGB)
+          })
+        })
+      })
+
+      describe('emoji.green', () => {
+        describe('if not a number', () => {
+          it('should throw ERR_MUST_BE_A_NUMBER', () => {
+            Object.values(emojis).forEach(emoji => emoji.green = 'taco')
+  
+            expect(() => {
+              validateEmojis(emojis)
+            }).toThrow(`emoji.green ${ERR_MUST_BE_A_NUMBER}`)
+          })
+        })
+
+        describe('if less than MIN_RGB', () => {
+          it('should set to MIN_RGB', () => {
+            Object.values(emojis).forEach(emoji => emoji.green = MIN_RGB - 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].green).toEqual(MIN_RGB)
+          })
+        })
+
+        describe('if more than MAX_RGB', () => {
+          it('should set to MAX_RGB', () => {
+            Object.values(emojis).forEach(emoji => emoji.green = MAX_RGB + 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].green).toEqual(MAX_RGB)
+          })
+        })
+      })
+
+      describe('emoji.opactiy', () => {
+        describe('if not a number', () => {
+          it('should set to MAX_OPACITY', () => {
+            Object.values(emojis).forEach(emoji => emoji.opacity = 'taco')
+  
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].opacity).toEqual(MAX_OPACITY)
+          })
+        })
+
+        describe('if less than MIN_OPACITY', () => {
+          it('should set to MIN_OPACITY', () => {
+            Object.values(emojis).forEach(emoji => emoji.opacity = MIN_OPACITY - 1)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].opacity).toEqual(MIN_OPACITY)
+          })
+        })
+
+        describe('if more than MAX_OPACITY', () => {
+          it('should set to MAX_OPACITY', () => {
+            Object.values(emojis).forEach(emoji => emoji.opacity = MAX_OPACITY + 1)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].opacity).toEqual(MAX_OPACITY)
+          })
+        })
+      })
+
+      describe('emoji.filters', () => {
+        it('should return an array of the recognized filters from the input array', () => {
+          const filters = ['RGBA']
+          Object.values(emojis).forEach(emoji => emoji.filters = filters)
+          const validatedEmojis = validateEmojis(emojis)
+          const arrayOfEmojis = Object.values(validatedEmojis)
+          expect(arrayOfEmojis[0].filters).toEqual(filters)
+        })
+
+        describe('if not an array', () => {
+          it('should set to an empty array', () => {
+            Object.values(emojis).forEach(emoji => emoji.filters = undefined)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].filters).toEqual([])
+          })
+        })
+
+        describe('if any array values exist that are not string type', () => {
+          it('should remove the item from array', () => {
+            Object.values(emojis).forEach(emoji => emoji.filters = [true, 16.45])
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].filters).toEqual([])
+          })
+        })
+
+        describe('if any array values are not recognized', () => {
+          it('should remove the item from array', () => {
+            Object.values(emojis).forEach(emoji => emoji.filters = ['UnrecognizedFilter'])
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].filters).toEqual([])
+          })
+        })
+
+        describe('if any recognized array value exists more than once', () => {
+          it('should remove the duplicate item(s) from array', () => {
+            const validatedFilters = ['RGBA']
+            const duplicateFilters = ['RGBA', 'RGBA', 'RGBA']
+            Object.values(emojis).forEach(emoji => emoji.filters = duplicateFilters)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].filters).toEqual(validatedFilters)
           })
         })
       })

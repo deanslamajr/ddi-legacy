@@ -1,8 +1,7 @@
-const cloneDeep = require('lodash/cloneDeep')
-
-const { emojiRegex } = require('../pages/studio/EmojiPicker')
+const { emojiRegex } = require('../shared')
 
 const {
+  MAX_EMOJIS_COUNT,
   MIN_POSITION,
   MAX_POSITION,
   MIN_ROTATION,
@@ -13,7 +12,10 @@ const {
   MAX_ALPHA,
   MIN_RGB,
   MAX_RGB,
-  MAX_CAPTION_LENGTH
+  MIN_OPACITY,
+  MAX_OPACITY,
+  MAX_CAPTION_LENGTH,
+  FILTERS_LIST
 } = require('../config/constants.json')
 
 const ERR_CANNOT_BE_NEGATIVE = 'cannot be a negative value'
@@ -21,6 +23,7 @@ const ERR_INCORRECT_SCALE_VALUE = 'must be either -1 or 1'
 const ERR_MUST_BE_A_NUMBER = 'must be a number type'
 const ERR_MUST_BE_A_STRING = 'must be a string type'
 const ERR_VALUE_MUST_BE_SET = 'must be set'
+const ERR_EXCEED_MAX_EMOJIS = `Emojis datastructure cannot exceed a count of ${MAX_EMOJIS_COUNT} emojis`
 
 function validateTitle (title) {
   let validatedTitle = title
@@ -159,6 +162,32 @@ function validateRGB (value, field) {
   }
 }
 
+function validateOpacity (value, field) {
+  // Must be a number
+  if (typeof value !== 'number') {
+    return MAX_OPACITY
+  }
+
+  if (value < MIN_OPACITY) {
+    return MIN_OPACITY
+  } else if (value > MAX_OPACITY) {
+    return MAX_OPACITY
+  } else {
+    return value
+  }
+}
+
+function validateFilters (filters, field) {
+  if (!filters) {
+    return []
+  }
+
+  const withoutUnrecognized = filters.filter(filter => FILTERS_LIST.includes(filter))
+
+  // remove duplicates
+  return Array.from(new Set(withoutUnrecognized))
+}
+
 function validateEmojiDatastructure (validatedEmojis, {
   emoji,
   id,
@@ -173,6 +202,7 @@ function validateEmojiDatastructure (validatedEmojis, {
   red,
   green,
   blue,
+  opacity,
   filters
 }) {
   validatedEmojis[id] = {
@@ -187,22 +217,22 @@ function validateEmojiDatastructure (validatedEmojis, {
     size: validateSize(size, 'emoji.size'),
     alpha: validateAlpha(alpha, 'emoji.alpha'),
     red: validateRGB(red, 'emoji.red'),
-    green, // range: 0-255
-    blue // range: 0-255
-    // don't forget to add validations for filters (line 128)
-    // also, opacity
-  }
-
-  if (filters) {
-    validatedEmojis[id].filters = filters
+    green: validateRGB(green, 'emoji.green'),
+    blue: validateRGB(blue, 'emoji.blue'),
+    opacity: validateOpacity(opacity, 'emoji.opacity'),
+    filters: validateFilters(filters, 'emoji.filters')
   }
 
   return validatedEmojis
 }
 
 function validateEmojis (emojis) {
-  const emojisArray = Object.keys(emojis).map(key => emojis[key])
+  const emojisArray = Object.values(emojis)
 
+  if (emojisArray.length > MAX_EMOJIS_COUNT) {
+    throw new Error(ERR_EXCEED_MAX_EMOJIS)
+  }
+  
   return emojisArray.reduce(validateEmojiDatastructure, {})
 }
 
@@ -230,6 +260,7 @@ module.exports = {
   ERR_MUST_BE_A_NUMBER,
   ERR_MUST_BE_A_STRING,
   ERR_VALUE_MUST_BE_SET,
+  ERR_EXCEED_MAX_EMOJIS,
   validateEmojis,
   validateId,
   validateStudioState,

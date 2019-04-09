@@ -25,6 +25,11 @@ const RedMenuButton = styled(MenuButton)`
   color: ${props => props.theme.colors.lightGreen};
 `
 
+const DisabledButton = styled(RedMenuButton)`
+  cursor: not-allowed;
+  pointer-events: none;
+`
+
 const GreenMenuButton = styled(MenuButton)`
   background-color: ${props => props.theme.colors.green};
   color: ${props => props.theme.colors.lightGreen};
@@ -39,5 +44,6 @@ export {
   MenuButton,
   BlueMenuButton,
   RedMenuButton,
-  GreenMenuButton
+  GreenMenuButton,
+  DisabledButton
 }

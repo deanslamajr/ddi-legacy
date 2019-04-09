@@ -6,12 +6,14 @@ import {
   MenuButton,
   RedMenuButton,
   BlueMenuButton,
-  GreenMenuButton
+  GreenMenuButton,
+  DisabledButton
 } from '../../components/Buttons'
 
 import {
   MIN_SIZE,
-  MAX_SIZE
+  MAX_SIZE,
+  MAX_EMOJIS_COUNT
 } from '../../config/constants.json'
 
 import { sortByOrder } from '../../helpers'
@@ -146,11 +148,11 @@ class BuilderMenu extends React.Component {
       activeEmoji,
       changeActiveEmoji,
       emojis,
-      setField,
-      updateCache
+      setField
     } = this.props
 
     const emojisArray = Object.values(emojis)
+    const canAddEmojis = emojisArray.length <= MAX_EMOJIS_COUNT
 
     return (<React.Fragment>
       <MenuButton onClick={() => this.setState({ currentMenu: SECONDARY })}>
@@ -169,9 +171,14 @@ class BuilderMenu extends React.Component {
         />
       </SliderContainer>
 
-      <GreenMenuButton onClick={this.props.openEmojiPicker}>
-        +
-      </GreenMenuButton>
+      {canAddEmojis
+        ? (<GreenMenuButton onClick={this.props.openEmojiPicker}>
+            +
+          </GreenMenuButton>)
+        : (<DisabledButton >
+            EMOJI LIMIT REACHED
+          </DisabledButton>)
+      }
 
       {emojisArray.sort(sortByOrder).reverse().map(({ emoji, id }, index) => (<SelectActiveEmojiButton
         key={`${id}${emoji}`}

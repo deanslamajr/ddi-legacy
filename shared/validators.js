@@ -178,11 +178,15 @@ function validateOpacity (value, field) {
 }
 
 function validateFilters (filters, field) {
-  if (!filters) {
-    return []
+  if (!filters || !Array.isArray(filters)) {
+    return undefined
   }
 
   const withoutUnrecognized = filters.filter(filter => FILTERS_LIST.includes(filter))
+
+  if (!withoutUnrecognized.length) {
+    return undefined
+  }
 
   // remove duplicates
   return Array.from(new Set(withoutUnrecognized))

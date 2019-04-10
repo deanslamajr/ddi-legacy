@@ -759,30 +759,57 @@ describe('validators', () => {
           expect(arrayOfEmojis[0].filters).toEqual(filters)
         })
 
-        describe('if not an array', () => {
-          it('should set to an empty array', () => {
+        describe('if a falsey value', () => {
+          it('should set to undefined', () => {
             Object.values(emojis).forEach(emoji => emoji.filters = undefined)
             const validatedEmojis = validateEmojis(emojis)
             const arrayOfEmojis = Object.values(validatedEmojis)
-            expect(arrayOfEmojis[0].filters).toEqual([])
+            expect(arrayOfEmojis[0].filters).toEqual(undefined)
+          })
+        })
+
+        describe('if not an array', () => {
+          it('should set to undefined', () => {
+            Object.values(emojis).forEach(emoji => emoji.filters = true)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].filters).toEqual(undefined)
           })
         })
 
         describe('if any array values exist that are not string type', () => {
           it('should remove the item from array', () => {
-            Object.values(emojis).forEach(emoji => emoji.filters = [true, 16.45])
+            Object.values(emojis).forEach(emoji => emoji.filters = [true, 16.45, 'RGBA'])
             const validatedEmojis = validateEmojis(emojis)
             const arrayOfEmojis = Object.values(validatedEmojis)
-            expect(arrayOfEmojis[0].filters).toEqual([])
+            expect(arrayOfEmojis[0].filters).toEqual(['RGBA'])
+          })
+
+          describe('if the remaining array is empty', () => {
+            it('should set to undefined', () => {
+              Object.values(emojis).forEach(emoji => emoji.filters = [true, 16.45])
+              const validatedEmojis = validateEmojis(emojis)
+              const arrayOfEmojis = Object.values(validatedEmojis)
+              expect(arrayOfEmojis[0].filters).toEqual(undefined)
+            })
           })
         })
 
         describe('if any array values are not recognized', () => {
           it('should remove the item from array', () => {
-            Object.values(emojis).forEach(emoji => emoji.filters = ['UnrecognizedFilter'])
+            Object.values(emojis).forEach(emoji => emoji.filters = ['RGBA', 'UnrecognizedFilter'])
             const validatedEmojis = validateEmojis(emojis)
             const arrayOfEmojis = Object.values(validatedEmojis)
-            expect(arrayOfEmojis[0].filters).toEqual([])
+            expect(arrayOfEmojis[0].filters).toEqual(['RGBA'])
+          })
+
+          describe('if the remaining array is empty', () => {
+            it('should set to undefined', () => {
+              Object.values(emojis).forEach(emoji => emoji.filters = ['UnrecognizedFilter'])
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].filters).toEqual(undefined)
+            })
           })
         })
 

@@ -13,6 +13,14 @@ import {
 import {
   MIN_SIZE,
   MAX_SIZE,
+  MIN_ROTATION,
+  MAX_ROTATION,
+  MIN_OPACITY,
+  MAX_OPACITY,
+  MIN_ALPHA,
+  MAX_ALPHA,
+  MIN_RGB,
+  MAX_RGB,
   MAX_EMOJIS_COUNT
 } from '../../config/constants.json'
 
@@ -229,8 +237,8 @@ class BuilderMenu extends React.Component {
 
       <SliderContainer>
         <Slider
-          min={-180}
-          max={180}
+          min={MIN_ROTATION}
+          max={MAX_ROTATION}
           step={1}
           value={(activeEmoji && activeEmoji.rotation) || 0}
           onDragEnd={this.onDragEnd}
@@ -286,8 +294,8 @@ class BuilderMenu extends React.Component {
       <SliderContainer>
         <Label>OPACITY</Label>
         <Slider
-          min={0}
-          max={1}
+          min={MIN_OPACITY}
+          max={MAX_OPACITY}
           step={.01}
           value={getOpacity(activeEmoji)}
           onDragEnd={this.onDragEnd}
@@ -305,8 +313,8 @@ class BuilderMenu extends React.Component {
         <SliderContainer>
           <Label>AMOUNT</Label>
           <Slider
-            min={0}
-            max={1}
+            min={MIN_ALPHA}
+            max={MAX_ALPHA}
             step={.01}
             value={(activeEmoji && activeEmoji.alpha) || 0}
             onDragEnd={this.onDragEnd}
@@ -317,8 +325,8 @@ class BuilderMenu extends React.Component {
         <SliderContainer>
           <Label>RED</Label>
           <Slider
-            min={0}
-            max={255}
+            min={MIN_RGB}
+            max={MAX_RGB}
             step={1}
             value={(activeEmoji && activeEmoji.red) || 0}
             onDragEnd={this.onDragEnd}
@@ -329,8 +337,8 @@ class BuilderMenu extends React.Component {
         <SliderContainer>
           <Label>BLUE</Label>
           <Slider
-            min={0}
-            max={255}
+            min={MIN_RGB}
+            max={MAX_RGB}
             step={1}
             value={(activeEmoji && activeEmoji.blue) || 0}
             onDragEnd={this.onDragEnd}
@@ -341,8 +349,8 @@ class BuilderMenu extends React.Component {
         <SliderContainer>
           <Label>GREEN</Label>
           <Slider
-            min={0}
-            max={255}
+            min={MIN_RGB}
+            max={MAX_RGB}
             step={1}
             value={(activeEmoji && activeEmoji.green) || 0}
             onDragEnd={this.onDragEnd}

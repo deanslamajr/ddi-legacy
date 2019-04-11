@@ -1,6 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep'
 
 import {
+  ERR_FILENAME_INVALID,
   ERR_CANNOT_BE_NEGATIVE,
   ERR_INCORRECT_SCALE_VALUE,
   ERR_MUST_BE_A_NUMBER,
@@ -8,6 +9,7 @@ import {
   ERR_VALUE_MUST_BE_SET,
   ERR_EXCEED_MAX_EMOJIS,
   validateEmojis,
+  validateFilename,
   validateId,
   validateStudioState,
   validateTitle
@@ -126,6 +128,57 @@ const validStudioState = {
 }
 
 describe('validators', () => {
+  describe('validateFilename', () => {
+    it('should strip the .png suffix from the filename before testing', () => {
+      // a 13 character filename should pass validation but with the
+      // 4 extra characters from the suffix .png this validation
+      // _would fail_ if the suffix was not stripped
+      expect(() => {
+        validateFilename('0123456789012.png')
+      }).not.toThrow()
+    })
+
+    describe('if filename doesnt have .png suffix', () => {
+      it('should throw', () => {
+        expect(() => {
+          validateFilename('noExtension')
+        }).toThrow(ERR_FILENAME_INVALID)
+      })
+    })
+
+    describe('if filename has any `.` characters other than the one in the extension `.png`', () => {
+      it('should throw', () => {
+        expect(() => {
+          validateFilename('taco.fun.png')
+        }).toThrow(ERR_FILENAME_INVALID)
+      })
+    })
+
+    describe('if filename has any non alphanumeric characters other than _-', () => {
+      it('should throw', () => {
+        expect(() => {
+          validateFilename('$urf$up.png')
+        }).toThrow(ERR_FILENAME_INVALID)
+      })
+    })
+
+    describe('if filename has spaces', () => {
+      it('should throw', () => {
+        expect(() => {
+          validateFilename('with spaces.png')
+        }).toThrow(ERR_FILENAME_INVALID)
+      })
+    })
+
+    describe('if filename is longer than 14 characters', () => {
+      it('should throw', () => {
+        expect(() => {
+          validateFilename('012345678901234.png')
+        }).toThrow(ERR_FILENAME_INVALID)
+      })
+    })
+  })
+
   describe('validateTitle', () => {
     describe('if value is longer than 255 characters', () => {
       it('should be clipped to the first 255 characters', () => {

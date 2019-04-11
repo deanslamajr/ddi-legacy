@@ -1,4 +1,5 @@
 const emojiRegexFactory = require('emoji-regex')
+const shortid = require('shortid')
 
 const {
   MAX_EMOJIS_COUNT,
@@ -18,6 +19,7 @@ const {
   FILTERS_LIST
 } = require('../config/constants.json')
 
+const ERR_FILENAME_INVALID = 'the given filename is invalid'
 const ERR_CANNOT_BE_NEGATIVE = 'cannot be a negative value'
 const ERR_INCORRECT_SCALE_VALUE = 'must be either -1 or 1'
 const ERR_MUST_BE_A_NUMBER = 'must be a number type'
@@ -33,6 +35,22 @@ function validateTitle (title) {
   }
 
   return validatedTitle
+}
+
+function validateFilename (filename) {
+  if (!filename.includes('.png')) {
+    throw new Error(ERR_FILENAME_INVALID)
+  }
+
+  const filenameWithoutExt = filename.slice(0, -4)
+  
+  if (!shortid.isValid(filenameWithoutExt)) {
+    throw new Error(ERR_FILENAME_INVALID)
+  }
+
+  if (filenameWithoutExt.length > 14) {
+    throw new Error(ERR_FILENAME_INVALID)
+  }
 }
 
 function validateId (id, field) {
@@ -260,6 +278,7 @@ function validateStudioState (studioState) {
 }
 
 module.exports = {
+  ERR_FILENAME_INVALID,
   ERR_CANNOT_BE_NEGATIVE,
   ERR_INCORRECT_SCALE_VALUE,
   ERR_MUST_BE_A_NUMBER,
@@ -267,6 +286,7 @@ module.exports = {
   ERR_VALUE_MUST_BE_SET,
   ERR_EXCEED_MAX_EMOJIS,
   validateEmojis,
+  validateFilename,
   validateId,
   validateStudioState,
   validateTitle

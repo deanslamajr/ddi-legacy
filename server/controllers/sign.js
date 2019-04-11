@@ -3,7 +3,10 @@ const shortid = require('shortid')
 const { sign: signViaS3 } = require('../adapters/s3')
 const { Cells, Comics } = require('../models/index')
 const { falsePositiveResponse } = require('./utils')
-const { validateTitle } = require('../../shared/validators')
+const {
+  validateFilename,
+  validateTitle
+} = require('../../shared/validators')
 
 async function sign (req, res) {
   try {
@@ -12,6 +15,9 @@ async function sign (req, res) {
     }
 
     const filename = req.query['file-name']
+
+    // throws on fail
+    validateFilename(filename)
     
     const title = validateTitle(req.query['title'])
 

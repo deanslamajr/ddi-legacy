@@ -1,6 +1,7 @@
 import { Component, Fragment } from 'react'
 import { emojiIndex } from 'emoji-mart'
 import styled from 'styled-components'
+import emojiRegexFactory from 'emoji-regex'
 
 import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT, BLUE } from '../../components/navigation'
 
@@ -127,6 +128,7 @@ class EmojiPicker extends Component {
     if (searchValue && searchValue.length === 1) {
       emojis.unshift(searchValue)
     } else {
+      const emojiRegex = emojiRegexFactory()
       const match = emojiRegex.exec(searchValue)
       if (match) {
         emojis.unshift(match[0])

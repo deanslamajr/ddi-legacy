@@ -5,8 +5,6 @@ import emojiRegexFactory from 'emoji-regex'
 
 import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT, BLUE } from '../../components/navigation'
 
-import { emojiRegex } from '../../shared'
-
 const emojis = Object.values(emojiIndex.emojis).filter(emoji => emoji.native).map(o => o.native)
 
 // from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array#answer-2450976

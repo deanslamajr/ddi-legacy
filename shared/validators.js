@@ -1,4 +1,4 @@
-const { emojiRegex } = require('../shared')
+const emojiRegexFactory = require('emoji-regex')
 
 const {
   MAX_EMOJIS_COUNT,
@@ -77,6 +77,7 @@ function validateEmojiField (value) {
     throw new Error(`emoji.emoji ${ERR_VALUE_MUST_BE_SET}`)
   }
 
+  const emojiRegex = emojiRegexFactory()
   const emojiMatch = emojiRegex.exec(value)
   if (emojiMatch) {
     return emojiMatch[0]

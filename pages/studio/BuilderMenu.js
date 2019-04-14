@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import Slider from '@material-ui/lab/Slider'
+import NewSlider from '../../components/slider'
 
 import {
   MenuButton,
@@ -36,7 +37,7 @@ const CenteredButtons = styled.div`
 
 const SliderContainer = styled.div`
   width: 100%;
-  padding: 2rem 0;
+  padding: 1.5rem 0;
 
   button {
     width: 2rem;
@@ -44,9 +45,9 @@ const SliderContainer = styled.div`
     background-color: ${props => props.theme.colors.blue};
   }
 
-  & div {
+  /* & div {
     background-color: ${props => props.theme.colors.blue};
-  }
+  } */
 `
 
 const HalfMenuButton = styled(MenuButton)`
@@ -169,13 +170,22 @@ class BuilderMenu extends React.Component {
 
       {/* SIZE */}
       <SliderContainer>
-        <Slider
+        {/* <Slider
           min={MIN_SIZE}
           max={MAX_SIZE}
           step={1}
           value={(activeEmoji && activeEmoji.size) || 0}
           onDragEnd={this.onDragEnd}
           onChange={(event, value) => setField('size', value)}
+        /> */}
+        <NewSlider
+          min={MIN_SIZE}
+          max={MAX_SIZE}
+          step={1}
+          value={(activeEmoji && activeEmoji.size) || 0}
+          onChangeComplete={this.onDragEnd}
+          tooltip={false}
+          onChange={(value) => setField('size', value)}
         />
       </SliderContainer>
 

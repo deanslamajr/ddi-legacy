@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import Slider from '@material-ui/lab/Slider'
+
 import NewSlider from '../../components/slider'
 
 import {

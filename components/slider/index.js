@@ -27,6 +27,149 @@ function clamp (value, min, max) {
 const ifVertical = (props, ifValue = 'inherit', elseValue = 'inherit') => props.orientation === 'vertical' ? ifValue : elseValue
 
 /**
+ * Styled components
+ */
+
+const LabelItem = styled.li`
+  position: ${props => ifVertical(props, 'absolute')};
+  transform: ${props => ifVertical(props, 'translate3d(0, -50%, 0)', 'translate3d(-50%, 0, 0)')};
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-block;
+  top: 10px;
+
+  &::before {
+    content: ${props => ifVertical(props, '')};
+    width: ${props => ifVertical(props, '10px')};
+    height: ${props => ifVertical(props, '2px')};
+    background: ${props => ifVertical(props, 'black')};
+    position: ${props => ifVertical(props, 'absolute')};
+    left: ${props => ifVertical(props, '-14px')};
+    top: ${props => ifVertical(props, '50%')};
+    transform: ${props => ifVertical(props, 'translateY(-50%)')};
+    z-index: ${props => ifVertical(props, '-1')};
+  }
+`
+
+const RangeSlider = styled.div`
+  display: block;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+  margin: 20px 0;
+  position: relative;
+  background: #e6e6e6;
+  -ms-touch-action: none;
+  touch-action: none;
+
+  height: ${props => ifVertical(props, '150px', '12px')};
+  border-radius: ${props => ifVertical(props, undefined, '10px')};
+
+  margin: ${props => ifVertical(props, '20px auto')};
+  max-width: ${props => ifVertical(props, '10px')};
+  background-color: ${props => ifVertical(props, 'transparent')};
+`
+
+const Fill = styled.div`
+  position: ${props => ifVertical(props, 'absolute')};
+  display: block;
+  box-shadow: ${props => ifVertical(props, 'none', 'inset 0 1px 3px rgba(0, 0, 0, 0.4)')};
+  background-color: #7cb342;
+  width: ${props => ifVertical(props, '100%')};
+  bottom: ${props => ifVertical(props, (props.isReverse ? 'inherit' : '0'))};
+  height: ${props => ifVertical(props, undefined, '100%')};
+  border-radius: ${props => ifVertical(props, undefined, '10px')};
+  top: ${props => ifVertical(props, (props.isReverse && '0'), '0')};
+
+  right: ${props => props.isReverse ? ifVertical(props, undefined, '0') : 'inherit'};
+`
+
+const Handle = styled.div`
+  background: ${props => props.theme.colors.blue};
+  border: 1px solid ${props => props.theme.colors.white};
+  cursor: pointer;
+  display: inline-block;
+  position: absolute;
+
+  opacity: ${props => props.isActive ? '1' : 'inherit'};
+
+  width: 30px;
+  height: ${props => ifVertical(props, '10px', '30px')};
+  left: ${props => ifVertical(props, '-10px')};
+  box-shadow: ${props => ifVertical(props, 'none', '0 1px 3px rgba(0, 0, 0, 0.4), 0 -1px 3px rgba(0, 0, 0, 0.4)')};
+
+  border-radius: ${props => ifVertical(props, undefined, '30px')};
+  top: ${props => ifVertical(props, undefined, '50%')};
+  transform: ${props => ifVertical(props, undefined, 'translate3d(-50%, -50%, 0)')};
+  padding: 0.3rem; /* I added this ?*/
+
+  /* &:after {
+    content: ${props => ifVertical(props, undefined, `' '`)};
+    position: ${props => ifVertical(props, undefined, 'absolute')};
+    width: ${props => ifVertical(props, undefined, '16px')};
+    height: ${props => ifVertical(props, undefined, '16px')};
+    top: ${props => ifVertical(props, undefined, '6px')};
+    left: ${props => ifVertical(props, undefined, '6px')}6px;
+    border-radius: ${props => ifVertical(props, undefined, '50%')};
+    background-color: ${props => ifVertical(props, undefined, '#dadada')};
+    box-shadow:${props => ifVertical(props, undefined, '0 1px 3px rgba(0, 0, 0, 0.4) inset, 0 -1px 3px rgba(0, 0, 0, 0.4) inset')};
+  } */
+`
+
+const Tooltip = styled.div`
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  font-weight: normal;
+  font-size: 14px;
+  transition: all 100ms ease-in;
+  border-radius: 4px;
+  display: inline-block;
+  color: white;
+  left: 50%;
+  transform: translate3d(-50%, 0, 0);
+  span {
+    margin-top: 12px;
+    display: inline-block;
+    line-height: 100%;
+  }
+  &:after {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+  }
+
+  top: ${props => ifVertical(props, '50%', '-55px')};
+  left: ${props => ifVertical(props, '-100%')};
+  transform: ${props => ifVertical(props, 'translate3d(-50%, -50%, 0)')};
+
+  &:after {
+    border-top: 8px solid transparent;
+    border-bottom: ${props => ifVertical(props, '8px solid transparent')};
+    border-left: ${props => ifVertical(props, '8px solid rgba(0, 0, 0, 0.8)', '8px solid transparent')};
+    left: ${props => ifVertical(props, '100%', '50%')};
+    top: ${props => ifVertical(props, '12px')};
+
+    border-right: ${props => ifVertical(props, undefined, '8px solid transparent')};
+    bottom: ${props => ifVertical(props, undefined, '-8px')};
+    transform: ${props => ifVertical(props, undefined, 'translate3d(-50%, 0, 0)')};
+  }
+`
+
+const Labels = styled.ul`
+  position: relative;
+  
+  list-style-type: ${props => ifVertical(props, 'none')};
+  margin: ${props => ifVertical(props, '0 0 0 24px')};
+  padding: ${props => ifVertical(props, '0')};
+  text-align: ${props => ifVertical(props, 'left')};
+  width: ${props => ifVertical(props, '250px')};
+  height: ${props => ifVertical(props, '100%')};
+  left: ${props => ifVertical(props, '10px')};
+`
+
+/**
  * Predefined constants
  * @type {Object}
  */
@@ -149,15 +292,13 @@ class Slider extends Component {
     e.stopPropagation()
     const { onChange } = this.props
     const { target: { className, classList, dataset } } = e
-    console.log('className', className)
+    
     // @todo figure out what this does and reimplement
     if (!onChange || className === 'rangeslider__labels') return
 
     let value = this.position(e)
 
-    console.log('classList', classList)
-    console.log('dataset', dataset)
-
+    // @todo figure out what this does and reimplement
     if (
       classList &&
       classList.contains('rangeslider__label-item') &&
@@ -293,18 +434,6 @@ class Slider extends Component {
   };
 
   renderLabels = (labels, orientation) => {
-    const Labels = styled.ul`
-      position: relative;
-      
-      list-style-type: ${props => ifVertical(props, 'none')};
-      margin: ${props => ifVertical(props, '0 0 0 24px')};
-      padding: ${props => ifVertical(props, '0')};
-      text-align: ${props => ifVertical(props, 'left')};
-      width: ${props => ifVertical(props, '250px')};
-      height: ${props => ifVertical(props, '100%')};
-      left: ${props => ifVertical(props, '10px')};
-    `
-
     return (<Labels
       ref={sl => {
         this.labels = sl
@@ -341,135 +470,6 @@ class Slider extends Component {
 
     let labelItems = []
     let labelKeys = Object.keys(labels)
-
-    const LabelItem = styled.li`
-      position: ${props => ifVertical(props, 'absolute')};
-      transform: ${props => ifVertical(props, 'translate3d(0, -50%, 0)', 'translate3d(-50%, 0, 0)')};
-      font-size: 14px;
-      cursor: pointer;
-      display: inline-block;
-      top: 10px;
-
-      &::before {
-        content: ${props => ifVertical(props, '')};
-        width: ${props => ifVertical(props, '10px')};
-        height: ${props => ifVertical(props, '2px')};
-        background: ${props => ifVertical(props, 'black')};
-        position: ${props => ifVertical(props, 'absolute')};
-        left: ${props => ifVertical(props, '-14px')};
-        top: ${props => ifVertical(props, '50%')};
-        transform: ${props => ifVertical(props, 'translateY(-50%)')};
-        z-index: ${props => ifVertical(props, '-1')};
-      }
-    `
-
-    const RangeSlider = styled.div`
-      display: block;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
-      margin: 20px 0;
-      position: relative;
-      background: #e6e6e6;
-      -ms-touch-action: none;
-      touch-action: none;
-
-      height: ${props => ifVertical(props, '150px', '12px')};
-      border-radius: ${props => ifVertical(props, undefined, '10px')};
-
-      margin: ${props => ifVertical(props, '20px auto')};
-      max-width: ${props => ifVertical(props, '10px')};
-      background-color: ${props => ifVertical(props, 'transparent')};
-    `
-
-    const Fill = styled.div`
-      position: ${props => ifVertical(props, 'absolute')};
-      display: block;
-      box-shadow: ${props => ifVertical(props, 'none', 'inset 0 1px 3px rgba(0, 0, 0, 0.4)')};
-      background-color: #7cb342;
-      width: ${props => ifVertical(props, '100%')};
-      bottom: ${props => ifVertical(props, (props.isReverse ? 'inherit' : '0'))};
-      height: ${props => ifVertical(props, undefined, '100%')};
-      border-radius: ${props => ifVertical(props, undefined, '10px')};
-      top: ${props => ifVertical(props, (props.isReverse && '0'), '0')};
-
-      right: ${props => props.isReverse ? ifVertical(props, undefined, '0') : 'inherit'};
-    `
-
-    const Handle = styled.div`
-      background: ${props => props.theme.colors.blue};
-      border: 1px solid ${props => props.theme.colors.white};
-      cursor: pointer;
-      display: inline-block;
-      position: absolute;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 -1px 3px rgba(0, 0, 0, 0.4);
-
-      opacity: ${props => props.isActive ? '1' : 'inherit'};
-
-      position: 'absolute';
-      width: 30px;
-      height: ${props => ifVertical(props, '10px', '30px')};
-      left: ${props => ifVertical(props, '-10px')};
-      box-shadow: ${props => ifVertical(props, 'none')};
-
-      border-radius: ${props => ifVertical(props, undefined, '30px')};
-      top: ${props => ifVertical(props, undefined, '50%')};
-      transform: ${props => ifVertical(props, undefined, 'translate3d(-50%, -50%, 0)')};
-      padding: 0.3rem;
-
-      /* &:after {
-        content: ${props => ifVertical(props, undefined, `' '`)};
-        position: ${props => ifVertical(props, undefined, 'absolute')};
-        width: ${props => ifVertical(props, undefined, '16px')};
-        height: ${props => ifVertical(props, undefined, '16px')};
-        top: ${props => ifVertical(props, undefined, '6px')};
-        left: ${props => ifVertical(props, undefined, '6px')}6px;
-        border-radius: ${props => ifVertical(props, undefined, '50%')};
-        background-color: ${props => ifVertical(props, undefined, '#dadada')};
-        box-shadow:${props => ifVertical(props, undefined, '0 1px 3px rgba(0, 0, 0, 0.4) inset, 0 -1px 3px rgba(0, 0, 0, 0.4) inset')};
-      } */
-    `
-
-    const Tooltip = styled.div`
-      width: 40px;
-      height: 40px;
-      text-align: center;
-      position: absolute;
-      background-color: rgba(0, 0, 0, 0.8);
-      font-weight: normal;
-      font-size: 14px;
-      transition: all 100ms ease-in;
-      border-radius: 4px;
-      display: inline-block;
-      color: white;
-      left: 50%;
-      transform: translate3d(-50%, 0, 0);
-      span {
-        margin-top: 12px;
-        display: inline-block;
-        line-height: 100%;
-      }
-      &:after {
-        content: ' ';
-        position: absolute;
-        width: 0;
-        height: 0;
-      }
-
-      top: ${props => ifVertical(props, '50%', '-55px')};
-      left: ${props => ifVertical(props, '-100%')};
-      transform: ${props => ifVertical(props, 'translate3d(-50%, -50%, 0)')};
-
-      &:after {
-        border-top: 8px solid transparent;
-        border-bottom: ${props => ifVertical(props, '8px solid transparent')};
-        border-left: ${props => ifVertical(props, '8px solid rgba(0, 0, 0, 0.8)', '8px solid transparent')};
-        left: ${props => ifVertical(props, '100%', '50%')};
-        top: ${props => ifVertical(props, '12px')};
-
-        border-right: ${props => ifVertical(props, undefined, '8px solid transparent')};
-        bottom: ${props => ifVertical(props, undefined, '-8px')};
-        transform: ${props => ifVertical(props, undefined, 'translate3d(-50%, 0, 0)')};
-      }
-    `
 
     if (labelKeys.length > 0) {
       labelKeys = labelKeys.sort((a, b) => (reverse ? a - b : b - a))

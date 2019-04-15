@@ -104,18 +104,6 @@ const Handle = styled.div`
   transform: ${props => ifVertical(props, undefined, 'translate3d(-50%, -50%, 0)')};
   padding: 0.3rem; /* I added this ?*/
   user-select: none;
-
-  /* &:after {
-    content: ${props => ifVertical(props, undefined, `' '`)};
-    position: ${props => ifVertical(props, undefined, 'absolute')};
-    width: ${props => ifVertical(props, undefined, '16px')};
-    height: ${props => ifVertical(props, undefined, '16px')};
-    top: ${props => ifVertical(props, undefined, '6px')};
-    left: ${props => ifVertical(props, undefined, '6px')}6px;
-    border-radius: ${props => ifVertical(props, undefined, '50%')};
-    background-color: ${props => ifVertical(props, undefined, '#dadada')};
-    box-shadow:${props => ifVertical(props, undefined, '0 1px 3px rgba(0, 0, 0, 0.4) inset, 0 -1px 3px rgba(0, 0, 0, 0.4) inset')};
-  } */
 `
 
 const Tooltip = styled.div`

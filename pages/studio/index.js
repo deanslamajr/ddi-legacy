@@ -343,12 +343,13 @@ class StudioRoute extends Component {
 
   setField = (field, value) => {
     this.setState(({ activeEmojiId, emojis }) => {
-      this.updateEmojiCache(activeEmojiId)
-
       const clonedEmojis = cloneDeep(emojis)
       clonedEmojis[activeEmojiId][field] = value
       
       return { emojis: clonedEmojis }
+    }, () => {
+      this.updateCache()
+      this.updateEmojiCache()
     })
   }
 
@@ -666,8 +667,6 @@ class StudioRoute extends Component {
                 setField={this.setField}
                 toggleFilter={this.toggleFilter}
                 toggleCaptionModal={this.toggleCaptionModal}
-                updateCache={this.updateCache}
-                updateEmojiCache={this.updateEmojiCache}
               />
 
               {this.state.showEmojiPicker && <EmojiPicker

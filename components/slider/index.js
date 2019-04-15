@@ -37,6 +37,7 @@ const LabelItem = styled.li`
   cursor: pointer;
   display: inline-block;
   top: 10px;
+  user-select: none;
 
   &::before {
     content: ${props => ifVertical(props, '')};
@@ -59,6 +60,7 @@ const RangeSlider = styled.div`
   background: #e6e6e6;
   -ms-touch-action: none;
   touch-action: none;
+  user-select: none;
 
   height: ${props => ifVertical(props, '150px', '12px')};
   border-radius: ${props => ifVertical(props, undefined, '10px')};
@@ -80,6 +82,7 @@ const Fill = styled.div`
   top: ${props => ifVertical(props, (props.isReverse && '0'), '0')};
 
   right: ${props => props.isReverse ? ifVertical(props, undefined, '0') : 'inherit'};
+  user-select: none;
 `
 
 const Handle = styled.div`
@@ -100,6 +103,7 @@ const Handle = styled.div`
   top: ${props => ifVertical(props, undefined, '50%')};
   transform: ${props => ifVertical(props, undefined, 'translate3d(-50%, -50%, 0)')};
   padding: 0.3rem; /* I added this ?*/
+  user-select: none;
 
   /* &:after {
     content: ${props => ifVertical(props, undefined, `' '`)};

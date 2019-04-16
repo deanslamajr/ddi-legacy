@@ -87,7 +87,7 @@ const Fill = styled.div`
 
 const Handle = styled.div`
   background: ${props => props.theme.colors.blue};
-  border: 1px solid ${props => props.theme.colors.white};
+  /* border: 1px solid ${props => props.theme.colors.white}; */
   cursor: pointer;
   display: inline-block;
   position: absolute;
@@ -97,7 +97,7 @@ const Handle = styled.div`
   width: 30px;
   height: ${props => ifVertical(props, '10px', '30px')};
   left: ${props => ifVertical(props, '-10px')};
-  box-shadow: ${props => ifVertical(props, 'none', '0 1px 3px rgba(0, 0, 0, 0.4), 0 -1px 3px rgba(0, 0, 0, 0.4)')};
+  box-shadow: ${props => ifVertical(props, 'none', 'rgba(0, 0, 0, 0.15) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px')};
 
   border-radius: ${props => ifVertical(props, undefined, '30px')};
   top: ${props => ifVertical(props, undefined, '50%')};
@@ -547,7 +547,7 @@ class Slider extends Component {
             {handleLabel}
           </div>
         </Handle>
-        {labels ? this.renderLabels(labelItems, orientation) : null}
+        {/* {labels ? this.renderLabels(labelItems, orientation) : null} */}
       </RangeSlider>
     )
   }

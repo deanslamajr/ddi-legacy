@@ -509,7 +509,6 @@ class Slider extends Component {
           }}
           // className='rangeslider__handle'
           onMouseDown={this.handleStart}
-          onTouchStart={this.handleStart}
           onKeyDown={this.handleKeyDown}
           style={handleStyle}
           tabIndex={0}

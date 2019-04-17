@@ -473,35 +473,6 @@ class Slider extends Component {
     const coords = this.coordinates(position)
     const fillStyle = { [dimension]: `${coords.fill}px` }
     const handleStyle = { [direction]: `${coords.handle}px` }
-    let showTooltip = tooltip && active
-
-    let labelItems = []
-    let labelKeys = Object.keys(labels)
-
-    if (labelKeys.length > 0) {
-      labelKeys = labelKeys.sort((a, b) => (reverse ? a - b : b - a))
-
-      for (let key of labelKeys) {
-        const labelPosition = this.getPositionFromValue(key)
-        const labelCoords = this.coordinates(labelPosition)
-        const labelStyle = { [direction]: `${labelCoords.label}px` }
-
-        labelItems.push(
-          <LabelItem
-            key={key}
-            // className={cx('rangeslider__label-item')}
-            data-value={key}
-            onMouseDown={this.handleDrag}
-            onTouchStart={this.handleStart}
-            onTouchEnd={this.handleEnd}
-            style={labelStyle}
-            orientation={orientation}
-          >
-            {this.props.labels[key]}
-          </LabelItem>
-        )
-      }
-    }
 
     return (
       <RangeSlider
@@ -517,7 +488,7 @@ class Slider extends Component {
         /*)*/}
         onMouseDown={this.handleDrag}
         onMouseUp={this.handleEnd}
-        onTouchStart={this.handleStart}
+        onTouchMove={this.handleDrag}
         onTouchEnd={this.handleEnd}
         aria-valuemin={min}
         aria-valuemax={max}
@@ -538,8 +509,7 @@ class Slider extends Component {
           }}
           // className='rangeslider__handle'
           onMouseDown={this.handleStart}
-          onTouchMove={this.handleDrag}
-          onTouchEnd={this.handleEnd}
+          onTouchStart={this.handleStart}
           onKeyDown={this.handleKeyDown}
           style={handleStyle}
           tabIndex={0}
@@ -547,7 +517,6 @@ class Slider extends Component {
           orientation={orientation}
           color={color}
         />
-        {/* {labels ? this.renderLabels(labelItems, orientation) : null} */}
       </RangeSlider>
     )
   }

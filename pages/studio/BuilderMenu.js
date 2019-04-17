@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import Slider from '@material-ui/lab/Slider'
 
+import NewerSlider from '../../components/NewSlider'
 import NewSlider from '../../components/slider'
 import theme from '../../helpers/theme'
 
@@ -181,7 +182,7 @@ class BuilderMenu extends React.Component {
           onChange={(event, value) => setField('size', value)}
         /> */}
         <Label>SIZE</Label>
-        <NewSlider
+        {/* <NewerSlider
           min={MIN_SIZE}
           max={MAX_SIZE}
           step={1}
@@ -190,6 +191,13 @@ class BuilderMenu extends React.Component {
           tooltip={false}
           onChange={(value) => setField('size', value)}
           color={theme.colors.blue}
+        /> */}
+        <NewerSlider
+          min={MIN_SIZE}
+          max={MAX_SIZE}
+          step={1}
+          value={(activeEmoji && activeEmoji.size) || 0}
+          onChange={(value) => setField('size', value)}
         />
       </SliderContainer>
 

@@ -74,7 +74,8 @@ const Fill = styled.div`
   position: ${props => ifVertical(props, 'absolute')};
   display: block;
   box-shadow: ${props => ifVertical(props, 'none', 'inset 0 1px 3px rgba(0, 0, 0, 0.4)')};
-  background-color: #7cb342;
+  background-color: ${props => props.theme.colors.backgroundGreen};
+  filter: brightness(0.95);
   width: ${props => ifVertical(props, '100%')};
   bottom: ${props => ifVertical(props, (props.isReverse ? 'inherit' : '0'))};
   height: ${props => ifVertical(props, undefined, '100%')};
@@ -86,7 +87,7 @@ const Fill = styled.div`
 `
 
 const Handle = styled.div`
-  background: ${props => props.theme.colors.blue};
+  background: ${props => props.theme.colors.white};
   /* border: 1px solid ${props => props.theme.colors.white}; */
   cursor: pointer;
   display: inline-block;
@@ -104,6 +105,19 @@ const Handle = styled.div`
   transform: ${props => ifVertical(props, undefined, 'translate3d(-50%, -50%, 0)')};
   padding: 0.3rem; /* I added this ?*/
   user-select: none;
+
+  &:hover {
+    /* background: ${props => props.color || props.theme.colors.green}; */
+    filter: brightness(0.95);
+  }
+
+  &:active {
+    filter: brightness(0.85);
+  }
+
+  &:focus{
+    outline: none;
+  }
 `
 
 const Tooltip = styled.div`
@@ -442,6 +456,7 @@ class Slider extends Component {
       value,
       orientation,
       className,
+      color,
       tooltip,
       reverse,
       labels,
@@ -515,6 +530,7 @@ class Slider extends Component {
           style={fillStyle}
           orientation={orientation}
           isReverse={reverse}
+          color={color}
         />
         <Handle
           ref={sh => {
@@ -529,6 +545,7 @@ class Slider extends Component {
           tabIndex={0}
           isActive={active}
           orientation={orientation}
+          color={color}
         >
           {showTooltip
             ? <Tooltip

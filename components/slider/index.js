@@ -546,24 +546,7 @@ class Slider extends Component {
           isActive={active}
           orientation={orientation}
           color={color}
-        >
-          {showTooltip
-            ? <Tooltip
-              ref={st => {
-                this.tooltip = st
-              }}
-              orientation={orientation}
-              // className='rangeslider__handle-tooltip'
-              >
-              <span>{this.handleFormat(value)}</span>
-            </Tooltip>
-            : null}
-          <div
-            // className='rangeslider__handle-label'
-          >
-            {handleLabel}
-          </div>
-        </Handle>
+        />
         {/* {labels ? this.renderLabels(labelItems, orientation) : null} */}
       </RangeSlider>
     )

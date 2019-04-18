@@ -1,10 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import Slider from '@material-ui/lab/Slider'
 
-import NewerSlider from '../../components/NewSlider'
-import NewSlider from '../../components/slider'
-import theme from '../../helpers/theme'
+import NewSlider from '../../components/NewSlider'
 
 import {
   MenuButton,
@@ -171,28 +168,9 @@ class BuilderMenu extends React.Component {
         ADVANCED
       </MenuButton>
 
-      {/* SIZE */}
       <SliderContainer>
-        {/* <Slider
-          min={MIN_SIZE}
-          max={MAX_SIZE}
-          step={1}
-          value={(activeEmoji && activeEmoji.size) || 0}
-          onDragEnd={this.onDragEnd}
-          onChange={(event, value) => setField('size', value)}
-        /> */}
         <Label>SIZE</Label>
-        {/* <NewerSlider
-          min={MIN_SIZE}
-          max={MAX_SIZE}
-          step={1}
-          value={(activeEmoji && activeEmoji.size) || 0}
-          onChangeComplete={this.onDragEnd}
-          tooltip={false}
-          onChange={(value) => setField('size', value)}
-          color={theme.colors.blue}
-        /> */}
-        <NewerSlider
+        <NewSlider
           min={MIN_SIZE}
           max={MAX_SIZE}
           step={1}
@@ -258,24 +236,13 @@ class BuilderMenu extends React.Component {
       </MenuButton>
 
       <SliderContainer>
-        {/* <Slider
-          min={MIN_ROTATION}
-          max={MAX_ROTATION}
-          step={1}
-          value={(activeEmoji && activeEmoji.rotation) || 0}
-          onDragEnd={this.onDragEnd}
-          onChange={(event, value) => setField('rotation', value)}
-        /> */}
         <Label>ROTATION</Label>
         <NewSlider
           min={MIN_ROTATION}
           max={MAX_ROTATION}
           step={1}
           value={(activeEmoji && activeEmoji.rotation) || 0}
-          onChangeComplete={this.onDragEnd}
-          tooltip={false}
           onChange={(value) => setField('rotation', value)}
-          color={theme.colors.green}
         />
       </SliderContainer>
 
@@ -326,21 +293,11 @@ class BuilderMenu extends React.Component {
 
       <SliderContainer>
         <Label>OPACITY</Label>
-        {/* <Slider
-          min={MIN_OPACITY}
-          max={MAX_OPACITY}
-          step={.01}
-          value={getOpacity(activeEmoji)}
-          onDragEnd={this.onDragEnd}
-          onChange={(event, value) => setField('opacity', value)}
-        /> */}
         <NewSlider
           min={MIN_OPACITY}
           max={MAX_OPACITY}
           step={.01}
           value={getOpacity(activeEmoji)}
-          onChangeComplete={this.onDragEnd}
-          tooltip={false}
           onChange={(value) => setField('opacity', value)}
         />
       </SliderContainer>
@@ -354,84 +311,44 @@ class BuilderMenu extends React.Component {
       {activeEmoji.filters && (<React.Fragment>
         <SliderContainer>
           <Label>AMOUNT</Label>
-          {/* <Slider
-            min={MIN_ALPHA}
-            max={MAX_ALPHA}
-            step={.01}
-            value={(activeEmoji && activeEmoji.alpha) || 0}
-            onDragEnd={this.onDragEnd}
-            onChange={(event, value) => setField('alpha', value)}
-          /> */}
           <NewSlider
             min={MIN_ALPHA}
             max={MAX_ALPHA}
             step={.01}
             value={(activeEmoji && activeEmoji.alpha) || 0}
-            onChangeComplete={this.onDragEnd}
-            tooltip={false}
             onChange={(value) => setField('alpha', value)}
           />
         </SliderContainer>
         
         <SliderContainer>
           <Label>RED</Label>
-          {/* <Slider
-            min={MIN_RGB}
-            max={MAX_RGB}
-            step={1}
-            value={(activeEmoji && activeEmoji.red) || 0}
-            onDragEnd={this.onDragEnd}
-            onChange={(event, value) => setField('red', value)}
-          /> */}
           <NewSlider
             min={MIN_RGB}
             max={MAX_RGB}
             step={1}
             value={(activeEmoji && activeEmoji.red) || 0}
-            onChangeComplete={this.onDragEnd}
-            tooltip={false}
             onChange={(value) => setField('red', value)}
           />
         </SliderContainer>
         
         <SliderContainer>
           <Label>BLUE</Label>
-          {/* <Slider
-            min={MIN_RGB}
-            max={MAX_RGB}
-            step={1}
-            value={(activeEmoji && activeEmoji.blue) || 0}
-            onDragEnd={this.onDragEnd}
-            onChange={(event, value) => setField('blue', value)}
-          /> */}
           <NewSlider
             min={MIN_RGB}
             max={MAX_RGB}
             step={1}
             value={(activeEmoji && activeEmoji.blue) || 0}
-            onChangeComplete={this.onDragEnd}
-            tooltip={false}
             onChange={(value) => setField('blue', value)}
           />
         </SliderContainer>
         
         <SliderContainer>
           <Label>GREEN</Label>
-          {/* <Slider
-            min={MIN_RGB}
-            max={MAX_RGB}
-            step={1}
-            value={(activeEmoji && activeEmoji.green) || 0}
-            onDragEnd={this.onDragEnd}
-            onChange={(event, value) => setField('green', value)}
-          /> */}
           <NewSlider
             min={MIN_RGB}
             max={MAX_RGB}
             step={1}
             value={(activeEmoji && activeEmoji.green) || 0}
-            onChangeComplete={this.onDragEnd}
-            tooltip={false}
             onChange={(value) => setField('green', value)}
           />
         </SliderContainer>

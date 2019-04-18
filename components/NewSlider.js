@@ -6,12 +6,11 @@ const SlideContainer = styled.div`
 `
 
 const Slider = styled.input`
-  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   height: 15px;
   border-radius: 5px;   
   background: ${props => props.theme.colors.backgroundGreen};
-  /* outline: none; */
   opacity: 0.7;
   transition: opacity .2s;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
@@ -48,7 +47,8 @@ class NewSlider extends React.Component {
     const newValue = e && e.target && e.target.value
 
     if (newValue) {
-      this.props.onChange(newValue)
+      const newNumber = parseFloat(newValue)
+      this.props.onChange(newNumber)
     }
   }
 

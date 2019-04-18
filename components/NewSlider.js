@@ -15,6 +15,8 @@ const Slider = styled.input`
   transition: opacity .2s;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
   user-select: none;
+  margin: 0;
+  border: none;
 
   &:focus{
     outline: none;

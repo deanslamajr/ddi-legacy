@@ -46,7 +46,6 @@
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-konva": "^16.6.31",
-    "resize-observer-polyfill": "^1.5.1",
     "sequelize": "^4.42.0",
     "shortid": "^2.2.14",
     "store2": "^2.7.1",

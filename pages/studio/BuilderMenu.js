@@ -92,6 +92,7 @@ const ChangeLayerButton = styled(ThirdOfAButton)`
   width: ${props => props.isActive ? 'calc(20% - 1px)' : '20%'};
   background-color: ${props => props.isIncrease ? props.theme.colors.clearerGreen : props.theme.colors.clearerRed};
   color: ${props => props.isIncrease ? props.theme.colors.clearGreen : props.theme.colors.clearRed};
+  cursor: pointer;
 
   &:hover {
     background-color: ${props => props.isIncrease ? props.theme.colors.green : props.theme.colors.red};

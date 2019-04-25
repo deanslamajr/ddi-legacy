@@ -44,10 +44,6 @@ const SliderContainer = styled.div`
     height: 2rem;
     background-color: ${props => props.theme.colors.blue};
   }
-
-  /* & div {
-    background-color: ${props => props.theme.colors.blue};
-  } */
 `
 
 const HalfMenuButton = styled(MenuButton)`

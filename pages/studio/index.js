@@ -143,11 +143,29 @@ class StudioRoute extends Component {
       else {
         parentId = null
       }
-      
+    }
+
+    let backActionPath
+    let backButtonLabel
+
+    if (comicId && parentId) {
+      backButtonLabel = 'TO COMIC'
+      backActionPath = `/comic/${comicId}`
+    } else if (parentId) {
+      backButtonLabel = 'TO CELL'
+      backActionPath = `/cell/${parentId}`
+    } else if (comicId) {
+      backButtonLabel = 'TO COMIC'
+      backActionPath = `/comic/${comicId}`
+    } else {
+      backButtonLabel = 'TO GALLERY'
+      backActionPath = '/gallery'
     }
 
     return {
       comicId,
+      backActionPath,
+      backButtonLabel,
       parentId,
       studioState
     }
@@ -260,7 +278,7 @@ class StudioRoute extends Component {
   navigateBack = () => {
     this.props.showSpinner()
     this.toggleActionsModal(false)
-    Router.back()
+    Router.pushRoute(this.props.backActionPath)
   }
 
   openEmojiPicker = () => {
@@ -581,6 +599,17 @@ class StudioRoute extends Component {
     this.toggleCaptionModal(false)
   }
 
+  onPickerCancel = () => {
+    const resetStudioAndNavidateAway = () => {
+      this.resetStudioSession()
+      Router.pushRoute(this.props.backActionPath)
+    }
+
+    this.state.activeEmojiId
+      ? this.closeEmojiPicker()
+      : resetStudioAndNavidateAway()
+  }
+
   componentDidMount () {
     const store = require('store2')
     const studioCache = store(STORAGEKEY_STUDIO)
@@ -589,6 +618,9 @@ class StudioRoute extends Component {
       // if the cached parentId matches the current parentId, refresh from cache
       if (!this.state.parentId || this.state.parentId === studioCache.parentId) {
         this.restoreFromCache(studioCache)
+        if (!studioCache.activeEmojiId) {
+          this.openEmojiPicker()
+        }
       }
     }
     else {
@@ -671,7 +703,8 @@ class StudioRoute extends Component {
 
               {this.state.showEmojiPicker && <EmojiPicker
                 onSelect={this.state.onEmojiSelect}
-                onCancel={this.state.activeEmojiId ? this.closeEmojiPicker : this.navigateBack}
+                onCancel={this.onPickerCancel}
+                backButtonLabel={this.state.activeEmojiId ? 'BACK' : this.props.backButtonLabel}
               />}
             </EverythingElseContainer>)}
         </CenteredContainer>
@@ -696,6 +729,7 @@ class StudioRoute extends Component {
           onExitClick={() => this.navigateBack()}
           onResetClick={() => this.onResetClick()}
           onPublishClick={() => this.onPublishClick()}
+          backButtonLabel={this.props.backButtonLabel}
         />}
 
         {showPublishPreviewModal && <PreviewModal

@@ -162,7 +162,7 @@ class EmojiPicker extends Component {
         </OuterContainer>
 
         <NavButton
-          value='BACK'
+          value={this.props.backButtonLabel}
           color={BLUE}
           cb={() => this.props.onCancel()}
           position={BOTTOM_LEFT}

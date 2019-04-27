@@ -5,8 +5,6 @@ import NewSlider from '../../components/NewSlider'
 
 import {
   MenuButton,
-  GreenMenuButton,
-
   PinkMenuButton,
   DisabledButton
 } from '../../components/Buttons'
@@ -233,11 +231,8 @@ class BuilderMenu extends React.Component {
 
   renderSecondaryMenu = () => {
     const {
-      activeEmoji,
       incrementField,
-      scaleField,
-      setField,
-      toggleCaptionModal
+      scaleField
     } = this.props
 
     return (<React.Fragment>
@@ -245,9 +240,6 @@ class BuilderMenu extends React.Component {
         SIMPLE
       </PinkMenuButton>
 
-      <MenuButton onClick={() => toggleCaptionModal(true)}>
-        CAPTION
-      </MenuButton>
       <MenuButton onClick={() => this.setState({ currentMenu: FILTERS })}>
         FILTERS
       </MenuButton>

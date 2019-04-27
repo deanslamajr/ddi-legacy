@@ -20,37 +20,18 @@ const MenuButton = styled.span`
   }
 `
 
-const RedMenuButton = styled(MenuButton)`
-  background-color: ${props => props.theme.colors.red};
-  color: ${props => props.theme.colors.lightGreen};
-`
-
-const DisabledButton = styled(RedMenuButton)`
-  cursor: not-allowed;
-  pointer-events: none;
-`
-
-const GreenMenuButton = styled(MenuButton)`
-  background-color: ${props => props.theme.colors.green};
-  color: ${props => props.theme.colors.lightGreen};
-`
-
-const BlueMenuButton = styled(MenuButton)`
-  background-color: ${props => props.theme.colors.blue};
-  color: ${props => props.theme.colors.black};
-`
-
 const PinkMenuButton = styled(MenuButton)`
   background-color: ${props => props.theme.colors.pink};
   color: ${props => props.theme.colors.black};
 `
 
+const DisabledButton = styled(PinkMenuButton)`
+  cursor: not-allowed;
+  pointer-events: none;
+`
+
 export {
   MenuButton,
-  BlueMenuButton,
-  RedMenuButton,
-  GreenMenuButton,
-
   PinkMenuButton,
   DisabledButton
 }

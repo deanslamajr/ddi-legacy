@@ -16,13 +16,19 @@ export default class ActionsModal extends React.Component {
       onCancelClick,
       onExitClick,
       onResetClick,
-      onPublishClick
+      onPublishClick,
+      toggleCaptionModal
     } = this.props
 
     return (<HomeModal>
       <CenteredButtons>
         <MenuButton onClick={onExitClick}>
           {backButtonLabel}
+        </MenuButton>
+      </CenteredButtons>
+      <CenteredButtons>
+        <MenuButton onClick={toggleCaptionModal}>
+          CAPTION
         </MenuButton>
       </CenteredButtons>
       <CenteredButtons>

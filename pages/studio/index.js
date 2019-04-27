@@ -569,6 +569,11 @@ class StudioRoute extends Component {
     this.toggleResetWarningModal(true)
   }
 
+  showCaptionModalFromActionsModal = () => {
+    this.toggleActionsModal(false)
+    this.toggleCaptionModal(true)
+  }
+
   onPublishClick = () => {
     this.toggleActionsModal(false)
     this.props.showSpinner()
@@ -635,8 +640,7 @@ class StudioRoute extends Component {
     const {
       activeEmojiId,
       showActionsModal,
-      showResetWarningModal,
-      showPublishPreviewModal
+      showResetWarningModal
     } = this.state
 
     const activeEmoji = this.state.emojis[activeEmojiId]
@@ -698,7 +702,6 @@ class StudioRoute extends Component {
                 scaleField={this.scaleField}
                 setField={this.setField}
                 toggleFilter={this.toggleFilter}
-                toggleCaptionModal={this.toggleCaptionModal}
               />
 
               {this.state.showEmojiPicker && <EmojiPicker
@@ -718,24 +721,26 @@ class StudioRoute extends Component {
           />
         </React.Fragment>}
 
-        {this.state.showCaptionModal && <CaptionModal
-          onCancelClick={() => this.toggleCaptionModal(false)}
-          onUpdateClick={this.onCaptionModalSave}
-          title={this.state.title || ''}
-        />}
-
         {showActionsModal && <ActionsModal
           onCancelClick={() => this.toggleActionsModal(false)}
           onExitClick={() => this.navigateBack()}
           onResetClick={() => this.onResetClick()}
           onPublishClick={() => this.onPublishClick()}
           backButtonLabel={this.props.backButtonLabel}
+          toggleCaptionModal={this.showCaptionModalFromActionsModal}
         />}
 
-        {showPublishPreviewModal && <PreviewModal
+        {this.state.showPublishPreviewModal && <PreviewModal
           canvasImageUrl={this.state.renderedImageUrl}
           onCancelClick={() => this.togglePublishPreviewModal(false)}
+          onEditCaptionClick={() => this.toggleCaptionModal(true)}
           onOkClick={() => this.saveCell()}
+          title={this.state.title || ''}
+        />}
+
+        {this.state.showCaptionModal && <CaptionModal
+          onCancelClick={() => this.toggleCaptionModal(false)}
+          onUpdateClick={this.onCaptionModalSave}
           title={this.state.title || ''}
         />}
 

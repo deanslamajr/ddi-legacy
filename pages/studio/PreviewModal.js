@@ -21,6 +21,7 @@ const PreviewModalContainer = styled(Modal)`
 function PreviewModal ({
   canvasImageUrl,
   onCancelClick,
+  onEditCaptionClick,
   onOkClick,
   title
 }) {  
@@ -36,12 +37,19 @@ function PreviewModal ({
       />
     </CenteredContainer>
     <CenteredButtons>
-      <MenuButton onClick={onCancelClick}>
-        CANCEL
+      <MenuButton onClick={onEditCaptionClick}>
+        CAPTION
       </MenuButton>
+    </CenteredButtons>
+    <CenteredButtons>
       <PinkMenuButton onClick={onOkClick}>
         PUBLISH
       </PinkMenuButton>
+    </CenteredButtons>
+    <CenteredButtons>
+      <MenuButton onClick={onCancelClick}>
+        CANCEL
+      </MenuButton>
     </CenteredButtons>
   </PreviewModalContainer>)
 }

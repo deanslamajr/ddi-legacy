@@ -1,12 +1,13 @@
 const theme = {
   colors: {
+    // https://coolors.co/fffaf9-f4364c-cececf-e7e7e7-464655
     white: '#FFFAF9',
     pink: '#FF4C7F',
     gray2: '#CECECF',
     gray3: '#E7E7E7',
     black: '#464655',
 
-    black: '#131B23',
+
     blue: '#3E92CC',
     gray: '#D6C3C9',
     green: '#679436',

@@ -7,6 +7,7 @@ const GrayBackground = createGlobalStyle`
   body {
     background-color: ${theme.colors.gray3};
     margin: 0;
+    color: ${theme.colors.black};
   }
 `
 

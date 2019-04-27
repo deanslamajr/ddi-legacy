@@ -37,7 +37,7 @@ let initialEmojiSet = getReshuffledEmojis()
 
 const OuterContainer = styled.div`
   position: absolute;
-  background-color: ${props => props.theme.colors.gray3};
+  background-color: ${props => props.theme.colors.white};
   top: 0;
   bottom: 0;
   left: 0;

@@ -93,9 +93,9 @@ export default class AddCellModal extends React.Component {
           </CellContainer>)}
         </CellsContainer>
         <CenteredButtons>
-          <RedMenuButton onClick={this.showHomeView}>
+          <MenuButton onClick={this.showHomeView}>
             BACK
-          </RedMenuButton>
+          </MenuButton>
         </CenteredButtons>
       </DuplicateModal>)
   }

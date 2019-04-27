@@ -14,6 +14,7 @@ const navigateTo = (urlId, showSpinner) => {
 const ComicContainer = styled.div`
   display: flex;
   margin: 0;
+  overflow-y: hidden;
 `
 
 const noop = () => {}

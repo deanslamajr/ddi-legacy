@@ -29,10 +29,9 @@ const CellContainer = styled.div`
 `
 
 const CellBorder = styled.div`
-  /* border: 1px solid ${props => props.theme.colors.gray2}; */
   padding: .25rem;
   background: ${props => props.theme.colors.white};
-  /* box-shadow: 4px 5px 5px 0px ${props => props.theme.colors.secondaryGray}; */
+  height: 100%;
 `
 
 export default function Cell ({ className, imageUrl, title, onClick, removeBorders }) {

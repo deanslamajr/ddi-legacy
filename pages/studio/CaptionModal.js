@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { MenuButton, GreenMenuButton } from '../../components/Buttons'
+import { MenuButton, PinkMenuButton } from '../../components/Buttons'
 import Modal, { CenteredButtons } from '../../components/Modal'
 import { validateTitle } from '../../shared/validators'
 
@@ -29,7 +29,7 @@ const TitleInput = styled.textarea`
   border: none;
 
   &::placeholder {
-    color: ${props => props.theme.colors.gray};
+    color: ${props => props.theme.colors.gray3};
     opacity: 0.5;
   }
 `
@@ -62,9 +62,9 @@ class CaptionModal extends React.Component {
         <MenuButton onClick={this.props.onCancelClick}>
           CANCEL
         </MenuButton>
-        <GreenMenuButton onClick={this.onUpdateClick}>
+        <PinkMenuButton onClick={this.onUpdateClick}>
           UPDATE
-        </GreenMenuButton>
+        </PinkMenuButton>
       </CenteredButtons>
     </PreviewModalContainer>)
   }

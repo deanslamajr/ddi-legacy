@@ -1,9 +1,11 @@
 import { createGlobalStyle } from 'styled-components'
 import Head from 'next/head'
 
+import theme from '../../helpers/theme'
+
 const GrayBackground = createGlobalStyle`
   body {
-    background-color: #C5D6D8;
+    background-color: ${theme.colors.gray3};
     margin: 0;
   }
 `

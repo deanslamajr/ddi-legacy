@@ -14,9 +14,9 @@ const TitleWidth = styled.div`
 `
 
 const CellContainer = styled.div`
-  margin: 0;
-  background: ${props => props.theme.colors.lightGreen};
-  padding: 10px;
+  margin: 1px;
+  /* padding: 10px; */
+  padding: 0;
   cursor: ${props => props.clickable ? 'pointer' : 'default'};
 
   &:first-of-type {
@@ -24,8 +24,15 @@ const CellContainer = styled.div`
   }
 
   &:last-of-type {
-    border-right: ${props => props.removeBorders ? 'inherit' : '1rem solid #C5D6D8'};
+    border-right: ${props => props.removeBorders ? 'inherit' : `1rem solid ${props.theme.colors.gray3}`};
   }
+`
+
+const CellBorder = styled.div`
+  /* border: 1px solid ${props => props.theme.colors.gray2}; */
+  padding: .25rem;
+  background: ${props => props.theme.colors.white};
+  /* box-shadow: 4px 5px 5px 0px ${props => props.theme.colors.secondaryGray}; */
 `
 
 export default function Cell ({ className, imageUrl, title, onClick, removeBorders }) {
@@ -35,11 +42,13 @@ export default function Cell ({ className, imageUrl, title, onClick, removeBorde
     onClick={onClick}
     removeBorders={removeBorders}
   >
-    <img src={imageUrl} />
-    <TitleContainer>
-      <TitleWidth>
-        {title}
-      </TitleWidth>
-    </TitleContainer>
+    <CellBorder>
+      <img src={imageUrl} />
+      <TitleContainer>
+        <TitleWidth>
+          {title}
+        </TitleWidth>
+      </TitleContainer>
+    </CellBorder>
   </CellContainer>)
 }

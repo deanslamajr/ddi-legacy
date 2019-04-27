@@ -15,7 +15,7 @@ const TransparentDarkBackground = styled.div`
 `
 
 const ModalContainer = styled.div`
-  background-color: #C5D6D8;
+  background-color: ${props => props.theme.colors.gray3};
   width: 70vw;
   height: 30vh;
   display: flex;
@@ -31,7 +31,7 @@ export const CenteredButtons = styled.div`
 `
 
 export const MessageContainer = styled.div`
-  color: ${props => props.theme.colors.green};
+  color: ${props => props.theme.colors.black};
   font-size: 2rem;
   display: flex;
   justify-content: center;

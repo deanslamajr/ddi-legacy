@@ -4,9 +4,9 @@ const MenuButton = styled.span`
   flex-grow: 1;
   max-width: 250px;
   height: 2.75rem;
-  margin: 1px auto;
+  margin: 2px auto;
   cursor: pointer;
-  background-color: ${props => props.theme.colors.lightGreen};
+  background-color: ${props => props.theme.colors.white};
   color: ${props => props.theme.colors.black};
   display: flex;
   align-items: center;
@@ -40,10 +40,17 @@ const BlueMenuButton = styled(MenuButton)`
   color: ${props => props.theme.colors.black};
 `
 
+const PinkMenuButton = styled(MenuButton)`
+  background-color: ${props => props.theme.colors.pink};
+  color: ${props => props.theme.colors.black};
+`
+
 export {
   MenuButton,
   BlueMenuButton,
   RedMenuButton,
   GreenMenuButton,
+
+  PinkMenuButton,
   DisabledButton
 }

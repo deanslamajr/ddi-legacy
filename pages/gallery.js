@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import axios from 'axios'
 import queryString from 'query-string'
 
-import { NavButton, BOTTOM_RIGHT, GREEN, } from '../components/navigation'
+import { NavButton, BOTTOM_RIGHT } from '../components/navigation'
 import { MenuButton } from '../components/Buttons'
 
 import Comic from './comic/Comic'
@@ -38,6 +38,10 @@ const UnstyledLink = styled.a`
 
 const ShowMoreButton = styled(MenuButton)`
   width: 270px;
+`
+
+const CreateButton = styled(NavButton)`
+  font-size: 2.5rem;
 `
 
 class GalleryRoute extends Component {
@@ -107,9 +111,9 @@ class GalleryRoute extends Component {
           </ShowMoreButton>}
         </CenteredContainer>
         
-        <NavButton
-          value='CREATE'
-          color={GREEN}
+        <CreateButton
+          value='+'
+          accented
           cb={this.navigateToStudio}
           position={BOTTOM_RIGHT}
         />

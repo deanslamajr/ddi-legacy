@@ -10,10 +10,7 @@ import {
   NavButton,
   TOP_RIGHT,
   BOTTOM_LEFT,
-  BOTTOM_RIGHT,
-  BLUE,
-  GREEN,
-  YELLOW
+  BOTTOM_RIGHT
 } from '../../components/navigation'
 
 import { Router } from '../../routes'
@@ -26,6 +23,10 @@ const CenteredContainer = styled.div`
   width: 100vw;
   margin-top: 6rem;
   overflow-x: auto;
+`
+
+const CreateButton = styled(NavButton)`
+  font-size: 2.5rem;
 `
 
 class ComicRoute extends Component {
@@ -125,8 +126,8 @@ class ComicRoute extends Component {
         </CenteredContainer>
 
         {userCanEdit && <NavButton
+          accented
           value='ADD CELL'
-          color={YELLOW}
           cb={this.showAddCellModal}
           position={TOP_RIGHT}
         />}
@@ -140,14 +141,13 @@ class ComicRoute extends Component {
 
         <NavButton
           value='GALLERY'
-          color={BLUE}
           cb={this.navigateToGallery}
           position={BOTTOM_LEFT}
         />
 
-        <NavButton
-          value='CREATE'
-          color={GREEN}
+        <CreateButton
+          accented={!userCanEdit}
+          value='+'
           cb={this.navigateToStudio}
           position={BOTTOM_RIGHT}
         />

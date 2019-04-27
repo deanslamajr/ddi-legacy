@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import Modal, { CenteredButtons, MessageContainer as Message } from '../../components/Modal'
-import { RedMenuButton, GreenMenuButton } from '../../components/Buttons'
+import { MenuButton, PinkMenuButton } from '../../components/Buttons'
 import Cell from '../../components/Cell'
 
 import { sortByOrder } from '../../helpers'
@@ -62,19 +62,19 @@ export default class AddCellModal extends React.Component {
         </Message>
           
         <CenteredButtons>
-          <GreenMenuButton onClick={this.showCellListView}>
+          <MenuButton onClick={this.showCellListView}>
             FROM DUPLICATE
-          </GreenMenuButton>
+          </MenuButton>
         </CenteredButtons>
         <CenteredButtons>
-          <GreenMenuButton onClick={onAddCellFromNewClick}>
+          <MenuButton onClick={onAddCellFromNewClick}>
             FROM NEW
-          </GreenMenuButton>
+          </MenuButton>
         </CenteredButtons>
         <CenteredButtons>
-          <RedMenuButton onClick={onCancelClick}>
+          <PinkMenuButton onClick={onCancelClick}>
             CANCEL
-          </RedMenuButton>
+          </PinkMenuButton>
         </CenteredButtons>
       </HomeModal>)
       : (<DuplicateModal>

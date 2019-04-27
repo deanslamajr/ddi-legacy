@@ -3,7 +3,7 @@ import { emojiIndex } from 'emoji-mart'
 import styled from 'styled-components'
 import emojiRegexFactory from 'emoji-regex'
 
-import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT, BLUE } from '../../components/navigation'
+import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../components/navigation'
 
 const emojis = Object.values(emojiIndex.emojis).filter(emoji => emoji.native).map(o => o.native)
 
@@ -37,7 +37,7 @@ let initialEmojiSet = getReshuffledEmojis()
 
 const OuterContainer = styled.div`
   position: absolute;
-  background-color: ${props => props.theme.colors.white};
+  background-color: ${props => props.theme.colors.gray3};
   top: 0;
   bottom: 0;
   left: 0;
@@ -163,14 +163,13 @@ class EmojiPicker extends Component {
 
         <NavButton
           value={this.props.backButtonLabel}
-          color={BLUE}
           cb={() => this.props.onCancel()}
           position={BOTTOM_LEFT}
+          accented
         />
 
         <NavButton
           value='SHUFFLE'
-          color={BLUE}
           cb={() => this.shuffleEmojis()}
           position={BOTTOM_RIGHT}
         />

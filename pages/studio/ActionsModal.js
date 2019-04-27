@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import Modal, { CenteredButtons } from '../../components/Modal'
-import { BlueMenuButton, RedMenuButton, GreenMenuButton } from '../../components/Buttons'
+import { PinkMenuButton, MenuButton } from '../../components/Buttons'
 
 const HomeModal = styled(Modal)`
   width: 315px;
@@ -21,24 +21,24 @@ export default class ActionsModal extends React.Component {
 
     return (<HomeModal>
       <CenteredButtons>
-        <BlueMenuButton onClick={onExitClick}>
+        <MenuButton onClick={onExitClick}>
           {backButtonLabel}
-        </BlueMenuButton>
+        </MenuButton>
       </CenteredButtons>
       <CenteredButtons>
-        <GreenMenuButton onClick={onPublishClick}>
+        <PinkMenuButton onClick={onPublishClick}>
           PUBLISH
-        </GreenMenuButton>
+        </PinkMenuButton>
       </CenteredButtons>
       <CenteredButtons>
-        <RedMenuButton onClick={onResetClick}>
+        <MenuButton onClick={onResetClick}>
           RESET
-        </RedMenuButton>
+        </MenuButton>
       </CenteredButtons>
       <CenteredButtons>
-        <RedMenuButton onClick={onCancelClick}>
+        <MenuButton onClick={onCancelClick}>
           CANCEL
-        </RedMenuButton>
+        </MenuButton>
       </CenteredButtons>
     </HomeModal>)
   }

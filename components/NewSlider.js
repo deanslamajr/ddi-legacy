@@ -10,7 +10,7 @@ const Slider = styled.input`
   width: 100%;
   height: 15px;
   border-radius: 5px;   
-  background: ${props => props.theme.colors.backgroundGreen};
+  background: ${props => props.theme.colors.gray3};
   opacity: 0.7;
   transition: opacity .2s;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);

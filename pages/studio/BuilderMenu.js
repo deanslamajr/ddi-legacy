@@ -5,9 +5,9 @@ import NewSlider from '../../components/NewSlider'
 
 import {
   MenuButton,
-  RedMenuButton,
-  BlueMenuButton,
   GreenMenuButton,
+
+  PinkMenuButton,
   DisabledButton
 } from '../../components/Buttons'
 
@@ -52,9 +52,10 @@ const HalfMenuButton = styled(MenuButton)`
 
 const SelectActiveEmojiButton = styled(MenuButton)`
   background-color: ${props => props.theme.colors.white};
-  border: ${props => props.isActive ? '2px solid red' : 'none'};
+  border: ${props => props.isActive ? `2px solid ${props.theme.colors.pink}` : 'none'};
   cursor: ${props => props.isActive ? 'default' : 'pointer'};
   font-size: 2rem;
+  height: ${props => props.isActive ? 'calc(2.75rem - 4px)' : '2.75rem'};
   width: ${props => props.isActive ? '246px' : '250px'};
   display: flex;
   justify-content: space-between;
@@ -84,16 +85,22 @@ const EmojiContainer = styled(ThirdOfAButton)`
 `
 
 const ChangeLayerButton = styled(ThirdOfAButton)`
-  border: 1px solid ${props => props.isIncrease ? props.theme.colors.clearGreen : props.theme.colors.clearRed};
+  border: 1px solid ${props => props.theme.colors.gray2};
+  border-right: ${props => !props.onLeft && props.isActive ? 'none' : `1px solid ${props.theme.colors.gray2}`};
   width: ${props => props.isActive ? 'calc(20% - 1px)' : '20%'};
-  background-color: ${props => props.isIncrease ? props.theme.colors.clearerGreen : props.theme.colors.clearerRed};
-  color: ${props => props.isIncrease ? props.theme.colors.clearGreen : props.theme.colors.clearRed};
+  height: ${props => props.isActive ? 'calc(2.75rem - 6px)' : '2.75rem'};
+  background-color: ${props => props.theme.colors.white};
+  color: ${props => props.theme.colors.gray2};
   cursor: pointer;
 
   &:hover {
-    background-color: ${props => props.isIncrease ? props.theme.colors.green : props.theme.colors.red};
+    background-color: ${props => props.theme.colors.pink};
     color: ${props => props.theme.colors.black};
   }
+`
+
+const AddEmojiButton = styled(PinkMenuButton)`
+  font-size: 2.5rem;
 `
 
 const MAIN = 'MAIN'
@@ -175,11 +182,21 @@ class BuilderMenu extends React.Component {
           onChange={(value) => setField('size', value)}
         />
       </SliderContainer>
+      <SliderContainer>
+        <Label>ROTATION</Label>
+        <NewSlider
+          min={MIN_ROTATION}
+          max={MAX_ROTATION}
+          step={1}
+          value={(activeEmoji && activeEmoji.rotation) || 0}
+          onChange={(value) => setField('rotation', value)}
+        />
+      </SliderContainer>
 
       {canAddEmojis
-        ? (<GreenMenuButton onClick={this.props.openEmojiPicker}>
+        ? (<AddEmojiButton onClick={this.props.openEmojiPicker}>
             +
-          </GreenMenuButton>)
+          </AddEmojiButton>)
         : (<DisabledButton >
             EMOJI LIMIT REACHED
           </DisabledButton>)
@@ -196,7 +213,7 @@ class BuilderMenu extends React.Component {
           ? (<ChangeLayerButton
               isActive={id === activeEmoji.id}
               onClick={(e) => this.increaseStackOrder(e, id)}
-              isIncrease
+              onLeft
             >
               ↑
             </ChangeLayerButton>)
@@ -224,24 +241,16 @@ class BuilderMenu extends React.Component {
     } = this.props
 
     return (<React.Fragment>
-      <BlueMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
+      <PinkMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
         SIMPLE
-      </BlueMenuButton>
+      </PinkMenuButton>
 
       <MenuButton onClick={() => toggleCaptionModal(true)}>
         CAPTION
       </MenuButton>
-
-      <SliderContainer>
-        <Label>ROTATION</Label>
-        <NewSlider
-          min={MIN_ROTATION}
-          max={MAX_ROTATION}
-          step={1}
-          value={(activeEmoji && activeEmoji.rotation) || 0}
-          onChange={(value) => setField('rotation', value)}
-        />
-      </SliderContainer>
+      <MenuButton onClick={() => this.setState({ currentMenu: FILTERS })}>
+        FILTERS
+      </MenuButton>
 
       <Label>FLIP</Label>
       <MenuButton onClick={() => scaleField('scaleX', -1)}>
@@ -269,10 +278,6 @@ class BuilderMenu extends React.Component {
           DOWN
         </HalfMenuButton>
       </CenteredButtons>
-
-      <GreenMenuButton onClick={() => this.setState({ currentMenu: FILTERS })}>
-        FILTERS
-      </GreenMenuButton>
     </React.Fragment>)
   }
 
@@ -284,9 +289,9 @@ class BuilderMenu extends React.Component {
     } = this.props
 
     return (<React.Fragment>
-      <BlueMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
+      <PinkMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
         BACK
-      </BlueMenuButton>
+      </PinkMenuButton>
 
       <SliderContainer>
         <Label>OPACITY</Label>
@@ -300,10 +305,7 @@ class BuilderMenu extends React.Component {
       </SliderContainer>
 
       {/* TOGGLE FILTER*/}
-      {activeEmoji.filters
-        ? (<RedMenuButton onClick={toggleFilter}>INACTIVATE RGB</RedMenuButton>)
-        : (<GreenMenuButton onClick={toggleFilter}>ACTIVATE RGB </GreenMenuButton>)
-      }
+      <MenuButton onClick={toggleFilter}>{activeEmoji.filters ? 'INACTIVATE RGB' : 'ACTIVATE RGB'}</MenuButton>
 
       {activeEmoji.filters && (<React.Fragment>
         <SliderContainer>

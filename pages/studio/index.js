@@ -10,7 +10,7 @@ import pick from 'lodash/pick'
 import Head from 'next/head'
 import qs from 'query-string'
 
-import { NavButton, BOTTOM_RIGHT, GREEN } from '../../components/navigation'
+import { NavButton, BOTTOM_RIGHT } from '../../components/navigation'
 
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
@@ -146,19 +146,19 @@ class StudioRoute extends Component {
     }
 
     let backActionPath
-    let backButtonLabel
+    const backButtonLabel = 'EXIT'
 
     if (comicId && parentId) {
-      backButtonLabel = 'TO COMIC'
+      //backButtonLabel = 'TO COMIC'
       backActionPath = `/comic/${comicId}`
     } else if (parentId) {
-      backButtonLabel = 'TO CELL'
+      //backButtonLabel = 'TO CELL'
       backActionPath = `/cell/${parentId}`
     } else if (comicId) {
-      backButtonLabel = 'TO COMIC'
+      //backButtonLabel = 'TO COMIC'
       backActionPath = `/comic/${comicId}`
     } else {
-      backButtonLabel = 'TO GALLERY'
+      //backButtonLabel = 'TO GALLERY'
       backActionPath = '/gallery'
     }
 
@@ -712,9 +712,9 @@ class StudioRoute extends Component {
         {!this.state.showEmojiPicker && <React.Fragment>
           <NavButton
             value='ACTIONS'
-            color={GREEN}
             cb={() => this.toggleActionsModal(true)}
             position={BOTTOM_RIGHT}
+            accented
           />
         </React.Fragment>}
 

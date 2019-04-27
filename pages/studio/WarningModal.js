@@ -1,33 +1,25 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { MenuButton, RedMenuButton, GreenMenuButton } from '../../components/Buttons'
+import { MenuButton, PinkMenuButton } from '../../components/Buttons'
 import Modal, { CenteredButtons, MessageContainer } from '../../components/Modal'
 
 const RedMessageContainer = styled(MessageContainer)`
   color: ${props => props.theme.colors.red};
 `
 
-function WarningModal ({ message, onCancelClick, onOkClick, okButtonLabel, colorTheme }) {
-  let OkButton = colorTheme
-    ? GreenMenuButton
-    : RedMenuButton
-
-  let Message = colorTheme
-    ? MessageContainer
-    : RedMessageContainer
-  
+function WarningModal ({ message, onCancelClick, onOkClick, okButtonLabel }) {
   return (<Modal>
-    <Message>
+    <MessageContainer>
       {message}
-    </Message>
+    </MessageContainer>
     <CenteredButtons>
-      <MenuButton onClick={onCancelClick}>
+      <PinkMenuButton onClick={onCancelClick}>
         CANCEL
-      </MenuButton>
-      <OkButton onClick={onOkClick}>
+      </PinkMenuButton>
+      <MenuButton onClick={onOkClick}>
         {okButtonLabel}
-      </OkButton>
+      </MenuButton>
     </CenteredButtons>
   </Modal>)
 }

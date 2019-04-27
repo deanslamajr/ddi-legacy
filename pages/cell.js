@@ -9,10 +9,7 @@ import {
   TOP_CENTER,
   BOTTOM_LEFT,
   BOTTOM_CENTER,
-  BOTTOM_RIGHT,
-  BLUE,
-  GREEN,
-  ORANGE
+  BOTTOM_RIGHT
 } from '../components/navigation'
 
 import { Router } from '../routes'
@@ -111,28 +108,24 @@ class CellRoute extends Component {
 
         {this.props.parentId && <NavButton
           value='PARENT'
-          color={BLUE}
           cb={this.navigateToParent}
           position={TOP_CENTER}
         />}
 
         <NavButton
           value='GALLERY'
-          color={BLUE}
           cb={this.navigateToGallery}
           position={BOTTOM_LEFT}
         />
 
         {canDuplicate && <NavButton
           value='COPY'
-          color={ORANGE}
           cb={this.navigateToDuplicate}
           position={BOTTOM_CENTER}
         />}
 
         <NavButton
           value='CREATE'
-          color={GREEN}
           cb={this.navigateToStudio}
           position={BOTTOM_RIGHT}
         />

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { MenuButton, GreenMenuButton } from '../../components/Buttons'
+import { MenuButton, PinkMenuButton } from '../../components/Buttons'
 import Modal, { CenteredButtons, MessageContainer } from '../../components/Modal'
 import Cell from '../../components/Cell'
 
@@ -39,9 +39,9 @@ function PreviewModal ({
       <MenuButton onClick={onCancelClick}>
         CANCEL
       </MenuButton>
-      <GreenMenuButton onClick={onOkClick}>
+      <PinkMenuButton onClick={onOkClick}>
         PUBLISH
-      </GreenMenuButton>
+      </PinkMenuButton>
     </CenteredButtons>
   </PreviewModalContainer>)
 }

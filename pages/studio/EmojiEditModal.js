@@ -3,9 +3,8 @@ import styled from 'styled-components'
 
 import Modal, { CenteredButtons, MessageContainer } from '../../components/Modal'
 import { 
-  BlueMenuButton,
-  RedMenuButton,
-  GreenMenuButton
+  PinkMenuButton,
+  MenuButton
 } from '../../components/Buttons'
 
 const HomeModal = styled(Modal)`
@@ -27,24 +26,24 @@ export default class ActionsModal extends React.Component {
         {emoji ? emoji.emoji : ''}
       </MessageContainer>
       <CenteredButtons>
-        <BlueMenuButton onClick={onChangeClick}>
+        <MenuButton onClick={onChangeClick}>
           CHANGE
-        </BlueMenuButton>
+        </MenuButton>
       </CenteredButtons>
       <CenteredButtons>
-        <GreenMenuButton onClick={onDuplicateClick}>
+        <MenuButton onClick={onDuplicateClick}>
           DUPLICATE
-        </GreenMenuButton>
+        </MenuButton>
       </CenteredButtons>
       <CenteredButtons>
-        <RedMenuButton onClick={onDeleteClick}>
+        <MenuButton onClick={onDeleteClick}>
           DELETE
-        </RedMenuButton>
+        </MenuButton>
       </CenteredButtons>
       <CenteredButtons>
-        <RedMenuButton onClick={onCancelClick}>
+        <PinkMenuButton onClick={onCancelClick}>
           CANCEL
-        </RedMenuButton>
+        </PinkMenuButton>
       </CenteredButtons>
     </HomeModal>)
   }

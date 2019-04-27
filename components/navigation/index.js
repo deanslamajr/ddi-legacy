@@ -6,13 +6,12 @@ export const TOP_RIGHT = 'TOP_RIGHT'
 export const BOTTOM_LEFT = 'BOTTOM_LEFT'
 export const BOTTOM_CENTER = 'BOTTOM_CENTER'
 export const BOTTOM_RIGHT = 'BOTTOM_RIGHT'
-export const RED = 'RED'
-export const GREEN = 'GREEN'
-export const BLUE = 'BLUE'
-export const ORANGE = 'ORANGE'
-export const YELLOW = 'YELLOW'
 
 const Button = styled.div`
+  border: 1px solid ${props => props.theme.colors.white};
+  background-color: ${props => props.accented ? props.theme.colors.pink : props.theme.colors.white};
+  color: ${props => props.accented ? props.theme.colors.white : props.theme.colors.black};
+
   cursor: pointer;
   z-index: 9999;
   border-radius: 5rem;
@@ -22,57 +21,15 @@ const Button = styled.div`
   font-size: .9rem;
   text-align: center;
   user-select: none;
-  color: ${props => {
-    if (props.color === YELLOW) {
-      return props.theme.colors.black
-    }
-    return props.theme.colors.lightGreen
-  }};
   box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
   position: fixed;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background-color: ${props => {
-    if (props.color === GREEN) {
-      return props.theme.colors.green
-    }
-    else if (props.color === RED) {
-      return props.theme.colors.red
-    }
-    else if (props.color === BLUE) {
-      return props.theme.colors.blue
-    }
-    else if (props.color === ORANGE) {
-      return props.theme.colors.orange
-    }
-    else if (props.color === YELLOW) {
-      return props.theme.colors.yellow
-    }
-    return props.theme.colors.white
-  }};
-
   &:hover {
     background-color: ${props => props.theme.colors.black};
-    color: ${props => {
-      if (props.color === GREEN) {
-        return props.theme.colors.green
-      }
-      else if (props.color === RED) {
-        return props.theme.colors.red
-      }
-      else if (props.color === BLUE) {
-        return props.theme.colors.blue
-      }
-      else if (props.color === ORANGE) {
-        return props.theme.colors.orange
-      }
-      else if (props.color === YELLOW) {
-        return props.theme.colors.yellow
-      }
-      return props.theme.colors.white
-    }};
+    color: ${props => props.accented ? props.theme.colors.pink : props.theme.colors.white};
   }
 `
 
@@ -133,12 +90,12 @@ function getButtonByPosition (position) {
 
 class NavButton extends React.Component {
   render () {
-    const { position, cb, className, color, value } = this.props
+    const { position, cb, className, accented, value } = this.props
 
     const PositionedButton = getButtonByPosition(position)
 
     return (
-      <PositionedButton className={className} color={color} onClick={cb}>
+      <PositionedButton className={className} accented={accented} onClick={cb}>
         {value}
       </PositionedButton>
     )

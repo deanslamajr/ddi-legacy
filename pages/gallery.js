@@ -1,8 +1,12 @@
 import { Component } from 'react'
 import styled from 'styled-components'
 
-import { NavButton, BOTTOM_RIGHT } from '../components/navigation'
-import { MenuButton } from '../components/Buttons'
+import {
+  NavButton,
+  BOTTOM_RIGHT,
+  BOTTOM_CENTER,
+  TOP_RIGHT
+} from '../components/navigation'
 
 import Comic from './comic/Comic'
 
@@ -14,12 +18,8 @@ const ComicsContainer = styled.div`
   flex-direction: column;
 `
 
-const CenteredContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 6rem;
+const ShowMoreButton = styled(NavButton)`
+  position: inherit;
 `
 
 const UnstyledLink = styled.a`
@@ -31,10 +31,6 @@ const UnstyledLink = styled.a`
   &:first-of-type {
     margin-top: 1rem;
   }
-`
-
-const ShowMoreButton = styled(MenuButton)`
-  width: 270px;
 `
 
 const CreateButton = styled(NavButton)`
@@ -55,6 +51,15 @@ class GalleryRoute extends Component {
   handleComicClick = (urlId) => {
     this.props.showSpinner()
     this.props.setActiveComicId(urlId)
+  }
+
+  handleRefreshClick = () => {
+    const finishRefresh = () => {
+      window.scrollTo(0, 0)
+      this.props.hideSpinner()
+    }
+    this.props.showSpinner()
+    this.props.fetchLatestComics(finishRefresh)
   }
 
   componentDidMount () {
@@ -84,11 +89,18 @@ class GalleryRoute extends Component {
             </Link>)
           )}
         </ComicsContainer>
-        <CenteredContainer>
-          {this.props.hasMoreComics && <ShowMoreButton onClick={this.showMoreComics}>
-            SHOW MORE
-          </ShowMoreButton>}
-        </CenteredContainer>
+
+        <NavButton
+          value='REFRESH'
+          cb={this.handleRefreshClick}
+          position={TOP_RIGHT}
+        />
+
+        {this.props.hasMoreComics && <ShowMoreButton
+          value='SHOW MORE'
+          cb={this.showMoreComics}
+          position={BOTTOM_CENTER}
+        />}
         
         <CreateButton
           value='+'

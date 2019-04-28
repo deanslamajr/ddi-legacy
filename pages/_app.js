@@ -29,14 +29,18 @@ class MyApp extends App {
     this.setState({ showSpinner: true })
   }
 
+  fetchLatestComics = async (cb = () => {}) => {
+    const { data } = await axios.get('/api/comics')
+
+    this.setState({
+      comics: data.comics,
+      hasMoreComics: data.hasMore
+    }, cb)
+  }
+
   fetchComics = async (cb = () => {}) => {
     if (!this.state.comics.length) {
-      const { data } = await axios.get('/api/comics')
-
-      this.setState({
-        comics: data.comics,
-        hasMoreComics: data.hasMore
-      }, cb)
+      await this.fetchLatestComics(cb)
     }
     else {
       cb()
@@ -93,6 +97,7 @@ class MyApp extends App {
             activeComicId={this.state.activeComicId}
             comics={this.state.comics}
             fetchComics={this.fetchComics}
+            fetchLatestComics={this.fetchLatestComics}
             fetchMoreComics={this.fetchMoreComics}
             hasMoreComics={this.state.hasMoreComics}
             hideSpinner={this.hideSpinner}

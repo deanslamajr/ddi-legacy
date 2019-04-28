@@ -5,7 +5,7 @@ import theme from '../../helpers/theme'
 
 const GrayBackground = createGlobalStyle`
   body {
-    background-color: ${theme.colors.gray3};
+    background-color: ${theme.colors.lightGray};
     margin: 0;
     color: ${theme.colors.black};
   }

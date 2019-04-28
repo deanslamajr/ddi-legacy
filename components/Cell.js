@@ -24,7 +24,7 @@ const CellContainer = styled.div`
   }
 
   &:last-of-type {
-    border-right: ${props => props.removeBorders ? 'inherit' : `1rem solid ${props.theme.colors.gray3}`};
+    border-right: ${props => props.removeBorders ? 'inherit' : `1rem solid ${props.theme.colors.lightGray}`};
   }
 `
 

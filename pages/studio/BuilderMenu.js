@@ -36,12 +36,6 @@ const CenteredButtons = styled.div`
 const SliderContainer = styled.div`
   width: 100%;
   padding: .5rem 0 1.5rem;
-
-  button {
-    width: 2rem;
-    height: 2rem;
-    background-color: ${props => props.theme.colors.blue};
-  }
 `
 
 const HalfMenuButton = styled(MenuButton)`
@@ -83,12 +77,12 @@ const EmojiContainer = styled(ThirdOfAButton)`
 `
 
 const ChangeLayerButton = styled(ThirdOfAButton)`
-  border: 1px solid ${props => props.theme.colors.gray2};
-  border-right: ${props => !props.onLeft && props.isActive ? 'none' : `1px solid ${props.theme.colors.gray2}`};
+  border: 1px solid ${props => props.theme.colors.darkGray};
+  border-right: ${props => !props.onLeft && props.isActive ? 'none' : `1px solid ${props.theme.colors.darkGray}`};
   width: ${props => props.isActive ? 'calc(20% - 1px)' : '20%'};
   height: ${props => props.isActive ? 'calc(2.75rem - 6px)' : '2.75rem'};
   background-color: ${props => props.theme.colors.white};
-  color: ${props => props.theme.colors.gray2};
+  color: ${props => props.theme.colors.darkGray};
   cursor: pointer;
 
   &:hover {

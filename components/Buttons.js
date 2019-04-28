@@ -22,7 +22,7 @@ const MenuButton = styled.span`
 
 const PinkMenuButton = styled(MenuButton)`
   background-color: ${props => props.theme.colors.pink};
-  color: ${props => props.theme.colors.black};
+  color: ${props => props.theme.colors.white};
 `
 
 const DisabledButton = styled(PinkMenuButton)`

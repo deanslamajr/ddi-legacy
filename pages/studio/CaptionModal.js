@@ -29,7 +29,7 @@ const TitleInput = styled.textarea`
   border: none;
 
   &::placeholder {
-    color: ${props => props.theme.colors.gray3};
+    color: ${props => props.theme.colors.lightGray};
     opacity: 0.5;
   }
 `

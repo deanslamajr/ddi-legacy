@@ -12,7 +12,6 @@ const HomeModal = styled(Modal)`
 export default class ActionsModal extends React.Component {
   render () {
     const {
-      backButtonLabel,
       onCancelClick,
       onExitClick,
       onResetClick,
@@ -23,7 +22,7 @@ export default class ActionsModal extends React.Component {
     return (<HomeModal>
       <CenteredButtons>
         <MenuButton onClick={onExitClick}>
-          {backButtonLabel}
+          EXIT
         </MenuButton>
       </CenteredButtons>
       <CenteredButtons>

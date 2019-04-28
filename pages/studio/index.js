@@ -146,26 +146,20 @@ class StudioRoute extends Component {
     }
 
     let backActionPath
-    const backButtonLabel = 'EXIT'
 
     if (comicId && parentId) {
-      //backButtonLabel = 'TO COMIC'
       backActionPath = `/comic/${comicId}`
     } else if (parentId) {
-      //backButtonLabel = 'TO CELL'
       backActionPath = `/cell/${parentId}`
     } else if (comicId) {
-      //backButtonLabel = 'TO COMIC'
       backActionPath = `/comic/${comicId}`
     } else {
-      //backButtonLabel = 'TO GALLERY'
       backActionPath = '/gallery'
     }
 
     return {
       comicId,
       backActionPath,
-      backButtonLabel,
       parentId,
       studioState
     }
@@ -707,7 +701,7 @@ class StudioRoute extends Component {
               {this.state.showEmojiPicker && <EmojiPicker
                 onSelect={this.state.onEmojiSelect}
                 onCancel={this.onPickerCancel}
-                backButtonLabel={this.state.activeEmojiId ? 'BACK' : this.props.backButtonLabel}
+                backButtonLabel={this.state.activeEmojiId ? 'BACK' : 'EXIT'}
               />}
             </EverythingElseContainer>)}
         </CenteredContainer>
@@ -726,7 +720,6 @@ class StudioRoute extends Component {
           onExitClick={() => this.navigateBack()}
           onResetClick={() => this.onResetClick()}
           onPublishClick={() => this.onPublishClick()}
-          backButtonLabel={this.props.backButtonLabel}
           toggleCaptionModal={this.showCaptionModalFromActionsModal}
         />}
 

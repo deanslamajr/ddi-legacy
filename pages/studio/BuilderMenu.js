@@ -160,10 +160,6 @@ class BuilderMenu extends React.Component {
     const canAddEmojis = emojisArray.length <= MAX_EMOJIS_COUNT
 
     return (<React.Fragment>
-      <MenuButton onClick={() => this.setState({ currentMenu: SECONDARY })}>
-        ADVANCED
-      </MenuButton>
-
       <SliderContainer>
         <Label>SIZE</Label>
         <NewSlider
@@ -185,6 +181,10 @@ class BuilderMenu extends React.Component {
         />
       </SliderContainer>
 
+      <MenuButton onClick={() => this.setState({ currentMenu: SECONDARY })}>
+        ADVANCED
+      </MenuButton>
+      
       {canAddEmojis
         ? (<AddEmojiButton onClick={this.props.openEmojiPicker}>
             +

@@ -47,7 +47,11 @@ class ComicRoute extends Component {
 
   navigateToGallery = () => {
     this.props.showSpinner()
-    Router.pushRoute('/gallery')
+    const galleryPath = this.props.activeComicId
+      ? `/gallery#${this.props.activeComicId}`
+      : '/gallery'
+      
+    Router.pushRoute(galleryPath)
   }
 
   navigateToStudio = () => {

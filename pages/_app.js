@@ -15,6 +15,7 @@ const { publicRuntimeConfig } = getConfig()
 
 class MyApp extends App {
   state = {
+    activeComicId: null,
     comics: [],
     hasMoreComics: false,
     showSpinner: true
@@ -29,12 +30,17 @@ class MyApp extends App {
   }
 
   fetchComics = async (cb = () => {}) => {
-    const { data } = await axios.get('/api/comics')
+    if (!this.state.comics.length) {
+      const { data } = await axios.get('/api/comics')
 
-    this.setState({
-      comics: data.comics,
-      hasMoreComics: data.hasMore
-    }, cb)
+      this.setState({
+        comics: data.comics,
+        hasMoreComics: data.hasMore
+      }, cb)
+    }
+    else {
+      cb()
+    }
   }
 
   fetchMoreComics = async (cb = () => {}) => {
@@ -53,6 +59,10 @@ class MyApp extends App {
       comics: newComics,
       hasMore: data.hasMore
     }, cb)
+  }
+
+  setActiveComicId = (comicId) => {
+    this.setState({ activeComicId: comicId })
   }
 
   render () {
@@ -80,12 +90,14 @@ class MyApp extends App {
 
         <ThemeProvider theme={theme}>
           <Component
+            activeComicId={this.state.activeComicId}
             comics={this.state.comics}
             fetchComics={this.fetchComics}
             fetchMoreComics={this.fetchMoreComics}
             hasMoreComics={this.state.hasMoreComics}
             hideSpinner={this.hideSpinner}
             isShowingSpinner={this.state.showSpinner}
+            setActiveComicId={this.setActiveComicId}
             showSpinner={this.showSpinner}
             {...pageProps}
           />

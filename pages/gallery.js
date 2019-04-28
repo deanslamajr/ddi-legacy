@@ -52,8 +52,14 @@ class GalleryRoute extends Component {
     this.props.fetchMoreComics(this.props.hideSpinner)
   }
 
+  handleComicClick = (urlId) => {
+    this.props.showSpinner()
+    this.props.setActiveComicId(urlId)
+  }
+
   componentDidMount () {
     this.props.fetchComics(this.props.hideSpinner)
+    this.props.setActiveComicId(null)
   }
 
   render () {
@@ -65,7 +71,10 @@ class GalleryRoute extends Component {
               key={id}
               route={`/comic/${url_id}`}
             >
-              <UnstyledLink onClick={this.props.showSpinner}>
+              <UnstyledLink
+                id={url_id}
+                onClick={() => this.handleComicClick(url_id)}
+              >
                 <Comic cells={cells} />
               </UnstyledLink>
             </Link>)

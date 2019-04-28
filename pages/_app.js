@@ -3,6 +3,8 @@ import Head from 'next/head'
 import React from 'react'
 import { ThemeProvider } from 'styled-components'
 import getConfig from 'next/config'
+import axios from 'axios'
+import queryString from 'query-string'
 
 import theme from '../helpers/theme'
 
@@ -13,6 +15,8 @@ const { publicRuntimeConfig } = getConfig()
 
 class MyApp extends App {
   state = {
+    comics: [],
+    hasMoreComics: false,
     showSpinner: true
   }
 
@@ -24,8 +28,36 @@ class MyApp extends App {
     this.setState({ showSpinner: true })
   }
 
+  fetchComics = async (cb = () => {}) => {
+    const { data } = await axios.get('/api/comics')
+
+    this.setState({
+      comics: data.comics,
+      hasMoreComics: data.hasMore
+    }, cb)
+  }
+
+  fetchMoreComics = async (cb = () => {}) => {
+    const paginationData = {
+      offset: this.state.comics.length
+    }
+
+    const qs = queryString.stringify(paginationData)
+
+    const { data } = await axios.get(`/api/comics?${qs}`)
+
+    const clonedComics = Array.from(this.state.comics)
+    const newComics = clonedComics.concat(data.comics)
+
+    this.setState({
+      comics: newComics,
+      hasMore: data.hasMore
+    }, cb)
+  }
+
   render () {
     const { Component, pageProps } = this.props
+
     return (
       <Container>
         <Head>
@@ -48,9 +80,13 @@ class MyApp extends App {
 
         <ThemeProvider theme={theme}>
           <Component
+            comics={this.state.comics}
+            fetchComics={this.fetchComics}
+            fetchMoreComics={this.fetchMoreComics}
+            hasMoreComics={this.state.hasMoreComics}
             hideSpinner={this.hideSpinner}
-            showSpinner={this.showSpinner}
             isShowingSpinner={this.state.showSpinner}
+            showSpinner={this.showSpinner}
             {...pageProps}
           />
         </ThemeProvider>

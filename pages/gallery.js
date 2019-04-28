@@ -1,7 +1,5 @@
 import { Component } from 'react'
 import styled from 'styled-components'
-import axios from 'axios'
-import queryString from 'query-string'
 
 import { NavButton, BOTTOM_RIGHT } from '../components/navigation'
 import { MenuButton } from '../components/Buttons'
@@ -9,7 +7,6 @@ import { MenuButton } from '../components/Buttons'
 import Comic from './comic/Comic'
 
 import { Link, Router } from '../routes'
-import { getApi } from '../helpers'
 
 const ComicsContainer = styled.div`
   display: flex;
@@ -45,20 +42,6 @@ const CreateButton = styled(NavButton)`
 `
 
 class GalleryRoute extends Component {
-  state = {
-    comics: this.props.comics,
-    hasMore: this.props.hasMore
-  }
-
-  static async getInitialProps ({ req }) {
-    const { data } = await axios.get(getApi('/api/comics', req))
-
-    return {
-      comics: data.comics,
-      hasMore: data.hasMore
-    }
-  }
-
   navigateToStudio = () => {
     this.props.showSpinner()
     Router.pushRoute('/studio/new/new')
@@ -66,35 +49,18 @@ class GalleryRoute extends Component {
 
   showMoreComics = async () => {
     this.props.showSpinner()
-
-    const paginationData = {
-      offset: this.state.comics.length
-    }
-
-    const qs = queryString.stringify(paginationData)
-
-    const { data } = await axios.get(`/api/comics?${qs}`)
-
-    const clonedComics = Array.from(this.state.comics)
-    const newComics = clonedComics.concat(data.comics)
-
-    this.setState({
-      comics: newComics,
-      hasMore: data.hasMore
-    }, () => this.props.hideSpinner())
+    this.props.fetchMoreComics(this.props.hideSpinner)
   }
 
   componentDidMount () {
-    this.props.hideSpinner()
+    this.props.fetchComics(this.props.hideSpinner)
   }
 
   render () {
-    const { comics = [], hasMore } = this.state
-    
     return (
       <div>
         <ComicsContainer>
-          {comics.map(({ id, cells, url_id }) => (
+          {this.props.comics.map(({ id, cells, url_id }) => (
             <Link
               key={id}
               route={`/comic/${url_id}`}
@@ -106,7 +72,7 @@ class GalleryRoute extends Component {
           )}
         </ComicsContainer>
         <CenteredContainer>
-          {hasMore && <ShowMoreButton onClick={this.showMoreComics}>
+          {this.props.hasMoreComics && <ShowMoreButton onClick={this.showMoreComics}>
             SHOW MORE
           </ShowMoreButton>}
         </CenteredContainer>

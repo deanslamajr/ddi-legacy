@@ -59,7 +59,7 @@ class GalleryRoute extends Component {
       this.props.hideSpinner()
     }
     this.props.showSpinner()
-    this.props.fetchLatestComics(finishRefresh)
+    this.props.appendLatestComics(finishRefresh)
   }
 
   componentDidMount () {
@@ -90,11 +90,11 @@ class GalleryRoute extends Component {
           )}
         </ComicsContainer>
 
-        <NavButton
-          value='REFRESH'
+        {this.props.newerComicsExist && <NavButton
+          value='SHOW NEWER'
           cb={this.handleRefreshClick}
           position={TOP_RIGHT}
-        />
+        />}
 
         {this.props.hasMoreComics && <ShowMoreButton
           value='SHOW MORE'

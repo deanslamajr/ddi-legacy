@@ -1,9 +1,10 @@
 const { Cells, Comics } = require('../models')
 const { falsePositiveResponse } = require('./utils')
 
+const LIMIT = 10
+
 async function all (req, res) {
   let offset = 0
-  let limit = 10
 
   const offsetFromQueryString = req.query['offset']
   if (offsetFromQueryString) {
@@ -13,14 +14,33 @@ async function all (req, res) {
   const comics = await Comics.findAll({
     order: [['updated_at', 'DESC']],
     offset,
-    limit,
+    limit: LIMIT,
     include: [Cells]
   })
-  const comicsCount = await Comics.count()
+  const count = await Comics.count()
 
   res.json({
     comics,
-    hasMore: comicsCount > (offset + limit)
+    hasMore: count > (offset + LIMIT)
+  })
+}
+
+async function getNewerThan (req, res) {
+  const latestUpdatedAt = req.query['latestUpdatedAt']
+  if (!latestUpdatedAt) {
+    throw new Error('Invalid request, must include queryString latestUpdatedAt')
+  }
+
+  const comics = await Comics.findAll({
+    order: [['updated_at', 'ASC']],
+    where: { updated_at: { $gt: latestUpdatedAt }},
+    limit: LIMIT,
+    include: [Cells]
+  })
+
+  res.json({
+    comics,
+    possiblyHasMore: comics.length === LIMIT
   })
 }
 
@@ -55,5 +75,6 @@ async function get (req, res) {
 
 module.exports = {
   all,
-  get
+  get,
+  getNewerThan
 }

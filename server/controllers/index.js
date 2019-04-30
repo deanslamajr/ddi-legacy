@@ -9,7 +9,8 @@ const {
 } = require('./cell')
 const {
   all: getComics,
-  get: getComic
+  get: getComic,
+  getNewerThan
 } = require('./comic')
 
 const router = express.Router()
@@ -23,5 +24,6 @@ router.get('/cells', getCells)
 
 router.get('/comics', getComics)
 router.get('/comic/:comicId', getComic)
+router.get('/comics/latest', getNewerThan)
 
 module.exports = router

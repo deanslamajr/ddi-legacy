@@ -13,11 +13,23 @@ import LoadSpinner from '../components/LoadSpinner'
 
 const { publicRuntimeConfig } = getConfig()
 
+async function getNewerComics (currentComics) {
+  const latestUpdatedAt = currentComics[0].updated_at
+  const { data } = await axios.get(`/api/comics/latest?latestUpdatedAt=${latestUpdatedAt}`)
+  return data.comics.length
+    ? {
+        comics: data.comics.reverse(),
+        possiblyHasMore: data.possiblyHasMore
+      }
+    : null
+}
+
 class MyApp extends App {
   state = {
     activeComicId: null,
     comics: [],
     hasMoreComics: false,
+    newerComics: null,
     showSpinner: true
   }
 
@@ -29,21 +41,33 @@ class MyApp extends App {
     this.setState({ showSpinner: true })
   }
 
-  fetchLatestComics = async (cb = () => {}) => {
-    const { data } = await axios.get('/api/comics')
+  appendLatestComics = async (cb = () => {}) => {
+    // @todo remove duplicates in this.newerComics.comics from this.state.comics
+    const clonedComics = Array.from(this.state.comics)
+    const newComics = this.state.newerComics.comics.concat(clonedComics)
+
+    const newerComics = this.state.newerComics.possiblyHasMore
+      ? await getNewerComics(newComics)
+      : null
 
     this.setState({
-      comics: data.comics,
-      hasMoreComics: data.hasMore
+      comics: newComics,
+      newerComics
     }, cb)
   }
 
   fetchComics = async (cb = () => {}) => {
     if (!this.state.comics.length) {
-      await this.fetchLatestComics(cb)
+      const { data } = await axios.get('/api/comics')
+
+      this.setState({
+        comics: data.comics,
+        hasMoreComics: data.hasMore
+      }, cb)
     }
     else {
-      cb()
+      const newerComics = await getNewerComics(this.state.comics)
+      this.setState({ newerComics }, cb)
     }
   }
 
@@ -54,14 +78,18 @@ class MyApp extends App {
 
     const qs = queryString.stringify(paginationData)
 
-    const { data } = await axios.get(`/api/comics?${qs}`)
+    const [{ data }, newerComics] = await Promise.all([
+      axios.get(`/api/comics?${qs}`),
+      getNewerComics(this.state.comics)
+    ])
 
     const clonedComics = Array.from(this.state.comics)
     const newComics = clonedComics.concat(data.comics)
 
     this.setState({
       comics: newComics,
-      hasMore: data.hasMore
+      hasMore: data.hasMore,
+      newerComics
     }, cb)
   }
 
@@ -97,11 +125,12 @@ class MyApp extends App {
             activeComicId={this.state.activeComicId}
             comics={this.state.comics}
             fetchComics={this.fetchComics}
-            fetchLatestComics={this.fetchLatestComics}
+            appendLatestComics={this.appendLatestComics}
             fetchMoreComics={this.fetchMoreComics}
             hasMoreComics={this.state.hasMoreComics}
             hideSpinner={this.hideSpinner}
             isShowingSpinner={this.state.showSpinner}
+            newerComicsExist={!!this.state.newerComics}
             setActiveComicId={this.setActiveComicId}
             showSpinner={this.showSpinner}
             {...pageProps}

@@ -1,3 +1,4 @@
+require('newrelic') // must be first line of app
 const express = require('express')
 const next = require('next')
 const cookieSession = require('cookie-session')

@@ -19,3 +19,6 @@ config/config.json
 
 # VS Code
 .vscode
+
+# newrelic
+newrelic_agent.log

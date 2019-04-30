@@ -24,7 +24,10 @@ const serverSecrets = {
   PGDB_DBNAME: fromProcessEnv('PGDB_DBNAME'),
   PGDB_USERNAME: fromProcessEnv('PGDB_USERNAME'),
   PGDB_PASSWORD: fromProcessEnv('PGDB_PASSWORD'),
-  PGDB_HOST: fromProcessEnv('PGDB_HOST')
+  PGDB_HOST: fromProcessEnv('PGDB_HOST'),
+  // NEWRELIC
+  NR_APP_NAME: fromProcessEnv('NR_APP_NAME'),
+  NR_LICENSE: fromProcessEnv('NR_LICENSE')
 }
 
 const serverEnvironment = Object.assign({}, clientEnvironment, serverSecrets)

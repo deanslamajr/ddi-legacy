@@ -13,4 +13,9 @@ const envConfigs = {
   publicRuntimeConfig: clientEnvironment
 }
 
-module.exports = Object.assign({}, cssConfigs, envConfigs)
+module.exports = Object.assign({}, cssConfigs, envConfigs, {
+  generateBuildId: async () => {
+    const {version} = require('./package.json')
+    return version || 'SOME_BUILD_ID'
+  }
+})

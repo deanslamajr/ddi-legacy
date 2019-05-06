@@ -7,11 +7,8 @@ const cookieParser = require('cookie-parser')
 const cluster = require('cluster')
 
 const handleUserSession = require('./middleware/userSession')
-
 const api = require('./controllers')
-
 const routes = require('../routes')
-
 const { serverEnvironment } = require('./env-config')
 
 const port = parseInt(serverEnvironment.PORT, 10) || 3000
@@ -19,8 +16,6 @@ const port = parseInt(serverEnvironment.PORT, 10) || 3000
 const dev = serverEnvironment.NODE_ENV !== 'production'
 const app = next({ dev })
 const handler = routes.getRequestHandler(app)
-
-let workers = []
 
 const server = express()
 
@@ -59,10 +54,10 @@ const setupWorkerProcesses = () => {
   for(let i = 0; i < numCores; i++) {
     // creating workers and pushing reference in an array
     // these references can be used to receive messages from workers
-    workers.push(cluster.fork())
+    const worker = cluster.fork()
 
     // to receive messages from worker process
-    workers[i].on('message', message => {
+    worker.on('message', message => {
       console.log(message)
     })
   }
@@ -76,10 +71,11 @@ const setupWorkerProcesses = () => {
   cluster.on('exit', (worker, code, signal) => {
     console.log('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal)
     console.log('Starting a new worker')
-    //cluster.fork()
-    workers.push(cluster.fork())
+    
+    const worker = cluster.fork()
+
     // to receive messages from worker process
-    workers[workers.length-1].on('message', message => {
+    worker.on('message', message => {
       console.log(message)
     })
   })

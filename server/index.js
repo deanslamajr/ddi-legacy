@@ -72,10 +72,10 @@ const setupWorkerProcesses = () => {
     console.log('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal)
     console.log('Starting a new worker')
     
-    const worker = cluster.fork()
+    const newWorker = cluster.fork()
 
     // to receive messages from worker process
-    worker.on('message', message => {
+    newWorker.on('message', message => {
       console.log(message)
     })
   })

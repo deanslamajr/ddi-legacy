@@ -42,8 +42,18 @@ class MyApp extends App {
   }
 
   appendLatestComics = async (cb = () => {}) => {
-    // @todo remove duplicates in this.newerComics.comics from this.state.comics
     const clonedComics = Array.from(this.state.comics)
+
+    // if any comics that exist in old list are also in new list, remove from old list
+    // e.g. a comic was recently updated
+    this.state.newerComics.comics.forEach(newComic => {
+      const duplicateIndex = clonedComics.findIndex(({ id }) => id === newComic.id)
+
+      if (duplicateIndex > -1) {
+        clonedComics.splice(duplicateIndex, 1)
+      }
+    })
+
     const newComics = this.state.newerComics.comics.concat(clonedComics)
 
     const newerComics = this.state.newerComics.possiblyHasMore

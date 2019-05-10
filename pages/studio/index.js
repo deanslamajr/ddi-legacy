@@ -27,6 +27,7 @@ import {
   STORAGEKEY_STUDIO
 } from '../../config/constants.json'
 
+const CELL_IMAGE_ID = 'cell-image';
 const RGBA = 'RGBA'
 const filters = {
   [RGBA]: Konva.Filters.RGBA
@@ -65,6 +66,117 @@ function createNewEmoji (emoji, currentEmojiId) {
     blue: 0,
     opacity: 1
   }
+}
+
+function getCaptionConfig (title) {
+  return {
+    x: 2 * theme.canvas.padding,
+    y: theme.canvas.height + (3 * theme.canvas.padding),
+    text: title,
+    fontSize: theme.canvas.fontSize,
+    width: theme.canvas.width - (2 * theme.canvas.padding),
+    fill: theme.colors.black,
+    fontFamily: 'Calibri'
+  }
+}
+
+function getLinesOfCaptionText (title) {
+  const captionConfig = getCaptionConfig(title);
+  const captionKonva = new Konva.Text(captionConfig);
+  return captionKonva.textArr.length;
+}
+
+function getEmojiConfigs (emojis) {
+  return emojis.sort(sortByOrder).map(emoji => ({
+    'data-id': emoji.id,
+    filters: emoji.filters && emoji.filters.map(filter => filters[filter]),
+    x: emoji.x,
+    y: emoji.y,
+    scaleX: emoji.scaleX,
+    scaleY: emoji.scaleY,
+    text: emoji.emoji,
+    fontSize: emoji.size,
+    rotation: emoji.rotation,
+    alpha: emoji.alpha,
+    red: emoji.red,
+    green: emoji.green,
+    blue: emoji.blue,
+    opacity: typeof emoji.opacity !== 'undefined' ? emoji.opacity : 1, /* backwards compatibility */
+    useCache: true
+  }));
+}
+
+function generateCellImage ({emojis, linesOfCaptionText, title}) {
+  const captionHeight = linesOfCaptionText
+    ? (theme.canvas.lineHeight * linesOfCaptionText) + (2 * theme.canvas.padding)
+    : 0;
+
+  const stageHeight = (theme.canvas.height + theme.canvas.padding) +
+    theme.canvas.padding + captionHeight + theme.canvas.padding;
+  const stageWidth = theme.canvas.width + (2 * theme.canvas.padding);
+
+  const stage = new Konva.Stage({
+    container: CELL_IMAGE_ID,
+    width: stageWidth,
+    height: stageHeight
+  });
+
+  const layer = new Konva.Layer();
+  // add the layer to the stage
+  stage.add(layer);
+
+  // Add background
+  const cellBackground = new Konva.Rect({
+    x: 0,
+    y: 0,
+    width: theme.canvas.width + (2 * theme.canvas.padding),
+    height: (/*canvas height*/(theme.canvas.height + theme.canvas.padding) +
+      theme.canvas.padding + captionHeight + theme.canvas.padding),
+    fill: theme.colors.white
+  });
+  layer.add(cellBackground);
+  
+  // Add Canvas
+  const canvas = new Konva.Rect({
+    x: theme.canvas.padding,
+    y: theme.canvas.padding,
+    width: theme.canvas.width,
+    height: theme.canvas.height,
+    fill: theme.colors.white
+  });
+  layer.add(canvas);
+
+  // Add emojis
+  getEmojiConfigs(Object.values(emojis)).forEach(config => {
+    const emoji = new Konva.Text({...config});
+    emoji.cache(konvaCacheConfig)
+    layer.add(emoji);
+  });
+
+  // Add caption background
+  const captionBackground = new Konva.Rect({
+    x: theme.canvas.padding,
+    y: theme.canvas.height + (2 * theme.canvas.padding),
+    width: theme.canvas.width,
+    height: captionHeight,
+    fill: theme.colors.white
+  });
+  layer.add(captionBackground);
+
+  {/* Caption text */}
+  const captionText = new Konva.Text({...getCaptionConfig(title)});
+  layer.add(captionText);
+
+  return new Promise((resolve, reject) => {
+    try {
+      stage.toCanvas().toBlob((blob) => resolve(blob));
+    }
+    catch(err) {
+      // @todo log error
+      console.error(err);
+      reject();
+    }
+  });
 }
 
 //
@@ -400,7 +512,7 @@ class StudioRoute extends Component {
   }
 
   updateAllEmojisCache = () => {
-    Object.keys(this.state.emojis).forEach(emoji => this.updateEmojiCache(emoji, false))
+    Object.keys(this.state.emojis).forEach(emoji => this.updateEmojiCache(emoji, this.state.activeEmojiId === emoji.id))
   }
 
   updateEmojiAndSessionCache = () => {
@@ -444,6 +556,8 @@ class StudioRoute extends Component {
   }
 
   restoreFromCache = (cache) => {
+    const linesOfCaptionText = getLinesOfCaptionText(cache.title);
+    cache.linesOfCaptionText = linesOfCaptionText;
     this.setState(cache, this.updateEmojiAndSessionCache)
   }
 
@@ -568,7 +682,19 @@ class StudioRoute extends Component {
     this.toggleCaptionModal(true)
   }
 
-  onPublishClick = () => {
+  generateImage = async (state) => {
+    const blob = await generateCellImage(state);
+  
+    const file = new File([blob], generateFilename(), {
+      type: S3_ASSET_FILETYPE,
+    });
+  
+    this.renderedImageFile = file
+    
+    return URL.createObjectURL(file);
+  }
+
+  onPublishClick = async () => {
     this.toggleActionsModal(false)
     this.props.showSpinner()
 
@@ -576,26 +702,35 @@ class StudioRoute extends Component {
     // clears active emoji border
     this.updateEmojiCache(undefined, false)
     this.incrementField('red', 1) // hack bc we need to get a konva image refresh for the canvas to get the 'remove border' update
-    
-    this.stage.toCanvas().toBlob((blob) => {
-      const file = new File([blob], generateFilename(), {
-        type: S3_ASSET_FILETYPE,
-      })
 
-      this.renderedImageFile = file
+    const renderedImageUrl = await this.generateImage(this.state);   
 
-      this.setState({
-        renderedImageUrl: URL.createObjectURL(this.renderedImageFile)
-      }, () => {
-        this.togglePublishPreviewModal(true)
-        this.props.hideSpinner()
-      })
+    this.setState({
+      renderedImageUrl
+    }, () => {
+      this.togglePublishPreviewModal(true)
+      this.props.hideSpinner()
     })
   }
 
-  onCaptionModalSave = (newTitle) => {
-    this.setState({ title: newTitle }, this.updateCache)
-    this.toggleCaptionModal(false)
+  onCaptionModalSave = async (newTitle) => {    
+    const linesOfCaptionText = getLinesOfCaptionText(newTitle);
+    const renderedImageUrl = await this.generateImage({
+      emojis: this.state.emojis,
+      linesOfCaptionText,
+      title: newTitle
+    });   
+
+    console.log('onCaptionModalSave renderedImageUrl', renderedImageUrl);
+
+    this.setState({
+      linesOfCaptionText,
+      renderedImageUrl,
+      title: newTitle
+    }, () => {
+      this.updateCache;
+      this.toggleCaptionModal(false);
+    })
   }
 
   onPickerCancel = () => {
@@ -624,7 +759,8 @@ class StudioRoute extends Component {
     }
     else {
       this.outlineActiveEmoji()
-      this.forceUpdate()
+      const linesOfCaptionText = getLinesOfCaptionText(this.state.title);
+      this.setState({linesOfCaptionText});
     }
 
     this.props.hideSpinner()
@@ -645,37 +781,29 @@ class StudioRoute extends Component {
           <title>DrawDrawInk - Studio</title>
         </Head>
 
+        <div style={{display: 'none'}} id={CELL_IMAGE_ID} />
+
         <CenteredContainer>
           <FixedCanvasContainer>
-            <Stage ref={ref => this.stage = ref} width={250} height={250}>
+            <Stage ref={ref => this.stage = ref} width={theme.canvas.width} height={theme.canvas.height}>
               <Layer>
+                {/* Canvas */}
                 <Rect
                   x={0}
                   y={0}
-                  width={250}
-                  height={250}
+                  width={theme.canvas.width}
+                  height={theme.canvas.height}
                   fill={theme.colors.white}
                 />
-                {Object.values(this.state.emojis).sort(sortByOrder).map(emoji => (<Text
-                  draggable={emoji.id === this.state.activeEmojiId}
-                  key={`${emoji.id}${emoji.emoji}`}
-                  ref={ref => this.emojiRefs[emoji.id] = ref}
-                  filters={emoji.filters && emoji.filters.map(filter => filters[filter])}
-                  x={emoji.x}
-                  y={emoji.y}
-                  scaleX={emoji.scaleX}
-                  scaleY={emoji.scaleY}
-                  text={emoji.emoji}
-                  fontSize={emoji.size}
-                  rotation={emoji.rotation}
-                  alpha={emoji.alpha}
-                  red={emoji.red}
-                  green={emoji.green}
-                  blue={emoji.blue}
-                  onDragEnd={this.handleDragEnd}
-                  opacity={typeof emoji.opacity !== 'undefined' ? emoji.opacity : 1 /* backwards compatibility */}
+
+                {getEmojiConfigs(Object.values(this.state.emojis)).map(config => <Text
+                  draggable={config['data-id'] === this.state.activeEmojiId}
                   useCache
-                />))}
+                  key={`${config['data-id']}${config.emoji}`}
+                  ref={ref => this.emojiRefs[config['data-id']] = ref}
+                  onDragEnd={this.handleDragEnd}
+                  {...config}
+                />)}
               </Layer>
             </Stage>
           </FixedCanvasContainer>

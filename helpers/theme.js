@@ -6,6 +6,14 @@ const theme = {
     darkGray: '#CECECF',
     lightGray: '#E7E7E7',
     black: '#464655'
+  },
+  canvas: {
+    width: 250,
+    height: 250,
+    captionHeight: 75,
+    padding: 3,
+    lineHeight: 15,
+    fontSize: 15
   }
 }
 

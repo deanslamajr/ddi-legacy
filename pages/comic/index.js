@@ -3,6 +3,7 @@ import { Component } from 'react'
 import styled from 'styled-components'
 import axios from 'axios'
 
+import { sortByOrder } from '../../helpers'
 import Comic from './Comic'
 import AddCellModal from './AddCellModal'
 
@@ -10,7 +11,8 @@ import {
   NavButton,
   TOP_RIGHT,
   BOTTOM_LEFT,
-  BOTTOM_RIGHT
+  BOTTOM_RIGHT,
+  TOP_CENTER
 } from '../../components/navigation'
 
 import { Router } from '../../routes'
@@ -78,36 +80,26 @@ class ComicRoute extends Component {
   }
 
   downloadCells = (e) => {
+    const {cells, comicId} = this.props;
+
     e.preventDefault();
 
-    console.log('this.props.cells', this.props.cells)
-
-    var temporaryDownloadLink = document.createElement("a");
-    temporaryDownloadLink.style.display = 'none';
-
-    document.body.appendChild( temporaryDownloadLink );
-
-    this.props.cells.forEach(({imageUrl}) => {
-      temporaryDownloadLink.setAttribute( 'href', imageUrl );
-      temporaryDownloadLink.setAttribute( 'download', 'test.png' );
-
-      temporaryDownloadLink.click();
+    cells.sort(sortByOrder).forEach(({imageUrl}, currentIndex) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', imageUrl, true);
+      xhr.responseType = 'blob';
+      xhr.onload = () => {
+          const urlCreator = window.URL || window.webkitURL;
+          const href = urlCreator.createObjectURL(xhr.response);
+          const tag = document.createElement('a');
+          tag.href = href;
+          tag.download = `${comicId}_${currentIndex + 1}of${cells.length}.png`;
+          document.body.appendChild(tag);
+          tag.click();
+          document.body.removeChild(tag);
+      }
+      xhr.send();
     })
-
-    // for( var n = 0; n < filesForDownload.length; n++ )
-    // {
-    //     var download = filesForDownload[n];
-    //     temporaryDownloadLink.setAttribute( 'href', download.path );
-    //     temporaryDownloadLink.setAttribute( 'download', download.name );
-
-    //     temporaryDownloadLink.click();
-    // }
-
-    document.body.removeChild( temporaryDownloadLink );
-
-    // this.props.cells.forEach(({imageUrl}) => {
-    //   /*window.open(imageUrl, '_parent')*/
-    // })
   }
 
   componentDidMount () {
@@ -164,6 +156,12 @@ class ComicRoute extends Component {
           cb={this.showAddCellModal}
           position={TOP_RIGHT}
         />}
+
+        <NavButton
+          value='DOWNLOAD'
+          cb={this.downloadCells}
+          position={TOP_CENTER}
+        />
 
         {this.state.showAddCellModal && <AddCellModal
           onCancelClick={this.hideAddCellModal}

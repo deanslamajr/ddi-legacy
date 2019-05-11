@@ -15,9 +15,9 @@ const { publicRuntimeConfig } = getConfig()
 
 // relax same-origin checks against subdomain
 // this allows browser downloads of assets.drawdraw.ink
-// if (typeof document !== 'undefined' && publicRuntimeConfig.APP_URL_DOMAIN) {
-//   document.domain = publicRuntimeConfig.APP_URL_DOMAIN 
-// }
+if (typeof document !== 'undefined' && publicRuntimeConfig.APP_URL_DOMAIN) {
+  document.domain = publicRuntimeConfig.APP_URL_DOMAIN 
+}
 
 async function getNewerComics (currentComics) {
   const latestUpdatedAt = currentComics[0].updated_at

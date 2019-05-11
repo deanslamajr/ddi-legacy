@@ -22,11 +22,15 @@ const noop = () => {}
 function Comic ({ cells, clickable, showSpinner = noop }) {
   return (<ComicContainer>
     {/* @todo replace having to support both casings for imageUrl and urlId */}
-    {cells.sort(sortByOrder).map(({ imageUrl, image_url, title, urlId, url_id }) => <Cell
+    {/*  This is due to the 2 different ways this is consumed: */}
+    {/*  1. /gallery - passes untransformed cells data from DB */}
+    {/*  2. /comic/:comicId - passes transformed cells data */}
+    {cells.sort(sortByOrder).map(({ imageUrl, image_url, schemaVersion, schema_version, title, urlId, url_id }) => <Cell
       onClick={() => clickable ? navigateTo(urlId || url_id, showSpinner) : noop()}
       imageUrl={imageUrl || image_url}
       title={title}
       key={imageUrl || image_url}
+      schemaVersion={schemaVersion || schema_version}
     />)}
   </ComicContainer>)
 }

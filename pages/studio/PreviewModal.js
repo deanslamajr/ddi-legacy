@@ -3,7 +3,6 @@ import styled from 'styled-components'
 
 import { MenuButton, PinkMenuButton } from '../../components/Buttons'
 import Modal, { CenteredButtons, MessageContainer } from '../../components/Modal'
-import Cell from '../../components/Cell'
 
 const CenteredContainer = styled.div`
   display: flex;
@@ -22,19 +21,15 @@ function PreviewModal ({
   canvasImageUrl,
   onCancelClick,
   onEditCaptionClick,
-  onOkClick,
-  title
+  onOkClick
 }) {  
+
   return (<PreviewModalContainer>
     <MessageContainer>
       Publish this Canvas?
     </MessageContainer>
     <CenteredContainer>
-      <Cell
-        imageUrl={canvasImageUrl}
-        removeBorders
-        title={title}
-      />
+      <img src={canvasImageUrl} />
     </CenteredContainer>
     <CenteredButtons>
       <MenuButton onClick={onEditCaptionClick}>

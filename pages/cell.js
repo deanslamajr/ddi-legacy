@@ -36,6 +36,7 @@ class CellRoute extends Component {
       imageUrl: data.image_url,
       parentId: data.parentId,
       cellId: query.cellId,
+      schemaVersion: data.schemaVersion,
       title: data.title
     }
   }
@@ -74,6 +75,7 @@ class CellRoute extends Component {
     const {
       canDuplicate,
       imageUrl,
+      schemaVersion,
       title
     } = this.props
     
@@ -103,7 +105,7 @@ class CellRoute extends Component {
         </Head>
 
         <CenteredContainer>
-          <Cell imageUrl={imageUrl} title={title} />
+          <Cell imageUrl={imageUrl} title={title} schemaVersion={schemaVersion}/>
         </CenteredContainer>
 
         {this.props.parentId && <NavButton

@@ -14,9 +14,8 @@ const TitleWidth = styled.div`
 `
 
 const CellContainer = styled.div`
-  margin: 1px;
-  /* padding: 10px; */
-  padding: 0;
+  margin: 0;
+  padding: ${props => props.schemaVersion === 1 ? '0' : '1px'};
   cursor: ${props => props.clickable ? 'pointer' : 'default'};
 
   &:first-of-type {
@@ -29,25 +28,39 @@ const CellContainer = styled.div`
 `
 
 const CellBorder = styled.div`
+  padding: 0;
+  margin-right: 1px;
+  background: ${props => props.theme.colors.white};
+  height: 100%;
+`
+
+const OldCellBorder = styled.div`
   padding: .25rem;
   background: ${props => props.theme.colors.white};
   height: 100%;
 `
 
-export default function Cell ({ className, imageUrl, title, onClick, removeBorders }) {
+export default function Cell ({ className, imageUrl, title, onClick, removeBorders, schemaVersion }) {
   return (<CellContainer
     className={className}
     clickable={onClick}
     onClick={onClick}
     removeBorders={removeBorders}
+    schemaVersion={schemaVersion}
   >
-    <CellBorder>
-      <img src={imageUrl} />
-      <TitleContainer>
-        <TitleWidth>
-          {title}
-        </TitleWidth>
-      </TitleContainer>
-    </CellBorder>
+    {schemaVersion === 1
+      ? (<CellBorder>
+        <img src={imageUrl} />
+      </CellBorder>)
+      : (<OldCellBorder>
+        <img src={imageUrl} />
+        <TitleContainer>
+          <TitleWidth>
+            {title}
+          </TitleWidth>
+        </TitleContainer>
+      </OldCellBorder>)
+    }
   </CellContainer>)
+  return 
 }

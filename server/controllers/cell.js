@@ -31,6 +31,7 @@ async function get (req, res) {
   const parentId = parent ? parent.url_id : null
 
   res.json({
+    schemaVersion: cell.schema_version,
     image_url: cell.image_url,
     parentId,
     studioState: cell.studio_state,

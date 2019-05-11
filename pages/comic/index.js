@@ -60,6 +60,7 @@ class ComicRoute extends Component {
     const { comicId } = this.props
 
     this.props.showSpinner()
+    this.hideAddCellModal();
     Router.pushRoute(`/studio/${comicId}/new`)
   }
 
@@ -67,6 +68,7 @@ class ComicRoute extends Component {
     const { comicId } = this.props
 
     this.props.showSpinner()
+    this.hideAddCellModal();
     Router.pushRoute(`/studio/${comicId}/${cellUrlId}`)
   }
 

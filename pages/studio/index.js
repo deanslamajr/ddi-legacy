@@ -715,7 +715,7 @@ class StudioRoute extends Component {
       renderedImageUrl,
       title: newTitle
     }, () => {
-      this.updateCache;
+      this.updateCache();
       this.toggleCaptionModal(false);
     })
   }

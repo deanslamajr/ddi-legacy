@@ -33,7 +33,7 @@ const Cells = sequelize.define('cells',
     },
     schema_version: {
       type: Sequelize.INTEGER,
-      defaultValue: 2
+      defaultValue: 1
     },
     comic_id: {
       type: Sequelize.UUID,

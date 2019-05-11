@@ -10,8 +10,7 @@ import {
   NavButton,
   TOP_RIGHT,
   BOTTOM_LEFT,
-  BOTTOM_RIGHT,
-  TOP_CENTER
+  BOTTOM_RIGHT
 } from '../../components/navigation'
 
 import { Router } from '../../routes'
@@ -172,12 +171,6 @@ class ComicRoute extends Component {
           onAddCellFromDuplicate={this.navigateToAddCell}
           cells={cells}
         />}
-
-        <NavButton
-          value='DOWNLOAD'
-          cb={this.downloadCells}
-          position={TOP_CENTER}
-        />
 
         <NavButton
           value='GALLERY'

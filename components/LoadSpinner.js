@@ -1,5 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
+import getConfig from 'next/config'
+
+const { publicRuntimeConfig } = getConfig()
 
 //
 // Styled Components
@@ -22,7 +25,7 @@ const Spinner = styled.div`
   position: relative;
 
   &:after {
-    content: "🤙";
+    content: url(${`${publicRuntimeConfig.FAVICON_ROOT_URL}/shaka.gif`});
     font-size: 3rem;
     display: block;
     animation: spin 2s infinite;

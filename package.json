@@ -3,7 +3,7 @@
   "version": "0.8.8-2",
   "main": "app.js",
   "scripts": {
-    "deploy:qa": "npm version prerelease --preid=\"$(echo git rev-parse --short=5 HEAD)\"",
+    "deploy:qa": "npm version prerelease --preid=\"$(git rev-parse --short=5 HEAD)\"",
     "dev": "nodemon server/index.js",
     "start": "next build && node server/index.js",
     "migrate": "sequelize db:migrate",

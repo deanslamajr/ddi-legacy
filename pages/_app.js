@@ -13,6 +13,10 @@ import LoadSpinner from '../components/LoadSpinner'
 
 const { publicRuntimeConfig } = getConfig()
 
+if (typeof document !== 'undefined' && publicRuntimeConfig.APP_URL_DOMAIN) {
+  document.domain = publicRuntimeConfig.APP_URL_DOMAIN 
+}
+
 async function getNewerComics (currentComics) {
   const latestUpdatedAt = currentComics[0].updated_at
   const { data } = await axios.get(`/api/comics/latest?latestUpdatedAt=${latestUpdatedAt}`)

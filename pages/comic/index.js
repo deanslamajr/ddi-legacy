@@ -10,7 +10,8 @@ import {
   NavButton,
   TOP_RIGHT,
   BOTTOM_LEFT,
-  BOTTOM_RIGHT
+  BOTTOM_RIGHT,
+  TOP_CENTER
 } from '../../components/navigation'
 
 import { Router } from '../../routes'
@@ -77,6 +78,39 @@ class ComicRoute extends Component {
     this.setState({ showAddCellModal: true })
   }
 
+  downloadCells = (e) => {
+    e.preventDefault();
+
+    console.log('this.props.cells', this.props.cells)
+
+    var temporaryDownloadLink = document.createElement("a");
+    temporaryDownloadLink.style.display = 'none';
+
+    document.body.appendChild( temporaryDownloadLink );
+
+    this.props.cells.forEach(({imageUrl}) => {
+      temporaryDownloadLink.setAttribute( 'href', imageUrl );
+      temporaryDownloadLink.setAttribute( 'download', 'test.png' );
+
+      temporaryDownloadLink.click();
+    })
+
+    // for( var n = 0; n < filesForDownload.length; n++ )
+    // {
+    //     var download = filesForDownload[n];
+    //     temporaryDownloadLink.setAttribute( 'href', download.path );
+    //     temporaryDownloadLink.setAttribute( 'download', download.name );
+
+    //     temporaryDownloadLink.click();
+    // }
+
+    document.body.removeChild( temporaryDownloadLink );
+
+    // this.props.cells.forEach(({imageUrl}) => {
+    //   /*window.open(imageUrl, '_parent')*/
+    // })
+  }
+
   componentDidMount () {
     this.props.hideSpinner()
   }
@@ -138,6 +172,12 @@ class ComicRoute extends Component {
           onAddCellFromDuplicate={this.navigateToAddCell}
           cells={cells}
         />}
+
+        <NavButton
+          value='DOWNLOAD'
+          cb={this.downloadCells}
+          position={TOP_CENTER}
+        />
 
         <NavButton
           value='GALLERY'

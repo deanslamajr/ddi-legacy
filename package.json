@@ -1,6 +1,6 @@
 {
   "name": "draw-draw-ink",
-  "version": "0.8.8-2",
+  "version": "0.8.8-3",
   "main": "app.js",
   "scripts": {
     "deploy:qa": "npm version prerelease --preid=\"$(git rev-parse --short=5 HEAD)\"",

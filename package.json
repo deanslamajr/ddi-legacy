@@ -1,6 +1,6 @@
 {
   "name": "draw-draw-ink",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "main": "app.js",
   "scripts": {
     "dev": "nodemon server/index.js",

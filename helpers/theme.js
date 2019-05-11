@@ -11,7 +11,7 @@ const theme = {
     width: 250,
     height: 250,
     captionHeight: 75,
-    padding: 3,
+    padding: 7,
     lineHeight: 15,
     fontSize: 15
   }

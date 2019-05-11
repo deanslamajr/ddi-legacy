@@ -70,7 +70,9 @@ function createNewEmoji (emoji, currentEmojiId) {
 
 function getCaptionConfig (title) {
   return {
-    ...getCaptionSharedConfig(),
+    x: theme.canvas.padding,
+    y: theme.canvas.height + theme.canvas.padding,
+    width: theme.canvas.width - (2 * theme.canvas.padding),
     text: title,
     fontSize: theme.canvas.fontSize,
     fill: theme.colors.black,
@@ -107,18 +109,9 @@ function getEmojiConfigs (emojis) {
   }));
 }
 
-function getCaptionSharedConfig () {
-  return {
-    x: 0,
-    y: theme.canvas.height,
-    width: theme.canvas.width,
-    padding: 3,
-  }
-}
-
 function generateCellImage ({emojis, linesOfCaptionText, title}) {
   const captionHeight = linesOfCaptionText
-    ? (theme.canvas.lineHeight * linesOfCaptionText) + (2 * theme.canvas.padding)
+    ? theme.canvas.lineHeight * linesOfCaptionText + (2 * theme.canvas.padding)
     : 0;
 
   const stageHeight = theme.canvas.height + captionHeight;
@@ -154,7 +147,9 @@ function generateCellImage ({emojis, linesOfCaptionText, title}) {
   // Add caption background
   if (linesOfCaptionText) {
     const captionBackground = new Konva.Rect({
-      ...getCaptionSharedConfig(),
+      x: 0,
+      y: theme.canvas.height,
+      width: theme.canvas.width,
       height: captionHeight,
       fill: theme.colors.white
     });

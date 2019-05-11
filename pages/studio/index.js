@@ -109,7 +109,8 @@ function getEmojiConfigs (emojis) {
   }));
 }
 
-function generateCellImage ({emojis, linesOfCaptionText, title}) {
+function generateCellImage ({emojis, title}) {
+  const linesOfCaptionText = getLinesOfCaptionText(title);
   const captionHeight = linesOfCaptionText
     ? theme.canvas.lineHeight * linesOfCaptionText + (2 * theme.canvas.padding)
     : 0;
@@ -707,10 +708,8 @@ class StudioRoute extends Component {
   }
 
   onCaptionModalSave = async (newTitle) => {    
-    const linesOfCaptionText = getLinesOfCaptionText(newTitle);
     const renderedImageUrl = await this.generateImage({
       emojis: this.state.emojis,
-      linesOfCaptionText,
       title: newTitle
     });   
 

@@ -70,11 +70,9 @@ function createNewEmoji (emoji, currentEmojiId) {
 
 function getCaptionConfig (title) {
   return {
-    x: 2 * theme.canvas.padding,
-    y: theme.canvas.height + (3 * theme.canvas.padding),
+    ...getCaptionSharedConfig(),
     text: title,
     fontSize: theme.canvas.fontSize,
-    width: theme.canvas.width - (2 * theme.canvas.padding),
     fill: theme.colors.black,
     fontFamily: 'Calibri'
   }
@@ -106,6 +104,15 @@ function getEmojiConfigs (emojis) {
   }));
 }
 
+function getCaptionSharedConfig () {
+  return {
+    x: 0,
+    y: theme.canvas.height,
+    width: theme.canvas.width,
+    padding: 3,
+  }
+}
+
 function generateCellImage ({emojis, linesOfCaptionText, title}) {
   const captionHeight = linesOfCaptionText
     ? (theme.canvas.lineHeight * linesOfCaptionText) + (2 * theme.canvas.padding)
@@ -124,22 +131,11 @@ function generateCellImage ({emojis, linesOfCaptionText, title}) {
   const layer = new Konva.Layer();
   // add the layer to the stage
   stage.add(layer);
-
-  // Add background
-  const cellBackground = new Konva.Rect({
-    x: 0,
-    y: 0,
-    width: theme.canvas.width + (2 * theme.canvas.padding),
-    height: (/*canvas height*/(theme.canvas.height + theme.canvas.padding) +
-      theme.canvas.padding + captionHeight + theme.canvas.padding),
-    fill: theme.colors.white
-  });
-  layer.add(cellBackground);
   
   // Add Canvas
   const canvas = new Konva.Rect({
-    x: theme.canvas.padding,
-    y: theme.canvas.padding,
+    x: 0,
+    y: 0,
     width: theme.canvas.width,
     height: theme.canvas.height,
     fill: theme.colors.white
@@ -155,9 +151,7 @@ function generateCellImage ({emojis, linesOfCaptionText, title}) {
 
   // Add caption background
   const captionBackground = new Konva.Rect({
-    x: theme.canvas.padding,
-    y: theme.canvas.height + (2 * theme.canvas.padding),
-    width: theme.canvas.width,
+    ...getCaptionSharedConfig(),
     height: captionHeight,
     fill: theme.colors.white
   });

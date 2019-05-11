@@ -48,7 +48,7 @@ export default function Cell ({ className, imageUrl, title, onClick, removeBorde
     removeBorders={removeBorders}
     schemaVersion={schemaVersion}
   >
-    {schemaVersion === 1
+    {schemaVersion >= 1
       ? (<CellBorder>
         <img src={imageUrl} />
       </CellBorder>)

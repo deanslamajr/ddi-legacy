@@ -13,6 +13,8 @@ import LoadSpinner from '../components/LoadSpinner'
 
 const { publicRuntimeConfig } = getConfig()
 
+// relax same-origin checks against subdomain
+// this allows browser downloads of assets.drawdraw.ink
 if (typeof document !== 'undefined' && publicRuntimeConfig.APP_URL_DOMAIN) {
   document.domain = publicRuntimeConfig.APP_URL_DOMAIN 
 }

@@ -7,6 +7,7 @@ const {
   validateFilename,
   validateTitle
 } = require('../../shared/validators')
+const { serverEnvironment } = require('../env-config')
 
 async function sign (req, res) {
   try {
@@ -28,9 +29,11 @@ async function sign (req, res) {
     const id = shortid.generate()
     signData.id = id
 
+    const image_url = serverEnvironment.ASSETS_DOMAIN ? `https://${serverEnvironment.ASSETS_DOMAIN}/${filename}` : signData.url;
+
     const newCellConfiguration = {
       creator_user_id: req.session.userId,
-      image_url: signData.url,
+      image_url,
       title,
       order: 0,
       url_id: id

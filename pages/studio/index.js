@@ -550,8 +550,6 @@ class StudioRoute extends Component {
   }
 
   restoreFromCache = (cache) => {
-    const linesOfCaptionText = getLinesOfCaptionText(cache.title);
-    cache.linesOfCaptionText = linesOfCaptionText;
     this.setState(cache, this.updateEmojiAndSessionCache)
   }
 
@@ -714,7 +712,6 @@ class StudioRoute extends Component {
     });   
 
     this.setState({
-      linesOfCaptionText,
       renderedImageUrl,
       title: newTitle
     }, () => {
@@ -749,8 +746,6 @@ class StudioRoute extends Component {
     }
     else {
       this.outlineActiveEmoji()
-      const linesOfCaptionText = getLinesOfCaptionText(this.state.title);
-      this.setState({linesOfCaptionText});
     }
 
     this.props.hideSpinner()

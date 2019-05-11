@@ -11,8 +11,7 @@ import {
   NavButton,
   TOP_RIGHT,
   BOTTOM_LEFT,
-  BOTTOM_RIGHT,
-  TOP_CENTER
+  BOTTOM_RIGHT
 } from '../../components/navigation'
 
 import { Router } from '../../routes'
@@ -79,6 +78,9 @@ class ComicRoute extends Component {
     this.setState({ showAddCellModal: true })
   }
 
+  /**
+   * not in use bc it doesn't seem to work on iOS safari
+   */
   downloadCells = (e) => {
     const {cells, comicId} = this.props;
 
@@ -156,12 +158,6 @@ class ComicRoute extends Component {
           cb={this.showAddCellModal}
           position={TOP_RIGHT}
         />}
-
-        <NavButton
-          value='DOWNLOAD'
-          cb={this.downloadCells}
-          position={TOP_CENTER}
-        />
 
         {this.state.showAddCellModal && <AddCellModal
           onCancelClick={this.hideAddCellModal}

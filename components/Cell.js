@@ -29,8 +29,8 @@ const CellContainer = styled.div`
 
 const CellBorder = styled.div`
   padding: 0;
-  margin-right: 1px;
-  background: ${props => props.theme.colors.white};
+  margin-right: 3px;
+  background: ${props => props.theme.colors.lightGray};
   height: 100%;
 `
 

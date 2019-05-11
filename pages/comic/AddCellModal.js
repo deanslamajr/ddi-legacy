@@ -82,12 +82,13 @@ export default class AddCellModal extends React.Component {
           Pick a cell to duplicate:
         </MessageContainer>
         <CellsContainer>
-          {cells.sort(sortByOrder).map(({ imageUrl, image_url, title, urlId, url_id }) => <CellContainer>
+          {cells.sort(sortByOrder).map(({ imageUrl, image_url, schemaVersion, schema_version, title, urlId, url_id }) => <CellContainer>
             <Cell
               imageUrl={imageUrl || image_url}
               key={imageUrl || image_url}
               onClick={() => onAddCellFromDuplicate(urlId || url_id)}
               removeBorders
+              schemaVersion={schemaVersion || schema_version}
               title={title}
             />
           </CellContainer>)}

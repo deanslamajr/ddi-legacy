@@ -79,6 +79,9 @@ function getCaptionConfig (title) {
 }
 
 function getLinesOfCaptionText (title) {
+  if (title === '') {
+    return 0;
+  }
   const captionConfig = getCaptionConfig(title);
   const captionKonva = new Konva.Text(captionConfig);
   return captionKonva.textArr.length;
@@ -118,9 +121,8 @@ function generateCellImage ({emojis, linesOfCaptionText, title}) {
     ? (theme.canvas.lineHeight * linesOfCaptionText) + (2 * theme.canvas.padding)
     : 0;
 
-  const stageHeight = (theme.canvas.height + theme.canvas.padding) +
-    theme.canvas.padding + captionHeight + theme.canvas.padding;
-  const stageWidth = theme.canvas.width + (2 * theme.canvas.padding);
+  const stageHeight = theme.canvas.height + captionHeight;
+  const stageWidth = theme.canvas.width;
 
   const stage = new Konva.Stage({
     container: CELL_IMAGE_ID,
@@ -150,16 +152,18 @@ function generateCellImage ({emojis, linesOfCaptionText, title}) {
   });
 
   // Add caption background
-  const captionBackground = new Konva.Rect({
-    ...getCaptionSharedConfig(),
-    height: captionHeight,
-    fill: theme.colors.white
-  });
-  layer.add(captionBackground);
-
-  {/* Caption text */}
-  const captionText = new Konva.Text({...getCaptionConfig(title)});
-  layer.add(captionText);
+  if (linesOfCaptionText) {
+    const captionBackground = new Konva.Rect({
+      ...getCaptionSharedConfig(),
+      height: captionHeight,
+      fill: theme.colors.white
+    });
+    layer.add(captionBackground);
+  
+    {/* Caption text */}
+    const captionText = new Konva.Text({...getCaptionConfig(title)});
+    layer.add(captionText);
+  }
 
   return new Promise((resolve, reject) => {
     try {
@@ -714,8 +718,6 @@ class StudioRoute extends Component {
       linesOfCaptionText,
       title: newTitle
     });   
-
-    console.log('onCaptionModalSave renderedImageUrl', renderedImageUrl);
 
     this.setState({
       linesOfCaptionText,

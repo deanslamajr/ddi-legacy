@@ -15,8 +15,7 @@ const envConfigs = {
 
 module.exports = Object.assign({}, cssConfigs, envConfigs, {
   generateBuildId: async () => {
-    //const {version} = require('./package.json')
-    //return version || 'SOME_BUILD_ID'
-    return 'BUILD'
+    const {version} = require('./package.json')
+    return version || 'SOME_BUILD_ID'
   }
 })

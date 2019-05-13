@@ -38,6 +38,7 @@ const OldCellBorder = styled.div`
   padding: .25rem;
   background: ${props => props.theme.colors.white};
   height: 100%;
+  width: ${props => props.theme.canvas.width}px;
 `
 
 export default function Cell ({ className, imageUrl, title, onClick, removeBorders, schemaVersion }) {

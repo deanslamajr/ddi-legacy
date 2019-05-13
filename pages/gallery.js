@@ -8,14 +8,50 @@ import {
   TOP_RIGHT
 } from '../components/navigation'
 
+import Cell from '../components/Cell'
 import Comic from './comic/Comic'
+import { sortByOrder } from '../helpers'
+import { media } from '../helpers/style-utils'
 
 import { Link, Router } from '../routes'
+
+const Thumbnail = styled.img`
+  width: 260px;
+
+  ${media.phoneMax`
+    width: 40vw;
+    min-width: 130px;
+  `}
+`;
+
+const Thumb = ({imageUrl}) => {
+    return (<Thumbnail src={imageUrl}>
+    </Thumbnail>)
+}
+
+const CellsThumb = ({cells = []}) => {
+  if (!Array.isArray(cells)) {
+    return null
+  }
+  console.log('cells', cells);
+
+  const sortedCells = cells.sort(sortByOrder);
+
+  if (sortedCells.length) {
+    const cell = sortedCells[0];
+    return (<Thumb
+      imageUrl={cell.image_url}
+    />)
+  }
+
+  return null
+}
 
 const ComicsContainer = styled.div`
   display: flex;
   justify-content: center;
-  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
 `
 
 const ShowMoreButton = styled(NavButton)`
@@ -84,7 +120,8 @@ class GalleryRoute extends Component {
                 id={url_id}
                 onClick={() => this.handleComicClick(url_id)}
               >
-                <Comic cells={cells} />
+                {/* <Comic cells={cells} /> */}
+                <CellsThumb cells={cells} />
               </UnstyledLink>
             </Link>)
           )}

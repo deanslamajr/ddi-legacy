@@ -1,8 +1,8 @@
 import styled, { css } from 'styled-components'
 
 export const media = {
-  tabletMax: (...args) => css`
-    @media (max-width: 899px) {
+  desktopMin: (...args) => css`
+    @media (min-width: 600px) {
       ${ css(...args) }
     }
   `,

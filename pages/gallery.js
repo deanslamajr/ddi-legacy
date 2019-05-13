@@ -19,7 +19,7 @@ const Thumbnail = styled.img`
   width: 260px;
 
   ${media.phoneMax`
-    width: 40vw;
+    width: 48vw;
     min-width: 130px;
   `}
 `;
@@ -62,7 +62,13 @@ const UnstyledLink = styled.a`
   text-decoration: none;
   color: ${props => props.theme.colors.black};
   overflow-x: auto;
-  margin: .5rem 0;
+  
+  ${media.desktopMin`
+    margin: 1rem;
+  `}
+  ${media.phoneMax`
+    margin: .2rem;
+  `}
 `
 
 const CreateButton = styled(NavButton)`

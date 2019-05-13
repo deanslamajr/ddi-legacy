@@ -63,10 +63,6 @@ const UnstyledLink = styled.a`
   color: ${props => props.theme.colors.black};
   overflow-x: auto;
   margin: .5rem 0;
-
-  &:first-of-type {
-    margin-top: 1rem;
-  }
 `
 
 const CreateButton = styled(NavButton)`

@@ -49,6 +49,7 @@
     "query-string": "^6.3.0",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
+    "react-ga": "^2.5.7",
     "react-konva": "^16.6.31",
     "sequelize": "^4.42.0",
     "shortid": "^2.2.14",

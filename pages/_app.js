@@ -5,6 +5,7 @@ import { ThemeProvider } from 'styled-components'
 import getConfig from 'next/config'
 import axios from 'axios'
 import queryString from 'query-string'
+import ReactGA from 'react-ga';
 
 import theme from '../helpers/theme'
 
@@ -111,6 +112,13 @@ class MyApp extends App {
 
   setActiveComicId = (comicId) => {
     this.setState({ activeComicId: comicId })
+  }
+
+  componentDidMount () {
+    if (publicRuntimeConfig.GA_ID) {
+      ReactGA.initialize(publicRuntimeConfig.GA_ID);
+      ReactGA.pageview('/test');
+    }
   }
 
   render () {

@@ -1,7 +1,7 @@
 const { Cells, Comics } = require('../models')
 const { falsePositiveResponse } = require('./utils')
 
-const LIMIT = 20
+const LIMIT = 20;
 
 async function all (req, res) {
   let offset = 0

@@ -24,9 +24,33 @@ const Thumbnail = styled.img`
   `}
 `;
 
+const OldThumbNail = styled(Thumbnail)`
+  background-color: ${props => props.theme.colors.white};
+`
+
+const OldCellImage = styled.img`
+  width: 100%;
+`
+
 const Thumb = ({imageUrl}) => {
     return (<Thumbnail src={imageUrl}>
     </Thumbnail>)
+}
+
+const Caption = styled.div`
+  ${media.phoneMax`
+    font-size: .7rem;
+  `}
+
+  padding: .25rem;
+  padding-top: .15rem;
+`
+
+const OldThumb = ({caption, imageUrl}) => {
+  return (<OldThumbNail as='div'>
+    <OldCellImage src={imageUrl} />
+    <Caption>{caption}</Caption>
+  </OldThumbNail>);
 }
 
 const CellsThumb = ({cells = []}) => {
@@ -39,9 +63,14 @@ const CellsThumb = ({cells = []}) => {
 
   if (sortedCells.length) {
     const cell = sortedCells[0];
-    return (<Thumb
-      imageUrl={cell.image_url}
-    />)
+    return cell.schema_version > 0
+      ? (<Thumb
+        imageUrl={cell.image_url}
+      />)
+      : (<OldThumb
+        imageUrl={cell.image_url}
+        caption={cell.title}
+      />)
   }
 
   return null

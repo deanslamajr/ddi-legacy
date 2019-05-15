@@ -8,15 +8,21 @@ import {
   TOP_RIGHT
 } from '../components/navigation'
 
-import Cell from '../components/Cell'
-import Comic from './comic/Comic'
 import { sortByOrder } from '../helpers'
-import { media } from '../helpers/style-utils'
+import { media, shadow } from '../helpers/style-utils'
 
 import { Link, Router } from '../routes'
 
 const Thumbnail = styled.img`
   width: 260px;
+  cursor: pointer;
+  opacity: .8;
+
+  ${shadow()}
+
+  &:hover {
+    opacity: 1;
+  }
 
   ${media.phoneMax`
     width: 48vw;
@@ -57,7 +63,6 @@ const CellsThumb = ({cells = []}) => {
   if (!Array.isArray(cells)) {
     return null
   }
-  console.log('cells', cells);
 
   const sortedCells = cells.sort(sortByOrder);
 
@@ -90,7 +95,6 @@ const ShowMoreButton = styled(NavButton)`
 const UnstyledLink = styled.a`
   text-decoration: none;
   color: ${props => props.theme.colors.black};
-  overflow-x: auto;
   
   ${media.desktopMin`
     margin: 1rem;

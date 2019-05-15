@@ -14,15 +14,17 @@ import { media, shadow } from '../helpers/style-utils'
 import { Link, Router } from '../routes'
 
 const Thumbnail = styled.img`
-  width: 260px;
-  cursor: pointer;
-  opacity: .8;
-
   ${shadow()}
 
-  &:hover {
-    opacity: 1;
-  }
+  ${media.desktopMin`
+    width: 260px;
+    cursor: pointer;
+    opacity: .8;
+
+    &:hover {
+      opacity: 1;
+    }
+  `}
 
   ${media.phoneMax`
     width: 48vw;

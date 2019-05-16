@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
 
+import {buttonShadow} from '../../helpers/style-utils'
+
 export const TOP_CENTER = 'TOP_CENTER'
 export const TOP_RIGHT = 'TOP_RIGHT'
 export const BOTTOM_LEFT = 'BOTTOM_LEFT'
@@ -21,11 +23,12 @@ const Button = styled.div`
   font-size: .9rem;
   text-align: center;
   user-select: none;
-  box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
   position: fixed;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  ${buttonShadow()}
 
   &:hover {
     background-color: ${props => props.theme.colors.black};

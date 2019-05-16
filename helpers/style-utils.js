@@ -18,3 +18,9 @@ export function shadow () {
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16);
   `
 }
+
+export function buttonShadow () {
+  return css`
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+  `
+}

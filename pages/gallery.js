@@ -40,9 +40,27 @@ const OldCellImage = styled.img`
   width: 100%;
 `
 
-const Thumb = ({imageUrl}) => {
-    return (<Thumbnail src={imageUrl}>
-    </Thumbnail>)
+const CellsCount = styled.div`
+  z-index: 999;
+  position: absolute;
+  top: .1rem;
+  left: .1rem;
+  width: 25px;
+  height: 25px;
+  opacity: .75;
+  background-color: ${props => props.theme.colors.pink};
+  color: ${props => props.theme.colors.white};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
+const Thumb = ({cellsCount, imageUrl}) => {
+  return (<>
+    {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}
+    <Thumbnail src={imageUrl}>
+    </Thumbnail>
+  </>)
 }
 
 const Caption = styled.div`
@@ -54,8 +72,9 @@ const Caption = styled.div`
   padding-top: .15rem;
 `
 
-const OldThumb = ({caption, imageUrl}) => {
+const OldThumb = ({caption, cellsCount, imageUrl}) => {
   return (<OldThumbNail as='div'>
+    {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}
     <OldCellImage src={imageUrl} />
     <Caption>{caption}</Caption>
   </OldThumbNail>);
@@ -72,9 +91,11 @@ const CellsThumb = ({cells = []}) => {
     const cell = sortedCells[0];
     return cell.schema_version > 0
       ? (<Thumb
+        cellsCount={sortedCells.length}
         imageUrl={cell.image_url}
       />)
       : (<OldThumb
+        cellsCount={sortedCells.length}
         imageUrl={cell.image_url}
         caption={cell.title}
       />)
@@ -97,6 +118,7 @@ const ShowMoreButton = styled(NavButton)`
 const UnstyledLink = styled.a`
   text-decoration: none;
   color: ${props => props.theme.colors.black};
+  position: relative;
   
   ${media.desktopMin`
     margin: 1rem;

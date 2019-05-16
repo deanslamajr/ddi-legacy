@@ -53,6 +53,8 @@ const CellsCount = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  user-select: none;
+  cursor: pointer;
 `
 
 const Thumb = ({cellsCount, imageUrl}) => {

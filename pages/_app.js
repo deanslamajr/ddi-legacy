@@ -7,6 +7,8 @@ import axios from 'axios'
 import queryString from 'query-string'
 import ReactGA from 'react-ga';
 
+import { Router } from '../routes'
+
 import theme from '../helpers/theme'
 
 import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
@@ -31,6 +33,20 @@ async function getNewerComics (currentComics) {
     : null
 }
 
+/**
+ * GOOGLE ANALYTICS - PAGE VIEWS
+ */
+const handleRouteChange = url => {
+  if (publicRuntimeConfig.GA_ID) {
+    ReactGA.pageview(url);
+  }
+}
+
+Router.events.on('routeChangeStart', handleRouteChange)
+
+/**
+ * COMPONENT
+ */
 class MyApp extends App {
   state = {
     activeComicId: null,
@@ -38,6 +54,20 @@ class MyApp extends App {
     hasMoreComics: false,
     newerComics: null,
     showSpinner: true
+  }
+
+  static async getInitialProps({ Component, ctx }) {
+    let pageProps = {};
+    if (Component.getInitialProps) {
+        pageProps = await Component.getInitialProps(ctx);
+    }
+    
+    // only on server side rendering
+    if (ctx.req) {
+      pageProps.userId = ctx.req.session.userId;
+    }
+
+    return { pageProps };
   }
 
   hideSpinner = () => {
@@ -116,11 +146,11 @@ class MyApp extends App {
 
   componentDidMount () {
     if (publicRuntimeConfig.GA_ID) {
-      ReactGA.initialize(publicRuntimeConfig.GA_ID/*, {
+      ReactGA.initialize(publicRuntimeConfig.GA_ID, {
         gaOptions: {
-          userId: 123
+          userId: this.props.userId
         }
-      }*/);
+      });
       ReactGA.pageview(window.location.pathname + window.location.search);
     }
   }

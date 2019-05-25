@@ -28,11 +28,11 @@ const CellContainer = styled.div`
 
   ${media.phoneMax`
     &:first-of-type {
-      margin-top: 1rem;
+      margin-top: ${props => props.removeBorders ? 'inherit' : `1rem`};
     }
 
     &:last-of-type {
-      margin-bottom: 5rem;
+      margin-bottom: ${props => props.removeBorders ? 'inherit' : `5rem`};
     }
   `}
 `

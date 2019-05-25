@@ -19,15 +19,16 @@ const HomeModal = styled(Modal)`
   width: 315px;
 `
 
-const CellContainer = styled.div`
-  width: 270px;
-  display: flex;
-  margin: auto;
-`
-
 const CellsContainer = styled.div`
   overflow-y: auto;
   height: 60%;
+  width: 270px;
+  margin: 2rem;
+`
+
+const CellContainer = styled.div`
+  display: flex;
+  margin: auto;
 `
 
 const MessageContainer = styled(Message)`

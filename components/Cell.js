@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
 
+import { media } from '../helpers/style-utils'
+
 const TitleContainer = styled.div`
   width: 250px;
   background: ${props => props.theme.colors.white};
@@ -18,13 +20,15 @@ const CellContainer = styled.div`
   padding: ${props => props.schemaVersion === 1 ? '0' : '1px'};
   cursor: ${props => props.clickable ? 'pointer' : 'default'};
 
-  &:first-of-type {
-    margin-left: ${props => props.removeBorders ? 'inherit' : '1rem'};
-  }
+  ${media.desktopMin`
+    &:first-of-type {
+      margin-left: ${props => props.removeBorders ? 'inherit' : '1rem'};
+    }
 
-  &:last-of-type {
-    border-right: ${props => props.removeBorders ? 'inherit' : `1rem solid ${props.theme.colors.lightGray}`};
-  }
+    &:last-of-type {
+      border-right: ${props => props.removeBorders ? 'inherit' : `1rem solid ${props.theme.colors.lightGray}`};
+    }
+  `}
 `
 
 const CellBorder = styled.div`

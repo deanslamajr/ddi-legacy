@@ -5,6 +5,7 @@ import { Router } from '../../routes'
 import Cell from '../../components/Cell'
 
 import { sortByOrder } from '../../helpers'
+import { media } from '../../helpers/style-utils'
 
 const navigateTo = (urlId, showSpinner) => {
   showSpinner()
@@ -15,6 +16,12 @@ const ComicContainer = styled.div`
   display: flex;
   margin: 0;
   overflow-y: hidden;
+  
+
+  ${media.phoneMax`
+    margin: 0 auto;
+    flex-direction: column;
+  `}
 `
 
 const noop = () => {}

@@ -8,6 +8,7 @@ const GrayBackground = createGlobalStyle`
     background-color: ${theme.colors.lightGray};
     margin: 0;
     color: ${theme.colors.black};
+    overflow-x: hidden;
   }
 `
 

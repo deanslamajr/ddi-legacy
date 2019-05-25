@@ -24,7 +24,7 @@ const CenteredContainer = styled.div`
   flex-direction: column;
 
   ${media.desktopMin`
-    margin: 8rem 10rem;
+    margin: 4rem 10rem;
   `}
   ${media.phoneMax`
     margin: .2rem;

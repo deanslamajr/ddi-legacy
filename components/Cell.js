@@ -19,11 +19,11 @@ const CellContainer = styled.div`
   margin: 0;
   padding: ${props => props.schemaVersion === 1 ? '0' : '1px'};
   cursor: ${props => props.clickable ? 'pointer' : 'default'};
+  background: ${props => props.schemaVersion === 1 ? 'inherit' : `${props.theme.colors.lightGray}`};
 
   ${media.desktopMin`
-    &:last-of-type {
-      border-right: ${props => props.removeBorders ? 'inherit' : `1rem solid ${props.theme.colors.lightGray}`};
-    }
+    margin-bottom: ${props => props.schemaVersion === 1 ? '3px' : '1px'};
+    margin-right: ${props => props.schemaVersion === 1 ? '3px' : '1px'};
   `}
 
   ${media.phoneMax`
@@ -39,16 +39,18 @@ const CellContainer = styled.div`
 
 const CellBorder = styled.div`
   padding: 0;
-  margin-right: 3px;
   background: ${props => props.theme.colors.lightGray};
   height: 100%;
+
+  ${media.desktopMin`
+    background: ${props => props.theme.colors.white};
+  `}
 `
 
 const OldCellBorder = styled.div`
-  padding: .25rem;
   background: ${props => props.theme.colors.white};
   height: 100%;
-  width: ${props => props.theme.canvas.width}px;
+  width: 100%;
 `
 
 export default function Cell ({ className, imageUrl, title, onClick, removeBorders, schemaVersion }) {

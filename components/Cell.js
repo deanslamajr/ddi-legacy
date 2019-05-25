@@ -21,12 +21,18 @@ const CellContainer = styled.div`
   cursor: ${props => props.clickable ? 'pointer' : 'default'};
 
   ${media.desktopMin`
+    &:last-of-type {
+      border-right: ${props => props.removeBorders ? 'inherit' : `1rem solid ${props.theme.colors.lightGray}`};
+    }
+  `}
+
+  ${media.phoneMax`
     &:first-of-type {
-      margin-left: ${props => props.removeBorders ? 'inherit' : '1rem'};
+      margin-top: 1rem;
     }
 
     &:last-of-type {
-      border-right: ${props => props.removeBorders ? 'inherit' : `1rem solid ${props.theme.colors.lightGray}`};
+      margin-bottom: 5rem;
     }
   `}
 `

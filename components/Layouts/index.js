@@ -2,13 +2,17 @@ import { createGlobalStyle } from 'styled-components'
 import Head from 'next/head'
 
 import theme from '../../helpers/theme'
+import {media} from '../../helpers/style-utils'
 
 const GrayBackground = createGlobalStyle`
   body {
     background-color: ${theme.colors.lightGray};
     margin: 0;
     color: ${theme.colors.black};
-    overflow-x: hidden;
+
+    ${media.phoneMax`
+      overflow-x: hidden;
+    `}
   }
 `
 

@@ -4,13 +4,14 @@ import styled from 'styled-components'
 import axios from 'axios'
 
 import { sortByOrder } from '../../helpers'
+import { media } from '../../helpers/style-utils'
 import Comic from './Comic'
 import AddCellModal from './AddCellModal'
 
 import {
   NavButton,
-  TOP_RIGHT,
   BOTTOM_LEFT,
+  BOTTOM_CENTER,
   BOTTOM_RIGHT
 } from '../../components/navigation'
 
@@ -21,9 +22,13 @@ const CenteredContainer = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
-  width: 100vw;
-  margin-top: 6rem;
-  overflow-x: auto;
+
+  ${media.desktopMin`
+    margin: 8rem 10rem;
+  `}
+  ${media.phoneMax`
+    margin: .2rem;
+  `}
 `
 
 const CreateButton = styled(NavButton)`
@@ -158,7 +163,7 @@ class ComicRoute extends Component {
           accented
           value='ADD CELL'
           cb={this.showAddCellModal}
-          position={TOP_RIGHT}
+          position={BOTTOM_CENTER}
         />}
 
         {this.state.showAddCellModal && <AddCellModal

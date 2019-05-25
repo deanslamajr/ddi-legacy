@@ -16,7 +16,11 @@ const ComicContainer = styled.div`
   display: flex;
   margin: 0;
   overflow-y: hidden;
+  overflow-x: hidden;
   
+  ${media.desktopMin`
+    flex-wrap: wrap;
+  `}
 
   ${media.phoneMax`
     margin: 0 auto;

@@ -20,6 +20,7 @@ const ComicContainer = styled.div`
   
   ${media.desktopMin`
     flex-wrap: wrap;
+    justify-content: center;
   `}
 
   ${media.phoneMax`

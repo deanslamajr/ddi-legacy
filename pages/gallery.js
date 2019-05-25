@@ -19,10 +19,9 @@ const Thumbnail = styled.img`
   ${media.desktopMin`
     width: 260px;
     cursor: pointer;
-    opacity: .8;
 
     &:hover {
-      opacity: 1;
+      opacity: .8;
     }
   `}
 

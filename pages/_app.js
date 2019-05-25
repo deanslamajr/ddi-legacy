@@ -116,8 +116,12 @@ class MyApp extends App {
 
   componentDidMount () {
     if (publicRuntimeConfig.GA_ID) {
-      ReactGA.initialize(publicRuntimeConfig.GA_ID);
-      ReactGA.pageview('/test');
+      ReactGA.initialize(publicRuntimeConfig.GA_ID/*, {
+        gaOptions: {
+          userId: 123
+        }
+      }*/);
+      ReactGA.pageview(window.location.pathname + window.location.search);
     }
   }
 

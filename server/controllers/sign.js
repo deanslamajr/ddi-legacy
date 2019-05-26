@@ -1,4 +1,6 @@
 const shortid = require('shortid')
+const axios = require('axios')
+const queryString = require('query-string');
 
 const { sign: signViaS3 } = require('../adapters/s3')
 const { Cells, Comics } = require('../models/index')
@@ -7,7 +9,23 @@ const {
   validateFilename,
   validateTitle
 } = require('../../shared/validators')
+
 const { serverEnvironment } = require('../env-config')
+const {
+  CAPTCHA_ACTION_CELL_PUBLISH,
+  CAPTCHA_THRESHOLD
+} = require('../../shared/constants')
+
+function verifyCaptchaToken (token) {
+  const verifyPayload = {
+    response: token,
+    secret: serverEnvironment.CAPTCHA_SECRET
+  };
+
+  console.log('verifyPayload', verifyPayload)
+
+  return axios.post('https://www.google.com/recaptcha/api/siteverify', queryString.stringify(verifyPayload))
+}
 
 async function sign (req, res) {
   try {
@@ -15,15 +33,31 @@ async function sign (req, res) {
       throw new Error('User session does not exist!')
     }
 
-    const filename = req.query['file-name']
+    const {
+      captchaToken,
+      filename,
+      parentId,
+      title
+    } = req.body;
+
+    const { data: captchaVerifyResponse } = await verifyCaptchaToken(captchaToken);
+
+    console.log('captchaVerifyResponse', captchaVerifyResponse)
+    if (
+      !captchaVerifyResponse.success ||
+      captchaVerifyResponse.action !== CAPTCHA_ACTION_CELL_PUBLISH ||
+      captchaVerifyResponse.score < CAPTCHA_THRESHOLD
+    ) {
+      // @todo generate better logs around this failed captcha
+      return res.sendStatus(400);
+    }
 
     // throws on fail
     validateFilename(filename)
     
-    const title = validateTitle(req.query['title'])
+    const validatedTitle = validateTitle(title)
 
-    const parentId = req.query['parent-id']
-    let comicId = req.query['comic-id']
+    let comicId = req.body.comicId;
 
     const signData = await signViaS3(filename)
     const id = shortid.generate()
@@ -34,7 +68,7 @@ async function sign (req, res) {
     const newCellConfiguration = {
       creator_user_id: req.session.userId,
       image_url,
-      title,
+      title: validatedTitle,
       order: 0,
       url_id: id
     }

@@ -51,6 +51,7 @@
     "react-dom": "^16.6.3",
     "react-ga": "^2.5.7",
     "react-konva": "^16.6.31",
+    "recaptcha-v3": "^1.5.0",
     "sequelize": "^4.42.0",
     "shortid": "^2.2.14",
     "store2": "^2.7.1",

@@ -6,6 +6,7 @@ import getConfig from 'next/config'
 import axios from 'axios'
 import queryString from 'query-string'
 import ReactGA from 'react-ga';
+import { load } from 'recaptcha-v3'
 
 import { Router } from '../routes'
 
@@ -145,6 +146,16 @@ class MyApp extends App {
   }
 
   componentDidMount () {
+    if (publicRuntimeConfig.CAPTCHA_SITE_KEY) {
+      load(publicRuntimeConfig.CAPTCHA_SITE_KEY, {
+        autoHideBadge: true
+      }).then((recaptcha) => {
+        this.setState({
+          recaptcha
+        });
+      });
+    }
+
     if (publicRuntimeConfig.GA_ID) {
       ReactGA.initialize(publicRuntimeConfig.GA_ID, {
         gaOptions: {
@@ -189,6 +200,7 @@ class MyApp extends App {
             hideSpinner={this.hideSpinner}
             isShowingSpinner={this.state.showSpinner}
             newerComicsExist={!!this.state.newerComics}
+            recaptcha={this.state.recaptcha}
             setActiveComicId={this.setActiveComicId}
             showSpinner={this.showSpinner}
             {...pageProps}

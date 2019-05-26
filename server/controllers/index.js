@@ -15,7 +15,7 @@ const {
 
 const router = express.Router()
 
-router.get('/sign', sign)
+router.post('/sign', sign)
 
 router.get('/cell/:cellId/parent', getParent)
 router.get('/cell/:cellId', getCell)

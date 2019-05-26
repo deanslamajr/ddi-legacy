@@ -8,7 +8,6 @@ import shortid from 'shortid'
 import cloneDeep from 'lodash/cloneDeep'
 import pick from 'lodash/pick'
 import Head from 'next/head'
-import qs from 'query-string'
 
 import { NavButton, BOTTOM_RIGHT } from '../../components/navigation'
 
@@ -21,6 +20,8 @@ import PreviewModal from './PreviewModal'
 
 import { getApi } from '../../helpers'
 import theme from '../../helpers/theme'
+
+import { CAPTCHA_ACTION_CELL_PUBLISH } from '../../shared/constants'
 
 import {
   S3_ASSET_FILETYPE,
@@ -293,24 +294,22 @@ class StudioRoute extends Component {
     }, this.doPostEmojiSelect)
   }
 
-  getSignedRequest = async (file) => {
+  getSignedRequest = async (file, captchaToken) => {
     let signData = {
-      'file-name': file.name,
-      title: this.state.title
-    }
+      filename: file.name,
+      title: this.state.title,
+      captchaToken
+    };
 
     if (this.state.parentId) {
-      signData['parent-id'] = this.state.parentId
+      signData.parentId = this.state.parentId
     }
     if (this.state.comicId) {
-      signData['comic-id'] = this.state.comicId
+      signData.comicId = this.state.comicId
     }
 
-    const queryString = qs.stringify(signData)
-    const requestUrlPath = `/api/sign?${queryString}`
-
     try {
-      const { data } = await axios.get(requestUrlPath)
+      const { data } = await axios.post('/api/sign', signData)
       return data
     }
     catch (e) {
@@ -343,35 +342,37 @@ class StudioRoute extends Component {
     this.props.showSpinner()
     this.togglePublishPreviewModal(false)
 
-    this.setState({ showSaveButton: false }, async () => {
-      try {
-        const {
-          comicId,
-          id,
-          signedRequest
-        } = await this.getSignedRequest(this.renderedImageFile)
-
-        const xhr = new XMLHttpRequest()
-        xhr.open('PUT', signedRequest)
-        xhr.onreadystatechange = async () => {
-          if(xhr.readyState === 4){
-            if(xhr.status === 200){
-              // update cell in DB
-              await this.finishCellPublish(id, comicId)
-            }
-            else{
-              // @todo better UX
-              console.error('could not upload file!')
+    this.props.recaptcha.execute(CAPTCHA_ACTION_CELL_PUBLISH).then((token) => {
+      this.setState({ showSaveButton: false }, async () => {
+        try {
+          const {
+            comicId,
+            id,
+            signedRequest
+          } = await this.getSignedRequest(this.renderedImageFile, token)
+  
+          const xhr = new XMLHttpRequest()
+          xhr.open('PUT', signedRequest)
+          xhr.onreadystatechange = async () => {
+            if(xhr.readyState === 4){
+              if(xhr.status === 200){
+                // update cell in DB
+                await this.finishCellPublish(id, comicId)
+              }
+              else{
+                // @todo better UX
+                console.error('could not upload file!')
+              }
             }
           }
+          xhr.send(this.renderedImageFile)
         }
-        xhr.send(this.renderedImageFile)
-      }
-      catch (e) {
-        // @todo better UX
-        console.error(e)
-      }
-
+        catch (e) {
+          // @todo better UX
+          console.error(e)
+        }
+  
+      })
     })
   }
 

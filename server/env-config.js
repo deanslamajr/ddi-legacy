@@ -5,7 +5,8 @@ const clientEnvironment = {
   HOST: fromProcessEnv('HOST'),
   FAVICON_ROOT_URL: fromProcessEnv('FAVICON_ROOT_URL'),
   APP_URL_DOMAIN: fromProcessEnv('APP_URL_DOMAIN'),
-  GA_ID: fromProcessEnv('GA_ID')
+  GA_ID: fromProcessEnv('GA_ID'),
+  CAPTCHA_SITE_KEY: fromProcessEnv('CAPTCHA_SITE_KEY'),
 }
 
 function fromProcessEnv (name) {
@@ -18,6 +19,7 @@ const serverSecrets = {
   NODE_ENV: fromProcessEnv('NODE_ENV'),
   COOKIE_SECRET: fromProcessEnv('COOKIE_SECRET'),
   ASSETS_DOMAIN: fromProcessEnv('ASSETS_DOMAIN'),
+  CAPTCHA_SECRET: fromProcessEnv('CAPTCHA_SECRET'),
 
   // AWS
   AWS_ACCESS_KEY_ID: fromProcessEnv('AWS_ACCESS_KEY_ID'),

@@ -1,4 +1,5 @@
 import React from 'react'
+import getConfig from 'next/config'
 import styled from 'styled-components'
 
 import { MenuButton, PinkMenuButton } from '../../components/Buttons'

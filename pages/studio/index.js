@@ -24,7 +24,7 @@ import PublishFailModal from './PublishFailModal'
 import { getApi } from '../../helpers'
 import theme from '../../helpers/theme'
 
-import { CAPTCHA_ACTION_CELL_PUBLISH } from '../../shared/constants'
+import { CAPTCHA_ACTION_CELL_PUBLISH } from '../../config/constants.json'
 
 import {
   S3_ASSET_FILETYPE,

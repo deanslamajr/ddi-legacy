@@ -17,15 +17,13 @@ const {
 const {
   CAPTCHA_ACTION_CELL_PUBLISH,
   CAPTCHA_THRESHOLD
-} = require('../../shared/constants')
+} = require('../../config/constants.json')
 
 function verifyCaptchaToken (token) {
   const verifyPayload = {
     response: token,
     secret: serverEnvironment.CAPTCHA_SECRET
   };
-
-  console.log('verifyPayload', verifyPayload)
 
   return axios.post('https://www.google.com/recaptcha/api/siteverify', queryString.stringify(verifyPayload))
 }

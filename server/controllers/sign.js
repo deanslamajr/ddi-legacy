@@ -42,7 +42,6 @@ async function sign (req, res) {
 
     const { data: captchaVerifyResponse } = await verifyCaptchaToken(captchaToken);
 
-    console.log('captchaVerifyResponse', captchaVerifyResponse)
     if (
       !captchaVerifyResponse.success ||
       captchaVerifyResponse.action !== CAPTCHA_ACTION_CELL_PUBLISH ||

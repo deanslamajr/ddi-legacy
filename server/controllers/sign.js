@@ -10,7 +10,10 @@ const {
   validateTitle
 } = require('../../shared/validators')
 
-const { serverEnvironment } = require('../env-config')
+const {
+  clientEnvironment,
+  serverEnvironment
+} = require('../env-config')
 const {
   CAPTCHA_ACTION_CELL_PUBLISH,
   CAPTCHA_THRESHOLD
@@ -40,15 +43,17 @@ async function sign (req, res) {
       title
     } = req.body;
 
-    const { data: captchaVerifyResponse } = await verifyCaptchaToken(captchaToken);
+    if (clientEnvironment.CAPTCHA_SITE_KEY) {
+      const { data: captchaVerifyResponse } = await verifyCaptchaToken(captchaToken);
 
-    if (
-      !captchaVerifyResponse.success ||
-      captchaVerifyResponse.action !== CAPTCHA_ACTION_CELL_PUBLISH ||
-      captchaVerifyResponse.score < CAPTCHA_THRESHOLD
-    ) {
-      // @todo generate better logs around this failed captcha
-      return res.sendStatus(400);
+      if (
+        !captchaVerifyResponse.success ||
+        captchaVerifyResponse.action !== CAPTCHA_ACTION_CELL_PUBLISH ||
+        captchaVerifyResponse.score < CAPTCHA_THRESHOLD
+      ) {
+        // @todo generate better logs around this failed captcha
+        return res.sendStatus(400);
+      }
     }
 
     // throws on fail

@@ -1,4 +1,3 @@
-import { Router } from '../../routes'
 import { Component } from 'react'
 import styled from 'styled-components'
 import Konva from 'konva'
@@ -8,6 +7,9 @@ import shortid from 'shortid'
 import cloneDeep from 'lodash/cloneDeep'
 import pick from 'lodash/pick'
 import Head from 'next/head'
+import getConfig from 'next/config'
+
+import { Router } from '../../routes'
 
 import { NavButton, BOTTOM_RIGHT } from '../../components/navigation'
 
@@ -28,6 +30,8 @@ import {
   S3_ASSET_FILETYPE,
   STORAGEKEY_STUDIO
 } from '../../config/constants.json'
+
+const { publicRuntimeConfig } = getConfig();
 
 const CELL_IMAGE_ID = 'cell-image';
 const RGBA = 'RGBA'
@@ -353,37 +357,40 @@ class StudioRoute extends Component {
   } 
 
   saveCell = async () => {
-    this.props.recaptcha.execute(CAPTCHA_ACTION_CELL_PUBLISH).then((token) => {
-      this.setState({ showSaveButton: false }, async () => {
-        try {
-          const {
-            comicId,
-            id,
-            signedRequest
-          } = await this.getSignedRequest(this.renderedImageFile, token)
-  
-          const xhr = new XMLHttpRequest()
-          xhr.open('PUT', signedRequest)
-          xhr.onreadystatechange = async () => {
-            if(xhr.readyState === 4){
-              if(xhr.status === 200){
-                // update cell in DB
-                await this.finishCellPublish(id, comicId)
-              }
-              else{
-                // @todo better UX
-                throw new Error('could not upload file!');
-              }
+    let token
+
+    if (publicRuntimeConfig.CAPTCHA_SITE_KEY) {
+      token = await this.props.recaptcha.execute(CAPTCHA_ACTION_CELL_PUBLISH);
+    }
+      
+    this.setState({ showSaveButton: false }, async () => {
+      try {
+        const {
+          comicId,
+          id,
+          signedRequest
+        } = await this.getSignedRequest(this.renderedImageFile, token)
+
+        const xhr = new XMLHttpRequest()
+        xhr.open('PUT', signedRequest)
+        xhr.onreadystatechange = async () => {
+          if(xhr.readyState === 4){
+            if(xhr.status === 200){
+              // update cell in DB
+              await this.finishCellPublish(id, comicId)
+            }
+            else{
+              // @todo better UX
+              throw new Error('could not upload file!');
             }
           }
-          xhr.send(this.renderedImageFile)
         }
-        catch (e) {
-          // @todo better UX
-          console.error(e)
-          this.togglePublishFailModal(true);
-        }
-      })
+        xhr.send(this.renderedImageFile)
+      }
+      catch (e) {
+        // @todo log this
+        this.togglePublishFailModal(true);
+      }
     })
   }
 

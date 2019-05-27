@@ -1,8 +1,8 @@
 import App, { Container } from 'next/app'
 import Head from 'next/head'
+import getConfig from 'next/config'
 import React from 'react'
 import { ThemeProvider } from 'styled-components'
-import getConfig from 'next/config'
 import axios from 'axios'
 import queryString from 'query-string'
 import ReactGA from 'react-ga';

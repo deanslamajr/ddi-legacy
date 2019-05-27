@@ -17,6 +17,7 @@ import ActionsModal from './ActionsModal'
 import CaptionModal from './CaptionModal'
 import WarningModal from './WarningModal'
 import PreviewModal from './PreviewModal'
+import PublishFailModal from './PublishFailModal'
 
 import { getApi } from '../../helpers'
 import theme from '../../helpers/theme'
@@ -216,6 +217,7 @@ class StudioRoute extends Component {
       showActionsModal: false,
       showResetWarningModal: false,
       showPublishPreviewModal: false,
+      showPublishFailModal: false,
       showSaveButton: true,
       emojis: {},
       title: ''
@@ -308,14 +310,8 @@ class StudioRoute extends Component {
       signData.comicId = this.state.comicId
     }
 
-    try {
-      const { data } = await axios.post('/api/sign', signData)
-      return data
-    }
-    catch (e) {
-      // @todo improve UX
-      throw e
-    }
+    const { data } = await axios.post('/api/sign', signData)
+    return data
   }
 
   getStudioState = () => {
@@ -338,10 +334,25 @@ class StudioRoute extends Component {
     }
   }
 
-  saveCell = async (event) => {
+  retryPublish = () => {
     this.props.showSpinner()
-    this.togglePublishPreviewModal(false)
+    this.togglePublishFailModal(false);
+    this.saveCell();
+  }
 
+  cancelPublishAttemp = () => {
+    this.setState({ showSaveButton: true })
+    this.props.hideSpinner();
+    this.togglePublishFailModal(false)
+  }
+
+  handleSaveCellConfirm = () => {
+    this.props.showSpinner();
+    this.togglePublishPreviewModal(false);
+    this.saveCell();
+  } 
+
+  saveCell = async () => {
     this.props.recaptcha.execute(CAPTCHA_ACTION_CELL_PUBLISH).then((token) => {
       this.setState({ showSaveButton: false }, async () => {
         try {
@@ -361,7 +372,7 @@ class StudioRoute extends Component {
               }
               else{
                 // @todo better UX
-                console.error('could not upload file!')
+                throw new Error('could not upload file!');
               }
             }
           }
@@ -370,8 +381,8 @@ class StudioRoute extends Component {
         catch (e) {
           // @todo better UX
           console.error(e)
+          this.togglePublishFailModal(true);
         }
-  
       })
     })
   }
@@ -580,6 +591,10 @@ class StudioRoute extends Component {
 
   toggleCaptionModal = (newValue) => {
     this.setState({ showCaptionModal: newValue })
+  }
+
+  togglePublishFailModal = (newValue) => {
+    this.setState({ showPublishFailModal: newValue })
   }
 
   openEmojiPickerToChangeEmoji = (cb = () => {}) => {
@@ -837,11 +852,16 @@ class StudioRoute extends Component {
           toggleCaptionModal={this.showCaptionModalFromActionsModal}
         />}
 
+        {this.state.showPublishFailModal && <PublishFailModal
+          onRetryClick={() => this.retryPublish()}
+          onCancelClick={() => this.cancelPublishAttemp()}
+        />}
+
         {this.state.showPublishPreviewModal && <PreviewModal
           canvasImageUrl={this.state.renderedImageUrl}
           onCancelClick={() => this.togglePublishPreviewModal(false)}
           onEditCaptionClick={() => this.toggleCaptionModal(true)}
-          onOkClick={() => this.saveCell()}
+          onOkClick={() => this.handleSaveCellConfirm()}
           title={this.state.title || ''}
         />}
 

@@ -2,7 +2,7 @@ import { Router } from '../../routes'
 import { Component } from 'react'
 import styled from 'styled-components'
 import Konva from 'konva'
-import { Stage, Layer, Rect, Text } from 'react-konva'
+import { Stage, Layer, Rect, Text, Image } from 'react-konva'
 import axios from 'axios'
 import shortid from 'shortid'
 import cloneDeep from 'lodash/cloneDeep'
@@ -28,6 +28,9 @@ import {
 } from '../../config/constants.json'
 
 const CELL_IMAGE_ID = 'cell-image';
+const EMOJI_IMAGE_ID = 'emoji-image';
+const CELL_IMAGE_WITH_CAPTION_ID = 'cell-with-caption-image';
+
 const RGBA = 'RGBA'
 const filters = {
   [RGBA]: Konva.Filters.RGBA
@@ -68,13 +71,60 @@ function createNewEmoji (emoji, currentEmojiId) {
   }
 }
 
+/**
+ * @todo step 1 generating emoji items as images
+ */
+// async function getEmojiImageAsUrl () {  
+//   const emojiText = new Konva.Text({
+//     text: '🤖',
+//     text: '👩‍🏫',
+//     fontSize: 100
+//   });
+//   emojiText.lineHeight(1.1)
+
+//   console.log('emojiText.width()',emojiText.width())
+//   console.log('emojiText.height()',emojiText.height())
+
+//   const stage = new Konva.Stage({
+//     container: EMOJI_IMAGE_ID,
+//     // @TODO round these to integers
+//     width: emojiText.width(),
+//     height: emojiText.height()
+//   });
+
+//   const layer = new Konva.Layer();
+//   // add the layer to the stage
+//   stage.add(layer);
+//   layer.add(emojiText);
+
+//   const blob = await new Promise((resolve, reject) => {
+//     try {
+//       stage.toCanvas().toBlob((blob) => resolve(blob));
+//     }
+//     catch(err) {
+//       // @todo log error
+//       console.error(err);
+//       reject();
+//     }
+//   });
+
+//   const file = new File([blob], generateFilename(), {
+//     type: S3_ASSET_FILETYPE,
+//   });
+  
+//   return {
+//     url: URL.createObjectURL(file),
+//     file
+//   };
+// }
+
 function getCaptionConfig (title) {
   return {
-    x: theme.canvas.padding,
-    y: theme.canvas.height + theme.canvas.padding,
-    width: theme.canvas.width - (2 * theme.canvas.padding),
+    x: theme.finalImage.padding,
+    y: theme.finalImage.height + theme.finalImage.padding,
+    width: theme.finalImage.width - (2 * theme.finalImage.padding),
     text: title,
-    fontSize: theme.canvas.fontSize,
+    fontSize: theme.finalImage.fontSize,
     fill: theme.colors.black,
     fontFamily: 'Calibri'
   }
@@ -109,13 +159,66 @@ function getEmojiConfigs (emojis) {
   }));
 }
 
-function generateCellImage ({emojis, title}) {
+function generateCellImageWithCaption(cellImageObj, title) {
   const linesOfCaptionText = getLinesOfCaptionText(title);
   const captionHeight = linesOfCaptionText
-    ? theme.canvas.lineHeight * linesOfCaptionText + (2 * theme.canvas.padding)
+    ? theme.finalImage.lineHeight * linesOfCaptionText + (2 * theme.finalImage.padding)
     : 0;
 
-  const stageHeight = theme.canvas.height + captionHeight;
+  const stageHeight = theme.finalImage.height + captionHeight;
+  const stageWidth = theme.finalImage.width;
+
+  const stage = new Konva.Stage({
+    container: CELL_IMAGE_WITH_CAPTION_ID,
+    width: stageWidth,
+    height: stageHeight
+  });
+
+  const layer = new Konva.Layer();
+  // add the layer to the stage
+  stage.add(layer);
+
+  const cellImage = new Konva.Image({
+    // width={1000}
+    // height={1000}
+    scale: {x:2, y:2},
+    x: 0,
+    y: 0,
+    image: cellImageObj
+  });
+      
+  layer.add(cellImage);
+
+  // Add caption background
+  if (linesOfCaptionText) {
+    const captionBackground = new Konva.Rect({
+      x: 0,
+      y: theme.finalImage.height,
+      width: theme.finalImage.width,
+      height: captionHeight,
+      fill: theme.colors.white
+    });
+    layer.add(captionBackground);
+  
+    {/* Caption text */}
+    const captionText = new Konva.Text({...getCaptionConfig(title)});
+    layer.add(captionText);
+  }
+
+  return new Promise((resolve, reject) => {
+    try {
+      stage.toCanvas().toBlob((blob) => resolve(blob));
+    }
+    catch(err) {
+      // @todo log error
+      console.error(err);
+      reject();
+    }
+  });
+}
+
+function generateCellImage (emojis) {
+  const stageHeight = theme.canvas.height;
   const stageWidth = theme.canvas.width;
 
   const stage = new Konva.Stage({
@@ -145,22 +248,6 @@ function generateCellImage ({emojis, title}) {
     layer.add(emoji);
   });
 
-  // Add caption background
-  if (linesOfCaptionText) {
-    const captionBackground = new Konva.Rect({
-      x: 0,
-      y: theme.canvas.height,
-      width: theme.canvas.width,
-      height: captionHeight,
-      fill: theme.colors.white
-    });
-    layer.add(captionBackground);
-  
-    {/* Caption text */}
-    const captionText = new Konva.Text({...getCaptionConfig(title)});
-    layer.add(captionText);
-  }
-
   return new Promise((resolve, reject) => {
     try {
       stage.toCanvas().toBlob((blob) => resolve(blob));
@@ -171,6 +258,17 @@ function generateCellImage ({emojis, title}) {
       reject();
     }
   });
+}
+
+function createImageFromUrl (url) {
+  return new Promise((resolve, reject) => {
+    const imageObj = new window.Image();
+    imageObj.onload = () => {
+      resolve(imageObj)
+    };
+    // @todo handle error case
+    imageObj.src = url;
+  })
 }
 
 //
@@ -193,8 +291,8 @@ const FixedCanvasContainer = styled.div`
 `
 
 const EverythingElseContainer = styled.div`
-  margin-top: 255px;
-  width: 250px;
+  margin-top: ${props => props.theme.canvas.width + 5}px;
+  width: ${props => props.theme.canvas.width}px;
 `
 
 //
@@ -675,15 +773,24 @@ class StudioRoute extends Component {
   }
 
   generateImage = async (state) => {
-    const blob = await generateCellImage(state);
+    const cellImageBlob = await generateCellImage(state.emojis);
   
-    const file = new File([blob], generateFilename(), {
+    const cellImageFile = new File([cellImageBlob], generateFilename(), {
+      type: S3_ASSET_FILETYPE,
+    });
+    
+    const cellImageUrl = URL.createObjectURL(cellImageFile);
+    const cellImageObj = await createImageFromUrl(cellImageUrl);
+
+    const cellImageAndCaptionBlob = await generateCellImageWithCaption(cellImageObj, state.title)
+
+    const cellImageAndCaptionFile = new File([cellImageAndCaptionBlob], generateFilename(), {
       type: S3_ASSET_FILETYPE,
     });
   
-    this.renderedImageFile = file
+    this.renderedImageFile = cellImageAndCaptionFile;
     
-    return URL.createObjectURL(file);
+    return URL.createObjectURL(cellImageAndCaptionFile);
   }
 
   onPublishClick = async () => {
@@ -749,6 +856,21 @@ class StudioRoute extends Component {
     }
 
     this.props.hideSpinner()
+    
+    /**
+     * @todo step 2 generating emoji items as images
+     */
+    // getEmojiImageAsUrl()
+    //   .then(emojiUrl => {
+    //     console.log('emojiUrl', emojiUrl)
+    //     this.setState({emojiUrl})
+
+    //     const imageObj = new window.Image();
+    //     imageObj.onload = () => {
+    //       this.setState({emojiImageObj: imageObj})
+    //     };
+    //     imageObj.src = emojiUrl.url;
+    //   })
   }
 
   render () {
@@ -767,10 +889,17 @@ class StudioRoute extends Component {
         </Head>
 
         <div style={{display: 'none'}} id={CELL_IMAGE_ID} />
+        <div style={{display: 'none'}} id={CELL_IMAGE_WITH_CAPTION_ID} />
+        <div style={{display: 'none'}} id={EMOJI_IMAGE_ID} />
+        {this.state.emojiUrl && <img url={this.state.emojiUrl.url} />}
 
         <CenteredContainer>
           <FixedCanvasContainer>
-            <Stage ref={ref => this.stage = ref} width={theme.canvas.width} height={theme.canvas.height}>
+            <Stage
+              ref={ref => this.stage = ref}
+              width={theme.canvas.width}
+              height={theme.canvas.height}
+            >
               <Layer>
                 {/* Canvas */}
                 <Rect
@@ -780,6 +909,19 @@ class StudioRoute extends Component {
                   height={theme.canvas.height}
                   fill={theme.colors.white}
                 />
+
+                {/* /**
+                  * @todo step 3 generating emoji items as images
+                */}
+                {/* {this.state.emojiImageObj && <Image
+                  draggable
+                  rotation={0}
+                  width={1000}
+                  height={1000}
+                  x={0}
+                  y={0}
+                  image={this.state.emojiImageObj}
+                />} */}
 
                 {getEmojiConfigs(Object.values(this.state.emojis)).map(config => <Text
                   draggable={config['data-id'] === this.state.activeEmojiId}

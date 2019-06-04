@@ -9,11 +9,15 @@ const theme = {
   },
   canvas: {
     width: 250,
-    height: 250,
-    captionHeight: 75,
-    padding: 7,
-    lineHeight: 15,
-    fontSize: 15
+    height: 250
+  },
+  finalImage: {
+    width: 500,
+    height: 500,
+    captionHeight: 150,
+    padding: 14,
+    lineHeight: 30,
+    fontSize: 30
   }
 }
 

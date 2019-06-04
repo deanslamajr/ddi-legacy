@@ -17,6 +17,10 @@ const PreviewModalContainer = styled(Modal)`
   width: inherit;
 `
 
+const CellImage = styled.img`
+  width: ${props => props.theme.canvas.width}px;
+`;
+
 function PreviewModal ({
   canvasImageUrl,
   onCancelClick,
@@ -29,7 +33,7 @@ function PreviewModal ({
       Publish this Canvas?
     </MessageContainer>
     <CenteredContainer>
-      <img src={canvasImageUrl} />
+      <CellImage src={canvasImageUrl} />
     </CenteredContainer>
     <CenteredButtons>
       <MenuButton onClick={onEditCaptionClick}>

@@ -53,6 +53,10 @@ const OldCellBorder = styled.div`
   width: 100%;
 `
 
+const CellImage = styled.img`
+  width: 350px;
+`
+
 export default function Cell ({ className, imageUrl, title, onClick, removeBorders, schemaVersion }) {
   return (<CellContainer
     className={className}
@@ -63,10 +67,10 @@ export default function Cell ({ className, imageUrl, title, onClick, removeBorde
   >
     {schemaVersion >= 1
       ? (<CellBorder>
-        <img src={imageUrl} />
+        <CellImage src={imageUrl} />
       </CellBorder>)
       : (<OldCellBorder>
-        <img src={imageUrl} />
+        <CellImage src={imageUrl} />
         <TitleContainer>
           <TitleWidth>
             {title}

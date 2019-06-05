@@ -26,8 +26,7 @@ function PreviewModal ({
   onCancelClick,
   onEditCaptionClick,
   onOkClick
-}) {  
-
+}) {
   return (<PreviewModalContainer>
     <MessageContainer>
       Publish this Canvas?

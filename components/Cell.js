@@ -54,7 +54,7 @@ const OldCellBorder = styled.div`
 `
 
 const CellImage = styled.img`
-  width: 350px;
+  width: ${props => props.removeBorders ? props.theme.canvas.width : 350}px;
 `
 
 export default function Cell ({ className, imageUrl, title, onClick, removeBorders, schemaVersion }) {
@@ -67,10 +67,16 @@ export default function Cell ({ className, imageUrl, title, onClick, removeBorde
   >
     {schemaVersion >= 1
       ? (<CellBorder>
-        <CellImage src={imageUrl} />
+        <CellImage
+          removeBorders={removeBorders}
+          src={imageUrl}
+        />
       </CellBorder>)
       : (<OldCellBorder>
-        <CellImage src={imageUrl} />
+        <CellImage
+          removeBorders={removeBorders}
+          src={imageUrl}
+        />
         <TitleContainer>
           <TitleWidth>
             {title}

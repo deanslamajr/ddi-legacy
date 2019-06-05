@@ -24,7 +24,8 @@ import {
   generateCellImageWithCaption,
   konvaCacheConfig,
   CELL_IMAGE_ID,
-  CELL_IMAGE_WITH_CAPTION_ID
+  CELL_IMAGE_WITH_CAPTION_ID,
+  RGBA
 } from './konvaDrawingUtils'
 
 import { getApi, sortByOrder } from '../../helpers'
@@ -35,11 +36,6 @@ import {
 } from '../../config/constants.json'
 
 const EMOJI_IMAGE_ID = 'emoji-image';
-
-const RGBA = 'RGBA'
-const filters = {
-  [RGBA]: Konva.Filters.RGBA
-}
 
 function generateFilename () {
   return `${shortid.generate()}.png`

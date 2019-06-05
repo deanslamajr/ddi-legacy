@@ -21,6 +21,10 @@ function getLinesOfCaptionText (title) {
 
 export const CELL_IMAGE_WITH_CAPTION_ID = 'cell-with-caption-image';
 export const CELL_IMAGE_ID = 'cell-image';
+export const RGBA = 'RGBA';
+const filters = {
+  [RGBA]: Konva.Filters.RGBA
+}
 
 export const konvaCacheConfig = {
   offset: 30,

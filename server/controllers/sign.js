@@ -16,6 +16,7 @@ async function sign (req, res) {
     }
 
     const filename = req.query['file-name']
+    const captionFilename = req.query['caption-filename'];
 
     // throws on fail
     validateFilename(filename)
@@ -26,6 +27,7 @@ async function sign (req, res) {
     let comicId = req.query['comic-id']
 
     const signData = await signViaS3(filename)
+    const captionSignData = await signViaS3(captionFilename)
     const id = shortid.generate()
     signData.id = id
 
@@ -120,7 +122,7 @@ async function sign (req, res) {
       signData.comicId = comicId
     }
 
-    res.json(signData)
+    res.json({captionSignData, signData});
   }
   catch (e) {
     console.error(e)

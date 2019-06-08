@@ -36,6 +36,27 @@ import {
 
 const EMOJI_IMAGE_ID = 'emoji-image';
 
+function uploadImage(imageFile, signedRequest) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('PUT', signedRequest)
+    xhr.onreadystatechange = async () => {
+      if(xhr.readyState === 4){
+        if(xhr.status === 200){
+          // update cell in DB
+          resolve();
+        }
+        else{
+          // @todo better UX
+          console.error('could not upload file!')
+          reject();
+        }
+      }
+    }
+    xhr.send(imageFile)
+  });
+}
+
 function generateCellImageFilename () {
   return `${shortid.generate()}.png`
 }
@@ -184,9 +205,10 @@ class StudioRoute extends Component {
     }, this.doPostEmojiSelect)
   }
 
-  getSignedRequest = async (file) => {
+  getSignedRequest = async () => {
     let signData = {
-      'file-name': file.name,
+      'file-name': this.cellImageFile.name,
+      'caption-filename': this.captionImageFile.name,
       title: this.state.title
     }
 
@@ -236,33 +258,22 @@ class StudioRoute extends Component {
 
     this.setState({ showSaveButton: false }, async () => {
       try {
+        const {captionSignData, signData} = await this.getSignedRequest();
         const {
           comicId,
           id,
           signedRequest
-        } = await this.getSignedRequest(this.renderedImageFile)
+        } = signData;
 
-        const xhr = new XMLHttpRequest()
-        xhr.open('PUT', signedRequest)
-        xhr.onreadystatechange = async () => {
-          if(xhr.readyState === 4){
-            if(xhr.status === 200){
-              // update cell in DB
-              await this.finishCellPublish(id, comicId)
-            }
-            else{
-              // @todo better UX
-              console.error('could not upload file!')
-            }
-          }
-        }
-        xhr.send(this.renderedImageFile)
+        await uploadImage(this.cellImageFile, signedRequest);
+        await uploadImage(this.captionImageFile, captionSignData.signedRequest);
+
+        this.finishCellPublish(id, comicId);
       }
       catch (e) {
         // @todo better UX
         console.error(e)
       }
-
     })
   }
 

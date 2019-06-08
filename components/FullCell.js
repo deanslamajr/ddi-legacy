@@ -31,16 +31,28 @@ export default class FullCell extends React.Component {
 
   elementId = shortid.generate()
 
-  async componentDidMount () {
-    const {captionUrl, cellUrl} = this.props;
+  componentDidMount () {
+    this.generateImage();
+  }
 
+  componentDidUpdate (prevProps) {
+    // if either the captionUrl or cellUrl changes, rerender image
+    if (
+      this.props.captionUrl !== prevProps.captionUrl ||
+      this.props.cellUrl !== prevProps.cellUrl
+    ) {
+      this.generateImage();
+    }
+  }
+
+  async generateImage () {
     // const [captionObj, cellObj] = await Promise.all[
     //   createImageFromUrl(captionUrl),
     //   createImageFromUrl(cellUrl)
     // ];
 
-    const captionObj = await createImageFromUrl(captionUrl);
-    const cellObj = await createImageFromUrl(cellUrl);
+    const captionObj = await createImageFromUrl(this.props.captionUrl);
+    const cellObj = await createImageFromUrl(this.props.cellUrl);
 
     const fullCellBlob = await generateCellImageWithCaption(captionObj, cellObj, this.elementId);
 

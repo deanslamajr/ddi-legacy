@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
+import FullCell from '../../components/FullCell'
 import { MenuButton, PinkMenuButton } from '../../components/Buttons'
 import Modal, { CenteredButtons, MessageContainer } from '../../components/Modal'
 
@@ -22,7 +23,8 @@ const CellImage = styled.img`
 `;
 
 function PreviewModal ({
-  canvasImageUrl,
+  captionImageUrl,
+  cellImageUrl,
   onCancelClick,
   onEditCaptionClick,
   onOkClick
@@ -32,7 +34,10 @@ function PreviewModal ({
       Publish this Canvas?
     </MessageContainer>
     <CenteredContainer>
-      <CellImage src={canvasImageUrl} />
+      <FullCell
+        cellUrl={cellImageUrl}
+        captionUrl={captionImageUrl}
+      />
     </CenteredContainer>
     <CenteredButtons>
       <MenuButton onClick={onEditCaptionClick}>

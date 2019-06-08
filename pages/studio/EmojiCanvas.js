@@ -4,7 +4,7 @@ import { Stage, Layer, Rect, Text, Image } from 'react-konva';
 
 import theme from '../../helpers/theme';
 
-import {getEmojiConfigs} from './konvaDrawingUtils'
+import {getEmojiConfigs} from '../../helpers/konvaDrawingUtils'
 
 //
 // Styled Components
@@ -57,8 +57,6 @@ class EmojiCanvas extends Component {
             </Layer>
           </Stage>
         </FixedCanvasContainer>
-
-        
     )
   }
 }

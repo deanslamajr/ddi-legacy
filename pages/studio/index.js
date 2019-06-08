@@ -1,7 +1,6 @@
 import { Router } from '../../routes'
 import { Component } from 'react'
 import styled from 'styled-components'
-import Konva from 'konva'
 import axios from 'axios'
 import shortid from 'shortid'
 import cloneDeep from 'lodash/cloneDeep'
@@ -21,12 +20,12 @@ import EmojiCanvas from './EmojiCanvas';
 
 import {
   generateCellImage,
-  generateCellImageWithCaption,
+  generateCaptionImage,
   konvaCacheConfig,
   CELL_IMAGE_ID,
-  CELL_IMAGE_WITH_CAPTION_ID,
+  CAPTION_IMAGE_ID,
   RGBA
-} from './konvaDrawingUtils'
+} from '../../helpers/konvaDrawingUtils'
 
 import { getApi, sortByOrder } from '../../helpers'
 
@@ -37,8 +36,15 @@ import {
 
 const EMOJI_IMAGE_ID = 'emoji-image';
 
-function generateFilename () {
+function generateCellImageFilename () {
   return `${shortid.generate()}.png`
+}
+
+function generateCellCaptionFilename (cellImageFilename) {
+  const filenameTokens = cellImageFilename
+    ? cellImageFilename.split('.')
+    : shortid.generate(); // case where cellImageFilename does not exist e.g. actions->caption before ever viewing preview modal
+  return `${filenameTokens[0]}_caption.png`
 }
 
 function createNewEmojiComponentState (emoji, currentEmojiId) {
@@ -60,17 +66,6 @@ function createNewEmojiComponentState (emoji, currentEmojiId) {
     blue: 0,
     opacity: 1
   }
-}
-
-function createImageFromUrl (url) {
-  return new Promise((resolve, reject) => {
-    const imageObj = new window.Image();
-    imageObj.onload = () => {
-      resolve(imageObj)
-    };
-    // @todo handle error case
-    imageObj.src = url;
-  })
 }
 
 //
@@ -100,6 +95,8 @@ class StudioRoute extends Component {
 
     this.initialState = {
       activeEmojiId: null,
+      captionImageUrl: null,
+      cellImageUrl: null,
       comicId: this.props.comicId,
       currentEmojiId: 1,
       parentId: this.props.parentId,
@@ -233,7 +230,7 @@ class StudioRoute extends Component {
     }
   }
 
-  saveCell = async (event) => {
+  saveCell = async () => {
     this.props.showSpinner()
     this.togglePublishPreviewModal(false)
 
@@ -568,28 +565,33 @@ class StudioRoute extends Component {
     this.toggleCaptionModal(true)
   }
 
-  generateImage = async (state) => {
+  generateCellImage = async (state) => {
     const cellImageBlob = await generateCellImage(state.emojis);
   
-    const cellImageFile = new File([cellImageBlob], generateFilename(), {
+    this.cellImageFile = new File([cellImageBlob], generateCellImageFilename(), {
       type: S3_ASSET_FILETYPE,
     });
-    
-    const cellImageUrl = URL.createObjectURL(cellImageFile);
-    const cellImageObj = await createImageFromUrl(cellImageUrl);
 
-    const cellImageAndCaptionBlob = await generateCellImageWithCaption(cellImageObj, state.title)
-
-    const cellImageAndCaptionFile = new File([cellImageAndCaptionBlob], generateFilename(), {
-      type: S3_ASSET_FILETYPE,
-    });
-  
-    this.renderedImageFile = cellImageAndCaptionFile;
-    
-    return URL.createObjectURL(cellImageAndCaptionFile);
+    return URL.createObjectURL(this.cellImageFile);
   }
 
-  onPublishClick = async () => {
+  generateCaptionImage = async (caption) => {
+    if (caption && caption.length > 0) {
+      const captionImageBlob = await generateCaptionImage(caption);
+
+      const cellImageFilename = this.cellImageFile && this.cellImageFile.name;
+
+      this.captionImageFile = new File([captionImageBlob], generateCellCaptionFilename(cellImageFilename), {
+        type: S3_ASSET_FILETYPE,
+      });
+      
+      return URL.createObjectURL(this.captionImageFile);
+    } else {
+      return null;
+    }
+  }
+
+  handleImagesGeneration = async () => {
     this.toggleActionsModal(false)
     this.props.showSpinner()
 
@@ -598,28 +600,30 @@ class StudioRoute extends Component {
     this.updateEmojiCache(undefined, false)
     this.incrementField('red', 1) // hack bc we need to get a konva image refresh for the canvas to get the 'remove border' update
 
-    const renderedImageUrl = await this.generateImage(this.state);   
+    const cellImageUrl = await this.generateCellImage(this.state);
+    const captionImageUrl = await this.generateCaptionImage(this.state.title);
 
     this.setState({
-      renderedImageUrl
+      captionImageUrl,
+      cellImageUrl
     }, () => {
       this.togglePublishPreviewModal(true)
       this.props.hideSpinner()
     })
   }
 
-  onCaptionModalSave = async (newTitle) => {    
-    const renderedImageUrl = await this.generateImage({
-      emojis: this.state.emojis,
-      title: newTitle
-    });   
+  onCaptionModalSave = async (newTitle) => {
+    this.props.showSpinner();
+
+    const captionImageUrl = await this.generateCaptionImage(newTitle); 
 
     this.setState({
-      renderedImageUrl,
+      captionImageUrl,
       title: newTitle
     }, () => {
       this.updateCache();
       this.toggleCaptionModal(false);
+      this.props.hideSpinner()
     })
   }
 
@@ -685,7 +689,7 @@ class StudioRoute extends Component {
         </Head>
 
         <div style={{display: 'none'}} id={CELL_IMAGE_ID} />
-        <div style={{display: 'none'}} id={CELL_IMAGE_WITH_CAPTION_ID} />
+        <div style={{display: 'none'}} id={CAPTION_IMAGE_ID} />
         <div style={{display: 'none'}} id={EMOJI_IMAGE_ID} />
         {this.state.emojiUrl && <img url={this.state.emojiUrl.url} />}
         <CenteredContainer>
@@ -735,12 +739,13 @@ class StudioRoute extends Component {
           onCancelClick={() => this.toggleActionsModal(false)}
           onExitClick={() => this.navigateBack()}
           onResetClick={() => this.onResetClick()}
-          onPublishClick={() => this.onPublishClick()}
+          onPublishClick={() => this.handleImagesGeneration()}
           toggleCaptionModal={this.showCaptionModalFromActionsModal}
         />}
 
         {this.state.showPublishPreviewModal && <PreviewModal
-          canvasImageUrl={this.state.renderedImageUrl}
+          captionImageUrl={this.state.captionImageUrl}
+          cellImageUrl={this.state.cellImageUrl}
           onCancelClick={() => this.togglePublishPreviewModal(false)}
           onEditCaptionClick={() => this.toggleCaptionModal(true)}
           onOkClick={() => this.saveCell()}

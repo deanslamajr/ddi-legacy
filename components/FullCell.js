@@ -6,6 +6,10 @@ import {generateCellImageWithCaption} from '../helpers/konvaDrawingUtils'
 import {S3_ASSET_FILETYPE} from '../config/constants.json'
 
 function createImageFromUrl (url) {
+  if (!url) {
+    return null;
+  }
+
   return new Promise((resolve, reject) => {
     const imageObj = new window.Image();
     imageObj.onload = () => {
@@ -13,7 +17,7 @@ function createImageFromUrl (url) {
     };
     // @todo handle error case
     imageObj.src = url;
-  })
+  });
 }
 
 const CellImage = styled.img`

@@ -52,13 +52,14 @@ export function generateCellImageWithCaption(captionImageObj, cellImageObj, imag
     image: cellImageObj
   });
 
-  const captionImage = new Konva.Image({
-    x: 0,
-    y: theme.finalImage.height,
-    image: captionImageObj
-  });
-  console.log('captionImage.height()', captionImage.height())
-  const captionHeight = captionImage.height();
+  const captionImage = captionImageObj
+    ? new Konva.Image({
+      x: 0,
+      y: theme.finalImage.height,
+      image: captionImageObj
+    })
+    : null;
+  const captionHeight = captionImage ? captionImage.height() : 0;
 
   const stage = new Konva.Stage({
     container: imageContainerId,
@@ -70,7 +71,9 @@ export function generateCellImageWithCaption(captionImageObj, cellImageObj, imag
   stage.add(layer);
 
   layer.add(cellImage);
-  layer.add(captionImage);
+  if (captionImage) {
+    layer.add(captionImage);
+  }
 
   return new Promise((resolve, reject) => {
     try {

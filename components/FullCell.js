@@ -15,7 +15,8 @@ function createImageFromUrl (url) {
       resolve(imageObj)
     };
     
-    imageObj.setAttribute('crossOrigin', 'anonymous');
+    //imageObj.setAttribute('crossOrigin', 'Anonymous');
+    imageObj.crossOrigin = 'Anonymous';
     imageObj.src = url;
     // @todo handle error case
   });
@@ -78,7 +79,10 @@ export default class FullCell extends React.Component {
       <React.Fragment>
         <div style={{display: 'none'}} id={this.elementId}></div>
         {this.state.imageUrl && (<ImageContainer>
-          <CellImage src={this.state.imageUrl} />
+          <CellImage
+            crossorigin="anonymous"
+            src={this.state.imageUrl}
+          />
         </ImageContainer>)}
       </React.Fragment>
     )

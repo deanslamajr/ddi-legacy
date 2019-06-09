@@ -59,7 +59,7 @@ const CellsCount = styled.div`
 const Thumb = ({cellsCount, imageUrl}) => {
   return (<>
     {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}
-    <Thumbnail src={imageUrl}>
+    <Thumbnail src={`${imageUrl}?x-request=html`}>
     </Thumbnail>
   </>)
 }
@@ -76,7 +76,7 @@ const Caption = styled.div`
 const OldThumb = ({caption, cellsCount, imageUrl}) => {
   return (<OldThumbNail as='div'>
     {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}
-    <OldCellImage src={imageUrl} />
+    <OldCellImage src={`${imageUrl}?x-request=html`} />
     <Caption>{caption}</Caption>
   </OldThumbNail>);
 }

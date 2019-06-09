@@ -17,7 +17,7 @@ function createImageFromUrl (url) {
     
     //imageObj.setAttribute('crossOrigin', 'Anonymous');
     imageObj.crossOrigin = 'Anonymous';
-    imageObj.src = `${url}?x-request=html`;
+    imageObj.src = url;
     // @todo handle error case
   });
 }

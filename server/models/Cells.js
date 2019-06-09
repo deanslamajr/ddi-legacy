@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize')
 
 const { sequelize } = require('../adapters/db')
+const {SCHEMA_VERSION} = require('../../config/constants.json')
 
 const Cells = sequelize.define('cells',
   {
@@ -33,7 +34,7 @@ const Cells = sequelize.define('cells',
     },
     schema_version: {
       type: Sequelize.INTEGER,
-      defaultValue: 1
+      defaultValue: SCHEMA_VERSION
     },
     comic_id: {
       type: Sequelize.UUID,

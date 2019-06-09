@@ -2,6 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 
 import { Router } from '../../routes'
+
+import FullCell from '../../components/FullCell'
 import Cell from '../../components/Cell'
 
 import { sortByOrder } from '../../helpers'
@@ -31,19 +33,37 @@ const ComicContainer = styled.div`
 
 const noop = () => {}
 
+function getCaptionUrlFromCellUrl(cellUrl) {
+  return cellUrl.replace('.png', '_caption.png');
+}
+
 function Comic ({ cells, clickable, showSpinner = noop }) {
   return (<ComicContainer>
     {/* @todo replace having to support both casings for imageUrl and urlId */}
     {/*  This is due to the 2 different ways this is consumed: */}
     {/*  1. /gallery - passes untransformed cells data from DB */}
     {/*  2. /comic/:comicId - passes transformed cells data */}
-    {cells.sort(sortByOrder).map(({ imageUrl, image_url, schemaVersion, schema_version, title, urlId, url_id }) => <Cell
-      onClick={() => clickable ? navigateTo(urlId || url_id, showSpinner) : noop()}
-      imageUrl={imageUrl || image_url}
-      title={title}
-      key={imageUrl || image_url}
-      schemaVersion={schemaVersion || schema_version}
-    />)}
+    {cells.sort(sortByOrder).map(({
+      imageUrl,
+      image_url,
+      schemaVersion,
+      schema_version,
+      title,
+      urlId,
+      url_id
+    }) => (schemaVersion || schema_version) >= 2
+      ? <FullCell
+        cellUrl={imageUrl || image_url}
+        captionUrl={getCaptionUrlFromCellUrl(imageUrl || image_url)}
+        key={imageUrl || image_url}
+      />
+      : <Cell
+        onClick={() => clickable ? navigateTo(urlId || url_id, showSpinner) : noop()}
+        imageUrl={imageUrl || image_url}
+        title={title}
+        key={imageUrl || image_url}
+        schemaVersion={schemaVersion || schema_version}
+      />)}
   </ComicContainer>)
 }
 

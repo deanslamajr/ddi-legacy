@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import shortid from 'shortid'
 
 import {generateCellImageWithCaption} from '../helpers/konvaDrawingUtils'
 import {S3_ASSET_FILETYPE} from '../config/constants.json'
@@ -15,21 +14,28 @@ function createImageFromUrl (url) {
     imageObj.onload = () => {
       resolve(imageObj)
     };
-    // @todo handle error case
+    
+    imageObj.setAttribute('crossOrigin', 'anonymous');
     imageObj.src = url;
+    // @todo handle error case
   });
 }
 
 const CellImage = styled.img`
-  width: 350px;
+  max-width:100%;
+  height:auto;
 `;
+
+const ImageContainer = styled.div`
+  width: 350px;
+`
 
 export default class FullCell extends React.Component {
   state = {
     imageUrl: null
   }
 
-  elementId = shortid.generate()
+  elementId = this.props.cellUrl
 
   componentDidMount () {
     this.generateImage();
@@ -71,7 +77,9 @@ export default class FullCell extends React.Component {
     return (
       <React.Fragment>
         <div style={{display: 'none'}} id={this.elementId}></div>
-        {this.state.imageUrl && <CellImage src={this.state.imageUrl} />}
+        {this.state.imageUrl && (<ImageContainer>
+          <CellImage src={this.state.imageUrl} />
+        </ImageContainer>)}
       </React.Fragment>
     )
   }

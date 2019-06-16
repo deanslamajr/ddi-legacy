@@ -12,7 +12,8 @@ const CELL_LIST = 'CELL_LIST'
 
 const DuplicateModal = styled(Modal)`
   height: 100%;
-  width: 315px;
+  width: 100%;
+  align-items: center;
 `
 
 const HomeModal = styled(Modal)`
@@ -21,9 +22,11 @@ const HomeModal = styled(Modal)`
 
 const CellsContainer = styled.div`
   overflow-y: auto;
+  overflow-x: hidden;
   height: 60%;
-  width: 270px;
-  margin: 2rem;
+  margin: 2rem; 
+  width: 370px;
+  max-width: calc(100vw - ${props => props.theme.padding}px);
 `
 
 const CellContainer = styled.div`
@@ -88,7 +91,6 @@ export default class AddCellModal extends React.Component {
               imageUrl={imageUrl || image_url}
               key={imageUrl || image_url}
               onClick={() => onAddCellFromDuplicate(urlId || url_id)}
-              removeBorders
               schemaVersion={schemaVersion || schema_version}
               title={title}
             />

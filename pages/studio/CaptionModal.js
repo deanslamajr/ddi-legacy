@@ -11,22 +11,23 @@ const CenteredContainer = styled.div`
   flex-direction: column;
   align-items: center;
   margin: 1rem auto;
+  width: 100%;
 `
 
 const PreviewModalContainer = styled(Modal)`
   height: inherit;
-  width: inherit;
+  width: 350px;
+  max-width: 100vw;
 `
 
 const TitleInput = styled.textarea`
   font-size: 16px;
   height: 4rem;
-  width: 244px;
+  width: calc(100% - ${props => props.theme.padding}px);
   padding: 3px;
   outline: none;
   resize: none;
   background-color: ${props => props.theme.colors.white};
-  border: none;
 
   &::placeholder {
     color: ${props => props.theme.colors.lightGray};
@@ -52,6 +53,7 @@ class CaptionModal extends React.Component {
     return (<PreviewModalContainer>
       <CenteredContainer>
         <TitleInput
+          wrap='soft'
           type='text'
           placeholder='add a caption'
           value={this.state.title}

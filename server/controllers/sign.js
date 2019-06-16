@@ -27,7 +27,6 @@ async function sign (req, res) {
     let comicId = req.query['comic-id']
 
     const signData = await signViaS3(filename)
-    const captionSignData = await signViaS3(captionFilename)
     const id = shortid.generate()
     signData.id = id
 
@@ -122,7 +121,7 @@ async function sign (req, res) {
       signData.comicId = comicId
     }
 
-    res.json({captionSignData, signData});
+    res.json(signData);
   }
   catch (e) {
     console.error(e)

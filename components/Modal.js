@@ -28,6 +28,7 @@ const ModalContainer = styled.div`
 export const CenteredButtons = styled.div`
   display: flex;
   justify-content: center;
+  width: 100%;
 `
 
 export const MessageContainer = styled.div`

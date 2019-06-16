@@ -20,10 +20,8 @@ import EmojiCanvas from './EmojiCanvas';
 
 import {
   generateCellImage,
-  generateCaptionImage,
   konvaCacheConfig,
   CELL_IMAGE_ID,
-  CAPTION_IMAGE_ID,
   RGBA
 } from '../../helpers/konvaDrawingUtils'
 
@@ -43,7 +41,6 @@ function uploadImage(imageFile, signedRequest) {
     xhr.onreadystatechange = async () => {
       if(xhr.readyState === 4){
         if(xhr.status === 200){
-          // update cell in DB
           resolve();
         }
         else{
@@ -59,13 +56,6 @@ function uploadImage(imageFile, signedRequest) {
 
 function generateCellImageFilename () {
   return `${shortid.generate()}.png`
-}
-
-function generateCellCaptionFilename (cellImageFilename) {
-  const filenameTokens = cellImageFilename
-    ? cellImageFilename.split('.')
-    : shortid.generate(); // case where cellImageFilename does not exist e.g. actions->caption before ever viewing preview modal
-  return `${filenameTokens[0]}_caption.png`
 }
 
 function createNewEmojiComponentState (emoji, currentEmojiId) {
@@ -116,7 +106,6 @@ class StudioRoute extends Component {
 
     this.initialState = {
       activeEmojiId: null,
-      captionImageUrl: null,
       cellImageUrl: null,
       comicId: this.props.comicId,
       currentEmojiId: 1,
@@ -208,7 +197,6 @@ class StudioRoute extends Component {
   getSignedRequest = async () => {
     let signData = {
       'file-name': this.cellImageFile.name,
-      'caption-filename': this.captionImageFile.name,
       title: this.state.title
     }
 
@@ -242,9 +230,9 @@ class StudioRoute extends Component {
     delete studioState.parentId
 
     try {
-      this.clearCache()
-      await axios.put(`/api/cell/${cellId}`, { studioState })
-      Router.pushRoute(`/comic/${comicId}`)
+      await axios.put(`/api/cell/${cellId}`, { studioState });
+      this.clearCache();
+      Router.pushRoute(`/comic/${comicId}`);
     }
     catch (e) {
       // @todo better UX
@@ -258,15 +246,13 @@ class StudioRoute extends Component {
 
     this.setState({ showSaveButton: false }, async () => {
       try {
-        const {captionSignData, signData} = await this.getSignedRequest();
         const {
           comicId,
           id,
           signedRequest
-        } = signData;
+        } = await this.getSignedRequest();
 
         await uploadImage(this.cellImageFile, signedRequest);
-        await uploadImage(this.captionImageFile, captionSignData.signedRequest);
 
         this.finishCellPublish(id, comicId);
       }
@@ -576,8 +562,8 @@ class StudioRoute extends Component {
     this.toggleCaptionModal(true)
   }
 
-  generateCellImage = async (state) => {
-    const cellImageBlob = await generateCellImage(state.emojis);
+  generateCellImage = async (emojis) => {
+    const cellImageBlob = await generateCellImage(emojis);
   
     this.cellImageFile = new File([cellImageBlob], generateCellImageFilename(), {
       type: S3_ASSET_FILETYPE,
@@ -586,23 +572,7 @@ class StudioRoute extends Component {
     return URL.createObjectURL(this.cellImageFile);
   }
 
-  generateCaptionImage = async (caption) => {
-    if (caption && caption.length > 0) {
-      const captionImageBlob = await generateCaptionImage(caption);
-
-      const cellImageFilename = this.cellImageFile && this.cellImageFile.name;
-
-      this.captionImageFile = new File([captionImageBlob], generateCellCaptionFilename(cellImageFilename), {
-        type: S3_ASSET_FILETYPE,
-      });
-      
-      return URL.createObjectURL(this.captionImageFile);
-    } else {
-      return null;
-    }
-  }
-
-  handleImagesGeneration = async () => {
+  handlePublishClick = async () => {
     this.toggleActionsModal(false)
     this.props.showSpinner()
 
@@ -611,11 +581,9 @@ class StudioRoute extends Component {
     this.updateEmojiCache(undefined, false)
     this.incrementField('red', 1) // hack bc we need to get a konva image refresh for the canvas to get the 'remove border' update
 
-    const cellImageUrl = await this.generateCellImage(this.state);
-    const captionImageUrl = await this.generateCaptionImage(this.state.title);
+    const cellImageUrl = await this.generateCellImage(this.state.emojis);
 
     this.setState({
-      captionImageUrl,
       cellImageUrl
     }, () => {
       this.togglePublishPreviewModal(true)
@@ -624,17 +592,11 @@ class StudioRoute extends Component {
   }
 
   onCaptionModalSave = async (newTitle) => {
-    this.props.showSpinner();
-
-    const captionImageUrl = await this.generateCaptionImage(newTitle); 
-
     this.setState({
-      captionImageUrl,
       title: newTitle
     }, () => {
       this.updateCache();
       this.toggleCaptionModal(false);
-      this.props.hideSpinner()
     })
   }
 
@@ -700,7 +662,6 @@ class StudioRoute extends Component {
         </Head>
 
         <div style={{display: 'none'}} id={CELL_IMAGE_ID} />
-        <div style={{display: 'none'}} id={CAPTION_IMAGE_ID} />
         <div style={{display: 'none'}} id={EMOJI_IMAGE_ID} />
         {this.state.emojiUrl && <img url={this.state.emojiUrl.url} />}
         <CenteredContainer>
@@ -750,12 +711,11 @@ class StudioRoute extends Component {
           onCancelClick={() => this.toggleActionsModal(false)}
           onExitClick={() => this.navigateBack()}
           onResetClick={() => this.onResetClick()}
-          onPublishClick={() => this.handleImagesGeneration()}
+          onPublishClick={() => this.handlePublishClick()}
           toggleCaptionModal={this.showCaptionModalFromActionsModal}
         />}
 
         {this.state.showPublishPreviewModal && <PreviewModal
-          captionImageUrl={this.state.captionImageUrl}
           cellImageUrl={this.state.cellImageUrl}
           onCancelClick={() => this.togglePublishPreviewModal(false)}
           onEditCaptionClick={() => this.toggleCaptionModal(true)}

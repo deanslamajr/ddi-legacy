@@ -1,9 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import FullCell from '../../components/FullCell'
+import Cell from '../../components/Cell'
 import { MenuButton, PinkMenuButton } from '../../components/Buttons'
 import Modal, { CenteredButtons, MessageContainer } from '../../components/Modal'
+
+import {SCHEMA_VERSION} from '../../config/constants.json'
 
 const CenteredContainer = styled.div`
   display: flex;
@@ -16,27 +18,25 @@ const CenteredContainer = styled.div`
 const PreviewModalContainer = styled(Modal)`
   height: inherit;
   width: inherit;
+  max-width: 100vw;
 `
 
-const CellImage = styled.img`
-  width: ${props => props.theme.canvas.width}px;
-`;
-
 function PreviewModal ({
-  captionImageUrl,
   cellImageUrl,
   onCancelClick,
   onEditCaptionClick,
-  onOkClick
+  onOkClick,
+  title
 }) {
   return (<PreviewModalContainer>
     <MessageContainer>
       Publish this Canvas?
     </MessageContainer>
     <CenteredContainer>
-      <FullCell
-        cellUrl={cellImageUrl}
-        captionUrl={captionImageUrl}
+      <Cell
+        imageUrl={cellImageUrl}
+        schemaVersion={SCHEMA_VERSION}
+        title={title}
       />
     </CenteredContainer>
     <CenteredButtons>

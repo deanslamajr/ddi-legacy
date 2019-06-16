@@ -1,19 +1,11 @@
 import React from 'react'
+import Head from 'next/head'
 import styled from 'styled-components'
+import nl2br from 'react-newline-to-break';
+
+import {DynamicTextContainer} from '../components/DynamicTextContainer'
 
 import { media } from '../helpers/style-utils'
-
-const TitleContainer = styled.div`
-  width: 250px;
-  background: ${props => props.theme.colors.white};
-  margin-top: 7px;
-`
-
-const TitleWidth = styled.div`
-  margin-left: .25rem;
-  margin-right: .25rem;
-  overflow-wrap: break-word;
-`
 
 const CellContainer = styled.div`
   margin: 0;
@@ -24,16 +16,6 @@ const CellContainer = styled.div`
   ${media.desktopMin`
     margin-bottom: ${props => props.schemaVersion === 1 ? '3px' : '1px'};
     margin-right: ${props => props.schemaVersion === 1 ? '3px' : '1px'};
-  `}
-
-  ${media.phoneMax`
-    &:first-of-type {
-      margin-top: ${props => props.removeBorders ? 'inherit' : `1rem`};
-    }
-
-    &:last-of-type {
-      margin-bottom: ${props => props.removeBorders ? 'inherit' : `5rem`};
-    }
   `}
 `
 
@@ -48,40 +30,42 @@ const CellBorder = styled.div`
 `
 
 const OldCellBorder = styled.div`
-  background: ${props => props.theme.colors.white};
   height: 100%;
-  width: 100%;
+  width: ${props => props.removeBorders ? '100%' : '350px'};
+  max-width: calc(100vw - ${props => props.theme.padding}px);
 `
 
 const CellImage = styled.img`
-  width: ${props => props.removeBorders ? props.theme.canvas.width : 350}px;
+  width: ${props => props.removeBorders ? '100%' : '350px'};
+  max-width: calc(100vw - ${props => props.theme.padding}px);
 `
 
-export default function Cell ({ className, imageUrl, title, onClick, removeBorders, schemaVersion }) {
+export default function Cell ({ className, imageUrl, title, clickable, onClick, removeBorders, schemaVersion }) {
   return (<CellContainer
     className={className}
-    clickable={onClick}
+    clickable={clickable || onClick}
     onClick={onClick}
     removeBorders={removeBorders}
     schemaVersion={schemaVersion}
-  >
-    {schemaVersion >= 1
+  > 
+    <Head>
+      <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet"></link>
+    </Head>
+    {schemaVersion === 1
       ? (<CellBorder>
         <CellImage
           removeBorders={removeBorders}
           src={imageUrl}
         />
       </CellBorder>)
-      : (<OldCellBorder>
+      : (<OldCellBorder removeBorders={removeBorders}>
         <CellImage
           removeBorders={removeBorders}
           src={imageUrl}
         />
-        <TitleContainer>
-          <TitleWidth>
-            {title}
-          </TitleWidth>
-        </TitleContainer>
+        {title && title.length && <DynamicTextContainer fontRatio={17}>
+          {nl2br(title)}
+        </DynamicTextContainer>}
       </OldCellBorder>)
     }
   </CellContainer>)

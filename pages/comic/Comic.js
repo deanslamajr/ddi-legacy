@@ -3,7 +3,6 @@ import styled from 'styled-components'
 
 import { Router } from '../../routes'
 
-import FullCell from '../../components/FullCell'
 import Cell from '../../components/Cell'
 
 import { sortByOrder } from '../../helpers'
@@ -26,16 +25,12 @@ const ComicContainer = styled.div`
   `}
 
   ${media.phoneMax`
-    margin: 0 auto;
+    margin: 1rem auto 5rem;
     flex-direction: column;
   `}
 `
 
 const noop = () => {}
-
-function getCaptionUrlFromCellUrl(cellUrl) {
-  return cellUrl.replace('.png', '_caption.png');
-}
 
 function Comic ({ cells, clickable, showSpinner = noop }) {
   return (<ComicContainer>
@@ -51,19 +46,13 @@ function Comic ({ cells, clickable, showSpinner = noop }) {
       title,
       urlId,
       url_id
-    }) => (schemaVersion || schema_version) >= 2
-      ? <FullCell
-        cellUrl={imageUrl || image_url}
-        captionUrl={getCaptionUrlFromCellUrl(imageUrl || image_url)}
-        key={imageUrl || image_url}
-      />
-      : <Cell
-        onClick={() => clickable ? navigateTo(urlId || url_id, showSpinner) : noop()}
-        imageUrl={imageUrl || image_url}
-        title={title}
-        key={imageUrl || image_url}
-        schemaVersion={schemaVersion || schema_version}
-      />)}
+    }) => (<Cell
+      onClick={() => clickable ? navigateTo(urlId || url_id, showSpinner) : noop()}
+      imageUrl={imageUrl || image_url}
+      title={title}
+      key={imageUrl || image_url}
+      schemaVersion={schemaVersion || schema_version}
+    />))}
   </ComicContainer>)
 }
 

@@ -7,20 +7,17 @@ const Container = styled.div`
   font-size: ${props => props.fontSize}px;
   background: ${props => props.theme.colors.white};
   margin-top: -4px;
-
+  padding: .5% 1.5%;
   line-height: 1;
-
-  padding: 0 .3rem .062rem .3rem;
   overflow-wrap: break-word;
 
   ${media.phoneMax`
     margin-top: -5px;
-    /* padding: .1rem .35rem; */
-    /* padding: .15rem .3rem; */
     padding: 1% 2%;
   `}
 `
 
+// Adapted from https://github.com/bond-agency/react-flowtype/blob/master/src/index.js
 export class DynamicTextContainer extends React.Component {
   componentDidMount () {
     this.updateSettings()
@@ -31,11 +28,6 @@ export class DynamicTextContainer extends React.Component {
   componentWillUnmount () {
     window.removeEventListener('resize', this.updateWidthFont)
   }
-
-  // componentWillReceiveProps () {
-  //   this.updateSettings()
-  //   this.updateFontSize()
-  // }
 
   updateSettings = () => {
     this.settings = {
@@ -69,8 +61,6 @@ export class DynamicTextContainer extends React.Component {
       fontSize = this.props.default || null
     }
 
-    //let divStyle = (fontSize) ? {'fontSize': fontSize + 'px'} : {}
-
     return (
       <Container fontSize={fontSize} ref={container => this.container = container}>
         {this.props.children}
@@ -78,13 +68,3 @@ export class DynamicTextContainer extends React.Component {
     )
   }
 }
-
-
-// DynamicTextContainer.propTypes = {
-//   default: PropTypes.number,
-//   fontRatio: PropTypes.number.isRequired,
-//   maximum: PropTypes.number,
-//   minimum: PropTypes.number,
-//   minFont: PropTypes.number,
-//   maxFont: PropTypes.number
-// }

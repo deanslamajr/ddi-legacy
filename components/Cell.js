@@ -31,16 +31,18 @@ const CellBorder = styled.div`
 
 const OldCellBorder = styled.div`
   height: 100%;
-  width: ${props => props.removeBorders ? '100%' : '350px'};
+  width: ${props => props.width || (props.removeBorders ? '100%' : '350px')};
   max-width: calc(100vw - ${props => props.theme.padding}px);
 `
 
 const CellImage = styled.img`
-  width: ${props => props.removeBorders ? '100%' : '350px'};
+  width: ${props => props.width || (props.removeBorders ? '100%' : '350px')};
   max-width: calc(100vw - ${props => props.theme.padding}px);
 `
 
-export default function Cell ({ className, imageUrl, title, clickable, onClick, removeBorders, schemaVersion }) {
+export default function Cell ({
+  className, imageUrl, title, clickable, onClick, removeBorders, schemaVersion, width
+}) {
   return (<CellContainer
     className={className}
     clickable={clickable || onClick}
@@ -58,10 +60,11 @@ export default function Cell ({ className, imageUrl, title, clickable, onClick, 
           src={imageUrl}
         />
       </CellBorder>)
-      : (<OldCellBorder removeBorders={removeBorders}>
+      : (<OldCellBorder removeBorders={removeBorders} width={width}>
         <CellImage
           removeBorders={removeBorders}
           src={imageUrl}
+          width={width}
         />
         {title && title.length && <DynamicTextContainer fontRatio={17}>
           {nl2br(title)}

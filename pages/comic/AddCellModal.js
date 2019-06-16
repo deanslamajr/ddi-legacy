@@ -23,14 +23,15 @@ const HomeModal = styled(Modal)`
 const CellsContainer = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
-  height: 60%;
-  margin: 2rem; 
-  width: 370px;
+  height: 70%;
+  margin: 2rem auto; 
+  width: 270px;
   max-width: calc(100vw - ${props => props.theme.padding}px);
 `
 
 const CellContainer = styled.div`
   display: flex;
+  justify-content: center;
   margin: auto;
 `
 
@@ -93,6 +94,7 @@ export default class AddCellModal extends React.Component {
               onClick={() => onAddCellFromDuplicate(urlId || url_id)}
               schemaVersion={schemaVersion || schema_version}
               title={title}
+              width="250px"
             />
           </CellContainer>)}
         </CellsContainer>

@@ -34,9 +34,11 @@ function PreviewModal ({
     </MessageContainer>
     <CenteredContainer>
       <Cell
+        removeBorders
         imageUrl={cellImageUrl}
         schemaVersion={SCHEMA_VERSION}
         title={title}
+        width="250px"
       />
     </CenteredContainer>
     <CenteredButtons>

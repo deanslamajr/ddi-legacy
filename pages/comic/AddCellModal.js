@@ -5,15 +5,26 @@ import Modal, { CenteredButtons, MessageContainer as Message } from '../../compo
 import { MenuButton, PinkMenuButton } from '../../components/Buttons'
 import Cell from '../../components/Cell'
 
+import { media } from '../../helpers/style-utils'
 import { sortByOrder } from '../../helpers'
 
 const HOME = 'HOME'
 const CELL_LIST = 'CELL_LIST'
 
 const DuplicateModal = styled(Modal)`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   height: 100%;
   width: 100%;
-  align-items: center;
+
+  ${media.phoneMax`
+    max-width: 100vw;
+  `}
+  ${media.desktopMin`
+    max-width: 500px;
+  `}
 `
 
 const HomeModal = styled(Modal)`
@@ -23,7 +34,7 @@ const HomeModal = styled(Modal)`
 const CellsContainer = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
-  height: 70%;
+  height: 80%;
   margin: 2rem auto; 
   width: 270px;
   max-width: calc(100vw - ${props => props.theme.padding}px);

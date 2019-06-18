@@ -31,12 +31,12 @@ const CellBorder = styled.div`
 
 const OldCellBorder = styled.div`
   height: 100%;
-  width: ${props => props.width || (props.removeBorders ? '100%' : '350px')};
+  width: ${props => props.width || (props.removeBorders ? '100%' : '300px')};
   max-width: calc(100vw - ${props => props.theme.padding}px);
 `
 
 const CellImage = styled.img`
-  width: ${props => props.width || (props.removeBorders ? '100%' : '350px')};
+  width: ${props => props.width || (props.removeBorders ? '100%' : '300px')};
   max-width: calc(100vw - ${props => props.theme.padding}px);
 `
 

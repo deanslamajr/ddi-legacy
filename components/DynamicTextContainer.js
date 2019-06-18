@@ -13,7 +13,7 @@ const Container = styled.div`
 
   ${media.phoneMax`
     margin-top: -5px;
-    padding: 1.5% 2% 1%;
+    padding: 2% 2% 1%;
   `}
 `
 

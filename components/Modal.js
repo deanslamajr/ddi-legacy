@@ -19,7 +19,6 @@ const TransparentDarkBackground = styled.div`
 const ModalContainer = styled.div`
   background-color: ${props => props.theme.colors.lightGray};
   width: 70vw;
-  height: 30vh;
   padding: 1rem;
   border-radius: 1px;
 `

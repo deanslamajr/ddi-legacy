@@ -1,5 +1,4 @@
 import React from 'react'
-import Head from 'next/head'
 import styled from 'styled-components'
 import nl2br from 'react-newline-to-break';
 
@@ -57,9 +56,6 @@ export default function Cell ({
     removeBorders={removeBorders}
     schemaVersion={schemaVersion}
   > 
-    <Head>
-      <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet"></link>
-    </Head>
     {schemaVersion === 1
       ? (<CellBorder>
         <CellImage

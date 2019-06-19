@@ -1,10 +1,12 @@
 import React from 'react'
 import styled from 'styled-components'
+import Head from 'next/head'
 
 import { media } from '../helpers/style-utils'
 
 const Container = styled.div`
   font-size: ${props => props.fontSize}px;
+  font-family: 'Open Sans', sans-serif;
   background: ${props => props.theme.colors.white};
   padding: .25vw;
   line-height: 1;
@@ -61,6 +63,9 @@ export class DynamicTextContainer extends React.Component {
 
     return (
       <Container fontSize={fontSize} ref={container => this.container = container}>
+        <Head>
+          <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet"></link>
+        </Head>
         {this.props.children}
       </Container>
     )

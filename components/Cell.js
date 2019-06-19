@@ -30,10 +30,16 @@ const CellBorder = styled.div`
 `
 
 const OldCellBorder = styled.div`
+  /* to normalize the height of the caption between shorter and taller comics on the same row */
+  background: rgb(255, 250, 249);
   display: grid;
   height: 100%;
   width: ${props => props.width || (props.removeBorders ? '100%' : '300px')};
   max-width: calc(100vw - ${props => props.theme.padding}px);
+
+  ${media.desktopMin`
+    grid-template-rows: ${props => props.width || (props.removeBorders ? 'inherit' : '300px')};
+  `}
 `
 
 const CellImage = styled.img`

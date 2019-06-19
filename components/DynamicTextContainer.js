@@ -6,13 +6,12 @@ import { media } from '../helpers/style-utils'
 const Container = styled.div`
   font-size: ${props => props.fontSize}px;
   background: ${props => props.theme.colors.white};
-  padding: .25vw .5vw .5vw .5vw;
+  padding: .25vw;
   line-height: 1;
   overflow-wrap: break-word;
 
   ${media.phoneMax`
-    margin-top: -5px;
-    padding: 1% 2%;
+    padding: 1vw;
   `}
 `
 

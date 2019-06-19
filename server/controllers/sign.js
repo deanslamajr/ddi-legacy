@@ -16,7 +16,6 @@ async function sign (req, res) {
     }
 
     const filename = req.query['file-name']
-    const captionFilename = req.query['caption-filename'];
 
     // throws on fail
     validateFilename(filename)

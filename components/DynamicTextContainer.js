@@ -6,8 +6,7 @@ import { media } from '../helpers/style-utils'
 const Container = styled.div`
   font-size: ${props => props.fontSize}px;
   background: ${props => props.theme.colors.white};
-  margin-top: -4px;
-  padding: .5% 1.5%;
+  padding: .25vw .5vw .5vw .5vw;
   line-height: 1;
   overflow-wrap: break-word;
 

@@ -30,6 +30,7 @@ const CellBorder = styled.div`
 `
 
 const OldCellBorder = styled.div`
+  display: grid;
   height: 100%;
   width: ${props => props.width || (props.removeBorders ? '100%' : '300px')};
   max-width: calc(100vw - ${props => props.theme.padding}px);

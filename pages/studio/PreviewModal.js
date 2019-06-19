@@ -2,8 +2,11 @@ import React from 'react'
 import getConfig from 'next/config'
 import styled from 'styled-components'
 
+import Cell from '../../components/Cell'
 import { MenuButton, PinkMenuButton } from '../../components/Buttons'
 import Modal, { CenteredButtons, MessageContainer } from '../../components/Modal'
+
+import {SCHEMA_VERSION} from '../../config/constants.json'
 
 const CenteredContainer = styled.div`
   display: flex;
@@ -16,21 +19,28 @@ const CenteredContainer = styled.div`
 const PreviewModalContainer = styled(Modal)`
   height: inherit;
   width: inherit;
+  max-width: 100vw;
 `
 
 function PreviewModal ({
-  canvasImageUrl,
+  cellImageUrl,
   onCancelClick,
   onEditCaptionClick,
-  onOkClick
-}) {  
-
+  onOkClick,
+  title
+}) {
   return (<PreviewModalContainer>
     <MessageContainer>
       Publish this Canvas?
     </MessageContainer>
     <CenteredContainer>
-      <img src={canvasImageUrl} />
+      <Cell
+        removeBorders
+        imageUrl={cellImageUrl}
+        schemaVersion={SCHEMA_VERSION}
+        title={title}
+        width="250px"
+      />
     </CenteredContainer>
     <CenteredButtons>
       <MenuButton onClick={onEditCaptionClick}>

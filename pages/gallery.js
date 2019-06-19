@@ -8,6 +8,8 @@ import {
   TOP_RIGHT
 } from '../components/navigation'
 
+import Cell from '../components/Cell'
+
 import { sortByOrder } from '../helpers'
 import { media, shadow } from '../helpers/style-utils'
 
@@ -76,8 +78,7 @@ const Caption = styled.div`
 const OldThumb = ({caption, cellsCount, imageUrl}) => {
   return (<OldThumbNail as='div'>
     {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}
-    <OldCellImage src={imageUrl} />
-    <Caption>{caption}</Caption>
+    <Cell clickable removeBorders imageUrl={imageUrl} title={caption} />
   </OldThumbNail>);
 }
 
@@ -90,7 +91,7 @@ const CellsThumb = ({cells = []}) => {
 
   if (sortedCells.length) {
     const cell = sortedCells[0];
-    return cell.schema_version > 0
+    return cell.schema_version === 1
       ? (<Thumb
         cellsCount={sortedCells.length}
         imageUrl={cell.image_url}
@@ -180,7 +181,6 @@ class GalleryRoute extends Component {
                 id={url_id}
                 onClick={() => this.handleComicClick(url_id)}
               >
-                {/* <Comic cells={cells} /> */}
                 <CellsThumb cells={cells} />
               </UnstyledLink>
             </Link>)

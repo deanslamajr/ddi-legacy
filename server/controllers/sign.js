@@ -156,7 +156,7 @@ async function sign (req, res) {
       signData.comicId = comicId
     }
 
-    res.json(signData)
+    res.json(signData);
   }
   catch (e) {
     console.error(e)

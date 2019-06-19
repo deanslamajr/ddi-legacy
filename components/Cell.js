@@ -1,19 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
+import nl2br from 'react-newline-to-break';
+
+import {DynamicTextContainer} from '../components/DynamicTextContainer'
 
 import { media } from '../helpers/style-utils'
-
-const TitleContainer = styled.div`
-  width: 250px;
-  background: ${props => props.theme.colors.white};
-  margin-top: 7px;
-`
-
-const TitleWidth = styled.div`
-  margin-left: .25rem;
-  margin-right: .25rem;
-  overflow-wrap: break-word;
-`
 
 const CellContainer = styled.div`
   margin: 0;
@@ -24,16 +15,6 @@ const CellContainer = styled.div`
   ${media.desktopMin`
     margin-bottom: ${props => props.schemaVersion === 1 ? '3px' : '1px'};
     margin-right: ${props => props.schemaVersion === 1 ? '3px' : '1px'};
-  `}
-
-  ${media.phoneMax`
-    &:first-of-type {
-      margin-top: ${props => props.removeBorders ? 'inherit' : `1rem`};
-    }
-
-    &:last-of-type {
-      margin-bottom: ${props => props.removeBorders ? 'inherit' : `5rem`};
-    }
   `}
 `
 
@@ -48,30 +29,49 @@ const CellBorder = styled.div`
 `
 
 const OldCellBorder = styled.div`
-  background: ${props => props.theme.colors.white};
+  /* to normalize the height of the caption between shorter and taller comics on the same row */
+  background: rgb(255, 250, 249);
+  display: grid;
   height: 100%;
-  width: 100%;
+  width: ${props => props.width || (props.removeBorders ? '100%' : '300px')};
+  max-width: calc(100vw - ${props => props.theme.padding}px);
+
+  ${media.desktopMin`
+    grid-template-rows: ${props => props.width || (props.removeBorders ? 'inherit' : '300px')};
+  `}
 `
 
-export default function Cell ({ className, imageUrl, title, onClick, removeBorders, schemaVersion }) {
+const CellImage = styled.img`
+  width: ${props => props.width || (props.removeBorders ? '100%' : '300px')};
+  max-width: calc(100vw - ${props => props.theme.padding}px);
+`
+
+export default function Cell ({
+  className, imageUrl, title, clickable, onClick, removeBorders, schemaVersion, width
+}) {
   return (<CellContainer
     className={className}
-    clickable={onClick}
+    clickable={clickable || onClick}
     onClick={onClick}
     removeBorders={removeBorders}
     schemaVersion={schemaVersion}
-  >
-    {schemaVersion >= 1
+  > 
+    {schemaVersion === 1
       ? (<CellBorder>
-        <img src={imageUrl} />
+        <CellImage
+          removeBorders={removeBorders}
+          src={imageUrl}
+        />
       </CellBorder>)
-      : (<OldCellBorder>
-        <img src={imageUrl} />
-        <TitleContainer>
-          <TitleWidth>
-            {title}
-          </TitleWidth>
-        </TitleContainer>
+      : (<OldCellBorder removeBorders={removeBorders} width={width}>
+        <CellImage
+          removeBorders={removeBorders}
+          src={imageUrl}
+          width={width}
+        />
+        {title && title.length && <DynamicTextContainer fontRatio={17}>
+          {nl2br(title)}
+        </DynamicTextContainer>}
       </OldCellBorder>)
     }
   </CellContainer>)

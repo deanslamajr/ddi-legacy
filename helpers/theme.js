@@ -9,12 +9,9 @@ const theme = {
   },
   canvas: {
     width: 250,
-    height: 250,
-    captionHeight: 75,
-    padding: 7,
-    lineHeight: 15,
-    fontSize: 15
-  }
+    height: 250
+  },
+  padding: 7
 }
 
 export default theme

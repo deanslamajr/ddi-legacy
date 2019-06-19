@@ -1,7 +1,5 @@
 import { Component } from 'react'
 import styled from 'styled-components'
-import Konva from 'konva'
-import { Stage, Layer, Rect, Text } from 'react-konva'
 import axios from 'axios'
 import shortid from 'shortid'
 import cloneDeep from 'lodash/cloneDeep'
@@ -20,9 +18,16 @@ import CaptionModal from './CaptionModal'
 import WarningModal from './WarningModal'
 import PreviewModal from './PreviewModal'
 import PublishFailModal from './PublishFailModal'
+import EmojiCanvas from './EmojiCanvas';
 
-import { getApi } from '../../helpers'
-import theme from '../../helpers/theme'
+import {
+  generateCellImage,
+  konvaCacheConfig,
+  CELL_IMAGE_ID,
+  RGBA
+} from '../../helpers/konvaDrawingUtils'
+
+import { getApi, sortByOrder } from '../../helpers'
 
 import { CAPTCHA_ACTION_CELL_PUBLISH } from '../../config/constants.json'
 
@@ -39,21 +44,31 @@ const filters = {
   [RGBA]: Konva.Filters.RGBA
 }
 
-const konvaCacheConfig = {
-  offset: 30,
-  pixelRatio: 1, /// fixes android graphics glitch
-  //drawBorder: true /// for debugging
+function uploadImage(imageFile, signedRequest) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('PUT', signedRequest)
+    xhr.onreadystatechange = async () => {
+      if(xhr.readyState === 4){
+        if(xhr.status === 200){
+          resolve();
+        }
+        else{
+          // @todo better UX
+          console.error('could not upload file!')
+          reject();
+        }
+      }
+    }
+    xhr.send(imageFile)
+  });
 }
 
-function generateFilename () {
+function generateCellImageFilename () {
   return `${shortid.generate()}.png`
 }
 
-function sortByOrder ({ order: a }, { order: b }) {
-  return a - b
-}
-
-function createNewEmoji (emoji, currentEmojiId) {
+function createNewEmojiComponentState (emoji, currentEmojiId) {
   return {
     emoji,
     id: currentEmojiId,
@@ -74,114 +89,14 @@ function createNewEmoji (emoji, currentEmojiId) {
   }
 }
 
-function getCaptionConfig (title) {
-  return {
-    x: theme.canvas.padding,
-    y: theme.canvas.height + theme.canvas.padding,
-    width: theme.canvas.width - (2 * theme.canvas.padding),
-    text: title,
-    fontSize: theme.canvas.fontSize,
-    fill: theme.colors.black,
-    fontFamily: 'Calibri'
-  }
-}
-
-function getLinesOfCaptionText (title) {
-  if (title === '') {
-    return 0;
-  }
-  const captionConfig = getCaptionConfig(title);
-  const captionKonva = new Konva.Text(captionConfig);
-  return captionKonva.textArr.length;
-}
-
-function getEmojiConfigs (emojis) {
-  return emojis.sort(sortByOrder).map(emoji => ({
-    'data-id': emoji.id,
-    filters: emoji.filters && emoji.filters.map(filter => filters[filter]),
-    x: emoji.x,
-    y: emoji.y,
-    scaleX: emoji.scaleX,
-    scaleY: emoji.scaleY,
-    text: emoji.emoji,
-    fontSize: emoji.size,
-    rotation: emoji.rotation,
-    alpha: emoji.alpha,
-    red: emoji.red,
-    green: emoji.green,
-    blue: emoji.blue,
-    opacity: typeof emoji.opacity !== 'undefined' ? emoji.opacity : 1, /* backwards compatibility */
-    useCache: true
-  }));
-}
-
-function generateCellImage ({emojis, title}) {
-  const linesOfCaptionText = getLinesOfCaptionText(title);
-  const captionHeight = linesOfCaptionText
-    ? theme.canvas.lineHeight * linesOfCaptionText + (2 * theme.canvas.padding)
-    : 0;
-
-  const stageHeight = theme.canvas.height + captionHeight;
-  const stageWidth = theme.canvas.width;
-
-  const stage = new Konva.Stage({
-    container: CELL_IMAGE_ID,
-    width: stageWidth,
-    height: stageHeight
-  });
-
-  const layer = new Konva.Layer();
-  // add the layer to the stage
-  stage.add(layer);
-  
-  // Add Canvas
-  const canvas = new Konva.Rect({
-    x: 0,
-    y: 0,
-    width: theme.canvas.width,
-    height: theme.canvas.height,
-    fill: theme.colors.white
-  });
-  layer.add(canvas);
-
-  // Add emojis
-  getEmojiConfigs(Object.values(emojis)).forEach(config => {
-    const emoji = new Konva.Text({...config});
-    emoji.cache(konvaCacheConfig)
-    layer.add(emoji);
-  });
-
-  // Add caption background
-  if (linesOfCaptionText) {
-    const captionBackground = new Konva.Rect({
-      x: 0,
-      y: theme.canvas.height,
-      width: theme.canvas.width,
-      height: captionHeight,
-      fill: theme.colors.white
-    });
-    layer.add(captionBackground);
-  
-    {/* Caption text */}
-    const captionText = new Konva.Text({...getCaptionConfig(title)});
-    layer.add(captionText);
-  }
-
-  return new Promise((resolve, reject) => {
-    try {
-      stage.toCanvas().toBlob((blob) => resolve(blob));
-    }
-    catch(err) {
-      // @todo log error
-      console.error(err);
-      reject();
-    }
-  });
-}
-
 //
 // Styled Components
 //
+const EverythingElseContainer = styled.div`
+  margin-top: ${props => props.theme.canvas.width + 5}px;
+  width: ${props => props.theme.canvas.width}px;
+`
+
 const CenteredContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -190,17 +105,6 @@ const CenteredContainer = styled.div`
   margin-bottom: 6rem;
   /* Hack to fix slider in fully right position making mobile view scroll :( */
   overflow-x: hidden;
-`
-
-const FixedCanvasContainer = styled.div`
-  position: fixed;
-  top: 0;
-  z-index: 999;
-`
-
-const EverythingElseContainer = styled.div`
-  margin-top: 255px;
-  width: 250px;
 `
 
 //
@@ -212,6 +116,7 @@ class StudioRoute extends Component {
 
     this.initialState = {
       activeEmojiId: null,
+      cellImageUrl: null,
       comicId: this.props.comicId,
       currentEmojiId: 1,
       parentId: this.props.parentId,
@@ -286,7 +191,7 @@ class StudioRoute extends Component {
 
   createNewEmoji = (emoji) => {
     this.setState(({ currentEmojiId, emojis }) => {
-      const newEmoji = createNewEmoji(emoji, currentEmojiId)
+      const newEmoji = createNewEmojiComponentState(emoji, currentEmojiId)
 
       const clonedEmojis = cloneDeep(emojis)
       clonedEmojis[newEmoji.id] = newEmoji
@@ -300,12 +205,12 @@ class StudioRoute extends Component {
     }, this.doPostEmojiSelect)
   }
 
-  getSignedRequest = async (file, captchaToken) => {
+  getSignedRequest = async (captchaToken) => {
     let signData = {
-      filename: file.name,
+      filename: this.cellImageFile.name,
       title: this.state.title,
       captchaToken
-    };
+    }
 
     if (this.state.parentId) {
       signData.parentId = this.state.parentId
@@ -328,9 +233,9 @@ class StudioRoute extends Component {
     delete studioState.parentId
 
     try {
-      this.clearCache()
-      await axios.put(`/api/cell/${cellId}`, { studioState })
-      Router.pushRoute(`/comic/${comicId}`)
+      await axios.put(`/api/cell/${cellId}`, { studioState });
+      this.clearCache();
+      Router.pushRoute(`/comic/${comicId}`);
     }
     catch (e) {
       // @todo better UX
@@ -341,7 +246,9 @@ class StudioRoute extends Component {
   retryPublish = () => {
     this.props.showSpinner()
     this.togglePublishFailModal(false);
-    this.saveCell();
+    
+    // @todo invoke captcha v2.0 in this case
+    // this.saveCell();
   }
 
   cancelPublishAttemp = () => {
@@ -369,23 +276,11 @@ class StudioRoute extends Component {
           comicId,
           id,
           signedRequest
-        } = await this.getSignedRequest(this.renderedImageFile, token)
+        } = await this.getSignedRequest(token);
 
-        const xhr = new XMLHttpRequest()
-        xhr.open('PUT', signedRequest)
-        xhr.onreadystatechange = async () => {
-          if(xhr.readyState === 4){
-            if(xhr.status === 200){
-              // update cell in DB
-              await this.finishCellPublish(id, comicId)
-            }
-            else{
-              // @todo better UX
-              throw new Error('could not upload file!');
-            }
-          }
-        }
-        xhr.send(this.renderedImageFile)
+        await uploadImage(this.cellImageFile, signedRequest);
+
+        this.finishCellPublish(id, comicId);
       }
       catch (e) {
         // @todo log this
@@ -697,19 +592,17 @@ class StudioRoute extends Component {
     this.toggleCaptionModal(true)
   }
 
-  generateImage = async (state) => {
-    const blob = await generateCellImage(state);
+  generateCellImage = async (emojis) => {
+    const cellImageBlob = await generateCellImage(emojis);
   
-    const file = new File([blob], generateFilename(), {
+    this.cellImageFile = new File([cellImageBlob], generateCellImageFilename(), {
       type: S3_ASSET_FILETYPE,
     });
-  
-    this.renderedImageFile = file
-    
-    return URL.createObjectURL(file);
+
+    return URL.createObjectURL(this.cellImageFile);
   }
 
-  onPublishClick = async () => {
+  handlePublishClick = async () => {
     this.toggleActionsModal(false)
     this.props.showSpinner()
 
@@ -718,24 +611,18 @@ class StudioRoute extends Component {
     this.updateEmojiCache(undefined, false)
     this.incrementField('red', 1) // hack bc we need to get a konva image refresh for the canvas to get the 'remove border' update
 
-    const renderedImageUrl = await this.generateImage(this.state);   
+    const cellImageUrl = await this.generateCellImage(this.state.emojis);
 
     this.setState({
-      renderedImageUrl
+      cellImageUrl
     }, () => {
       this.togglePublishPreviewModal(true)
       this.props.hideSpinner()
     })
   }
 
-  onCaptionModalSave = async (newTitle) => {    
-    const renderedImageUrl = await this.generateImage({
-      emojis: this.state.emojis,
-      title: newTitle
-    });   
-
+  onCaptionModalSave = async (newTitle) => {
     this.setState({
-      renderedImageUrl,
       title: newTitle
     }, () => {
       this.updateCache();
@@ -772,6 +659,21 @@ class StudioRoute extends Component {
     }
 
     this.props.hideSpinner()
+    
+    /**
+     * @todo step 2 generating emoji items as images
+     */
+    // getEmojiImageAsUrl()
+    //   .then(emojiUrl => {
+    //     console.log('emojiUrl', emojiUrl)
+    //     this.setState({emojiUrl})
+
+    //     const imageObj = new window.Image();
+    //     imageObj.onload = () => {
+    //       this.setState({emojiImageObj: imageObj})
+    //     };
+    //     imageObj.src = emojiUrl.url;
+    //   })
   }
 
   render () {
@@ -790,32 +692,15 @@ class StudioRoute extends Component {
         </Head>
 
         <div style={{display: 'none'}} id={CELL_IMAGE_ID} />
-
+        <div style={{display: 'none'}} id={EMOJI_IMAGE_ID} />
+        {this.state.emojiUrl && <img url={this.state.emojiUrl.url} />}
         <CenteredContainer>
-          <FixedCanvasContainer>
-            <Stage ref={ref => this.stage = ref} width={theme.canvas.width} height={theme.canvas.height}>
-              <Layer>
-                {/* Canvas */}
-                <Rect
-                  x={0}
-                  y={0}
-                  width={theme.canvas.width}
-                  height={theme.canvas.height}
-                  fill={theme.colors.white}
-                />
-
-                {getEmojiConfigs(Object.values(this.state.emojis)).map(config => <Text
-                  draggable={config['data-id'] === this.state.activeEmojiId}
-                  useCache
-                  key={`${config['data-id']}${config.emoji}`}
-                  ref={ref => this.emojiRefs[config['data-id']] = ref}
-                  onDragEnd={this.handleDragEnd}
-                  {...config}
-                />)}
-              </Layer>
-            </Stage>
-          </FixedCanvasContainer>
-
+          <EmojiCanvas
+            activeEmojiId={this.state.activeEmojiId}
+            emojis={this.state.emojis}
+            emojiRefs={this.emojiRefs}
+            handleDragEnd={this.handleDragEnd}
+          />
           {this.state.showSaveButton && (
             <EverythingElseContainer>
               <BuilderMenu
@@ -839,7 +724,8 @@ class StudioRoute extends Component {
                 onCancel={this.onPickerCancel}
                 backButtonLabel={this.state.activeEmojiId ? 'BACK' : 'EXIT'}
               />}
-            </EverythingElseContainer>)}
+            </EverythingElseContainer>
+          )}
         </CenteredContainer>
 
         {!this.state.showEmojiPicker && <React.Fragment>
@@ -855,7 +741,7 @@ class StudioRoute extends Component {
           onCancelClick={() => this.toggleActionsModal(false)}
           onExitClick={() => this.navigateBack()}
           onResetClick={() => this.onResetClick()}
-          onPublishClick={() => this.onPublishClick()}
+          onPublishClick={() => this.handlePublishClick()}
           toggleCaptionModal={this.showCaptionModalFromActionsModal}
         />}
 
@@ -865,7 +751,7 @@ class StudioRoute extends Component {
         />}
 
         {this.state.showPublishPreviewModal && <PreviewModal
-          canvasImageUrl={this.state.renderedImageUrl}
+          cellImageUrl={this.state.cellImageUrl}
           onCancelClick={() => this.togglePublishPreviewModal(false)}
           onEditCaptionClick={() => this.toggleCaptionModal(true)}
           onOkClick={() => this.handleSaveCellConfirm()}

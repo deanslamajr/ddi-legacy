@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import { Router } from '../../routes'
+
 import Cell from '../../components/Cell'
 
 import { sortByOrder } from '../../helpers'
@@ -24,7 +25,7 @@ const ComicContainer = styled.div`
   `}
 
   ${media.phoneMax`
-    margin: 0 auto;
+    margin: 1rem auto 5rem;
     flex-direction: column;
   `}
 `
@@ -37,13 +38,21 @@ function Comic ({ cells, clickable, showSpinner = noop }) {
     {/*  This is due to the 2 different ways this is consumed: */}
     {/*  1. /gallery - passes untransformed cells data from DB */}
     {/*  2. /comic/:comicId - passes transformed cells data */}
-    {cells.sort(sortByOrder).map(({ imageUrl, image_url, schemaVersion, schema_version, title, urlId, url_id }) => <Cell
+    {cells.sort(sortByOrder).map(({
+      imageUrl,
+      image_url,
+      schemaVersion,
+      schema_version,
+      title,
+      urlId,
+      url_id
+    }) => (<Cell
       onClick={() => clickable ? navigateTo(urlId || url_id, showSpinner) : noop()}
       imageUrl={imageUrl || image_url}
       title={title}
       key={imageUrl || image_url}
       schemaVersion={schemaVersion || schema_version}
-    />)}
+    />))}
   </ComicContainer>)
 }
 

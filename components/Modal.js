@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
 
+import { media } from '../helpers/style-utils'
+
 const TransparentDarkBackground = styled.div`
   z-index: 999999;
   position: fixed;
@@ -17,17 +19,15 @@ const TransparentDarkBackground = styled.div`
 const ModalContainer = styled.div`
   background-color: ${props => props.theme.colors.lightGray};
   width: 70vw;
-  height: 30vh;
-  display: flex;
   padding: 1rem;
   border-radius: 1px;
-  justify-content: space-around;
-  flex-direction: column;
 `
 
 export const CenteredButtons = styled.div`
   display: flex;
   justify-content: center;
+  width: 100%;
+  margin-bottom: 1rem;
 `
 
 export const MessageContainer = styled.div`
@@ -35,6 +35,10 @@ export const MessageContainer = styled.div`
   font-size: 2rem;
   display: flex;
   justify-content: center;
+
+  ${media.phoneMax`
+    font-size: 1.5rem;
+  `}
 `
 
 function Modal ({ children, className }) {

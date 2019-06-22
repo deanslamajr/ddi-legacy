@@ -20,7 +20,6 @@ const {
 } = require('../../config/constants.json')
 
 function verifyCaptchaToken (token, isV2) {
-  console.log('isV2', isV2);
   const verifyPayload = {
     response: token,
     secret: isV2 ? serverEnvironment.CAPTCHA_V2_SECRET : serverEnvironment.CAPTCHA_V3_SECRET

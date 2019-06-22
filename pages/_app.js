@@ -54,6 +54,7 @@ class MyApp extends App {
     comics: [],
     hasMoreComics: false,
     newerComics: null,
+    recaptcha: undefined,
     showSpinner: true
   }
 

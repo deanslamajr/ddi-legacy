@@ -38,10 +38,6 @@ import {
 
 const { publicRuntimeConfig } = getConfig();
 
-const filters = {
-  [RGBA]: Konva.Filters.RGBA
-}
-
 function uploadImage(imageFile, signedRequest) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()
@@ -438,7 +434,7 @@ class StudioRoute extends Component {
   }
 
   changeActiveEmoji = (id) => {
-    this.setState({ activeEmojiId: id }, (state) => {
+    this.setState({ activeEmojiId: id }, () => {
       this.updateEmojiAndSessionCache()
       this.updateCache()
     })

@@ -38,8 +38,6 @@ import {
 
 const { publicRuntimeConfig } = getConfig();
 
-const CELL_IMAGE_ID = 'cell-image';
-const RGBA = 'RGBA'
 const filters = {
   [RGBA]: Konva.Filters.RGBA
 }
@@ -430,7 +428,8 @@ class StudioRoute extends Component {
   }
 
   changeActiveEmoji = (id) => {
-    this.setState({ activeEmojiId: id }, () => {
+    this.setState({ activeEmojiId: id }, (state) => {
+      console.log('state', state)
       this.updateEmojiAndSessionCache()
       this.updateCache()
     })
@@ -464,7 +463,7 @@ class StudioRoute extends Component {
   }
 
   restoreFromCache = (cache) => {
-    this.setState(cache, this.updateEmojiAndSessionCache)
+    this.setState(cache, this.updateEmojiAndSessionCache);
   }
 
   handleDragEnd = (e) => {
@@ -645,17 +644,23 @@ class StudioRoute extends Component {
     const store = require('store2')
     const studioCache = store(STORAGEKEY_STUDIO)
 
-    if (studioCache && Object.keys(studioCache).length) {
-      // if the cached parentId matches the current parentId, refresh from cache
-      if (!this.state.parentId || this.state.parentId === studioCache.parentId) {
-        this.restoreFromCache(studioCache)
-        if (!studioCache.activeEmojiId) {
-          this.openEmojiPicker()
-        }
+    // restore studio state from localstorage cache if:
+    //   * Studio state exists in localstorage 
+    //   AND either of the following is true
+    //   1. the studio state doesn't have a parentId i.e. studio state of a 'new' studio
+    //   2. the cached parentId matches the studio state's parentId i.e. a copied studio state
+    if ((studioCache && Object.keys(studioCache).length) &&
+     (!this.state.parentId || this.state.parentId === studioCache.parentId)
+    ) {
+      this.restoreFromCache(studioCache)
+      if (!studioCache.activeEmojiId) {
+        this.openEmojiPicker()
       }
     }
     else {
-      this.outlineActiveEmoji()
+      // no studio state to refresh from localstorage
+      // but still need to trigger konva cache refresh
+      this.updateEmojiAndSessionCache();
     }
 
     this.props.hideSpinner()
@@ -692,7 +697,6 @@ class StudioRoute extends Component {
         </Head>
 
         <div style={{display: 'none'}} id={CELL_IMAGE_ID} />
-        <div style={{display: 'none'}} id={EMOJI_IMAGE_ID} />
         {this.state.emojiUrl && <img url={this.state.emojiUrl.url} />}
         <CenteredContainer>
           <EmojiCanvas

@@ -78,7 +78,7 @@ const EmojiContainer = styled(ThirdOfAButton)`
 
 const ChangeLayerButton = styled(ThirdOfAButton)`
   border: 1px solid ${props => props.theme.colors.darkGray};
-  border-right: ${props => !props.onLeft && props.isActive ? 'none' : `1px solid ${props.theme.colors.darkGray}`};
+  border-right: ${props => !props.isLeft && props.isActive ? 'none' : `1px solid ${props.theme.colors.darkGray}`};
   width: ${props => props.isActive ? 'calc(20% - 1px)' : '20%'};
   height: ${props => props.isActive ? 'calc(2.75rem - 6px)' : '2.75rem'};
   background-color: ${props => props.theme.colors.white};
@@ -205,7 +205,7 @@ class BuilderMenu extends React.Component {
           ? (<ChangeLayerButton
               isActive={id === activeEmoji.id}
               onClick={(e) => this.increaseStackOrder(e, id)}
-              onLeft
+              isLeft
             >
               ↑
             </ChangeLayerButton>)

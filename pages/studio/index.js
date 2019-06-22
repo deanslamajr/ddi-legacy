@@ -266,12 +266,12 @@ class StudioRoute extends Component {
   saveCell = async (v2CaptchaToken) => {
     let token
     
-    if (!v2CaptchaToken && publicRuntimeConfig.CAPTCHA_V3_SITE_KEY) {
-      token = await this.props.recaptcha.execute(CAPTCHA_ACTION_CELL_PUBLISH);
-    }
-      
-    this.setState({ showSaveButton: false }, async () => {
-      try {
+    try {
+      if (!v2CaptchaToken && publicRuntimeConfig.CAPTCHA_V3_SITE_KEY) {
+        token = await this.props.recaptcha.execute(CAPTCHA_ACTION_CELL_PUBLISH);
+      }
+        
+      this.setState({ showSaveButton: false }, async () => {
         const {
           comicId,
           id,
@@ -284,13 +284,14 @@ class StudioRoute extends Component {
         await uploadImage(this.cellImageFile, signedRequest);
 
         this.finishCellPublish(id, comicId);
-      }
-      catch (e) {
-        const isCaptchaFail = e && e.response && e.response.status === 400;
-        // @todo log this
-        this.togglePublishFailModal(true, isCaptchaFail);
-      }
-    })
+      })
+
+    }
+    catch (e) {
+      const isCaptchaFail = e && e.response && e.response.status === 400;
+      // @todo log this
+      this.togglePublishFailModal(true, isCaptchaFail);
+    }
   }
 
   navigateBack = () => {
@@ -759,7 +760,7 @@ class StudioRoute extends Component {
 
         {this.state.showPublishFailModal && <PublishFailModal
           hasFailedCaptcha={this.state.hasFailedCaptcha}
-          onRetryClick={this.retryPublish}
+          onRetryClick={() => this.retryPublish()}
           onCancelClick={() => this.cancelPublishAttemp()}
         />}
 

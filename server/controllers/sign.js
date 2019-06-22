@@ -19,38 +19,53 @@ const {
   CAPTCHA_THRESHOLD
 } = require('../../config/constants.json')
 
-function verifyCaptchaToken (token) {
+function verifyCaptchaToken (token, isV2) {
+  console.log('isV2', isV2);
   const verifyPayload = {
     response: token,
-    secret: serverEnvironment.CAPTCHA_SECRET
+    secret: isV2 ? serverEnvironment.CAPTCHA_V2_SECRET : serverEnvironment.CAPTCHA_V3_SECRET
   };
 
   return axios.post('https://www.google.com/recaptcha/api/siteverify', queryString.stringify(verifyPayload))
 }
 
 async function sign (req, res) {
+  const handleFailedCaptcha = () => {
+    // @todo generate better logs around this failed captcha
+    res.sendStatus(400);
+  };
+
   try {
     if (!req.session.userId) {
       throw new Error('User session does not exist!')
     }
 
     const {
-      captchaToken,
+      v2Token,
+      v3Token,
       filename,
       parentId,
       title
     } = req.body;
 
-    if (clientEnvironment.CAPTCHA_SITE_KEY) {
-      const { data: captchaVerifyResponse } = await verifyCaptchaToken(captchaToken);
+    const isV2Token = !!v2Token;
 
-      if (
+    if (clientEnvironment.CAPTCHA_V3_SITE_KEY) {
+      const { data: captchaVerifyResponse } = await verifyCaptchaToken(v3Token || v2Token, isV2Token);
+
+      // v2 captcha
+      if (isV2Token) {
+        if (!captchaVerifyResponse.success) {
+          return handleFailedCaptcha();
+        }
+      }
+      // v3 captcha
+      else if (
         !captchaVerifyResponse.success ||
         captchaVerifyResponse.action !== CAPTCHA_ACTION_CELL_PUBLISH ||
         captchaVerifyResponse.score < CAPTCHA_THRESHOLD
       ) {
-        // @todo generate better logs around this failed captcha
-        return res.sendStatus(400);
+        return handleFailedCaptcha();
       }
     }
 

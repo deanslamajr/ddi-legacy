@@ -117,6 +117,7 @@ class StudioRoute extends Component {
       cellImageUrl: null,
       comicId: this.props.comicId,
       currentEmojiId: 1,
+      hasFailedCaptcha: false,
       parentId: this.props.parentId,
       onEmojiSelect: this.createNewEmoji,
       showEmojiPicker: this.props.parentId ? false : true,
@@ -203,11 +204,17 @@ class StudioRoute extends Component {
     }, this.doPostEmojiSelect)
   }
 
-  getSignedRequest = async (captchaToken) => {
+  getSignedRequest = async (captchaTokens) => {
     let signData = {
       filename: this.cellImageFile.name,
-      title: this.state.title,
-      captchaToken
+      title: this.state.title
+    }
+
+    if (captchaTokens.v2) {
+      signData.v2Token = captchaTokens.v2;
+    }
+    else if (captchaTokens.v3) {
+      signData.v3Token = captchaTokens.v3;
     }
 
     if (this.state.parentId) {
@@ -241,12 +248,11 @@ class StudioRoute extends Component {
     }
   }
 
-  retryPublish = () => {
+  retryPublish = (token) => {
     this.props.showSpinner()
     this.togglePublishFailModal(false);
     
-    // @todo invoke captcha v2.0 in this case
-    // this.saveCell();
+    this.saveCell(token);
   }
 
   cancelPublishAttemp = () => {
@@ -261,10 +267,10 @@ class StudioRoute extends Component {
     this.saveCell();
   } 
 
-  saveCell = async () => {
+  saveCell = async (v2CaptchaToken) => {
     let token
-
-    if (publicRuntimeConfig.CAPTCHA_SITE_KEY) {
+    
+    if (!v2CaptchaToken && publicRuntimeConfig.CAPTCHA_V3_SITE_KEY) {
       token = await this.props.recaptcha.execute(CAPTCHA_ACTION_CELL_PUBLISH);
     }
       
@@ -274,15 +280,19 @@ class StudioRoute extends Component {
           comicId,
           id,
           signedRequest
-        } = await this.getSignedRequest(token);
+        } = await this.getSignedRequest({
+          v2: v2CaptchaToken,
+          v3: token
+        });
 
         await uploadImage(this.cellImageFile, signedRequest);
 
         this.finishCellPublish(id, comicId);
       }
       catch (e) {
+        const isCaptchaFail = e && e.response && e.response.status === 400;
         // @todo log this
-        this.togglePublishFailModal(true);
+        this.togglePublishFailModal(true, isCaptchaFail);
       }
     })
   }
@@ -429,7 +439,6 @@ class StudioRoute extends Component {
 
   changeActiveEmoji = (id) => {
     this.setState({ activeEmojiId: id }, (state) => {
-      console.log('state', state)
       this.updateEmojiAndSessionCache()
       this.updateCache()
     })
@@ -494,8 +503,11 @@ class StudioRoute extends Component {
     this.setState({ showCaptionModal: newValue })
   }
 
-  togglePublishFailModal = (newValue) => {
-    this.setState({ showPublishFailModal: newValue })
+  togglePublishFailModal = (newValue, hasFailedCaptcha) => {
+    this.setState({
+      hasFailedCaptcha,
+      showPublishFailModal: newValue
+    })
   }
 
   openEmojiPickerToChangeEmoji = (cb = () => {}) => {
@@ -750,7 +762,8 @@ class StudioRoute extends Component {
         />}
 
         {this.state.showPublishFailModal && <PublishFailModal
-          onRetryClick={() => this.retryPublish()}
+          hasFailedCaptcha={this.state.hasFailedCaptcha}
+          onRetryClick={this.retryPublish}
           onCancelClick={() => this.cancelPublishAttemp()}
         />}
 

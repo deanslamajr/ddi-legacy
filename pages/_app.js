@@ -146,8 +146,8 @@ class MyApp extends App {
   }
 
   componentDidMount () {
-    if (publicRuntimeConfig.CAPTCHA_SITE_KEY) {
-      load(publicRuntimeConfig.CAPTCHA_SITE_KEY, {
+    if (publicRuntimeConfig.CAPTCHA_V3_SITE_KEY) {
+      load(publicRuntimeConfig.CAPTCHA_V3_SITE_KEY, {
         autoHideBadge: true
       }).then((recaptcha) => {
         this.setState({

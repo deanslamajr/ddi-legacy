@@ -386,8 +386,9 @@ class StudioRoute extends Component {
       
       return { emojis: clonedEmojis }
     }, () => {
-      this.updateCache()
-      this.updateEmojiCache()
+      this.updateCache();
+      this.updateEmojiCache();
+      this.updateMaskCache();
     })
   }
 
@@ -427,6 +428,10 @@ class StudioRoute extends Component {
 
   updateAllEmojisCache = () => {
     Object.keys(this.state.emojis).forEach(emoji => this.updateEmojiCache(emoji, this.state.activeEmojiId === emoji.id))
+    this.updateMaskCache();
+  }
+
+  updateMaskCache = () => {
     this.updateEmojiCache(EMOJI_MASK_REF_ID, false);
   }
 

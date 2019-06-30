@@ -472,16 +472,16 @@ class StudioRoute extends Component {
     this.setState(cache, this.updateEmojiAndSessionCache);
   }
 
-  handleDragEnd = (e) => {
-    const { x, y } = e.target.attrs
-
+  handleDragEnd = ({xDiff, yDiff}) => {
     this.setState(({ activeEmojiId, emojis }) => {
       const clonedEmojis = cloneDeep(emojis)
-      clonedEmojis[activeEmojiId].x = x
-      clonedEmojis[activeEmojiId].y = y
+      const activeEmoji = clonedEmojis[activeEmojiId];
+      
+      clonedEmojis[activeEmojiId].x = activeEmoji.x + xDiff;
+      clonedEmojis[activeEmojiId].y = activeEmoji.y + yDiff;
       
       return { emojis: clonedEmojis }
-    }, this.updateCache)
+    }, this.updateCache);
   }
 
   toggleResetWarningModal = (newValue = !this.state.showResetWarningModal) => {

@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import styled from 'styled-components';
-import { Stage, Layer, Rect, Text, Image } from 'react-konva';
+import { Stage, Layer, Rect, Text, Group } from 'react-konva';
 
 import theme from '../../helpers/theme';
 
@@ -16,7 +16,35 @@ const FixedCanvasContainer = styled.div`
 `
 
 class EmojiCanvas extends Component {
+  state = {
+    prevX: 0,
+    prevY: 0
+  }
+
+  onDragEnd = (e) => {
+    const { x, y } = e.target.attrs;
+    const {prevX, prevY} = this.state;
+
+    const xDiff = x - prevX;
+    const yDiff = y - prevY;
+
+    this.props.handleDragEnd({xDiff, yDiff});
+
+    // we need a change to force a rerender of Group (to reset the position of draggable group)
+    const groupXChange = xDiff > 0 ? .01 : -.01;
+    const groupYChange = yDiff > 0 ? .01 : -.01;
+
+    this.setState({
+      prevX: this.state.prevX + groupXChange,
+      prevY: this.state.prevY + groupYChange
+    });
+  }
+
   render () {
+    const emojiConfigs = getEmojiConfigs(Object.values(this.props.emojis));
+    const activeEmojiConfig = emojiConfigs.find(config => config['data-id'] === this.props.activeEmojiId)
+
+    console.log('activeEmojiConfig.x', activeEmojiConfig && activeEmojiConfig.x)
     return (
         <FixedCanvasContainer>
           <Stage
@@ -30,11 +58,12 @@ class EmojiCanvas extends Component {
                 y={0}
                 width={theme.canvas.width}
                 height={theme.canvas.height}
-                fill={theme.colors.white}
+                fill={theme.colors.black}
               />
 
               {/* /**
                 * @todo step 3 generating emoji items as images
+                * alternatively, try this approach https://github.com/konvajs/konva/issues/101#issuecomment-149646411
               */}
               {/* {this.state.emojiImageObj && <Image
                 draggable
@@ -46,14 +75,32 @@ class EmojiCanvas extends Component {
                 image={this.state.emojiImageObj}
               />} */}
 
-              {getEmojiConfigs(Object.values(this.props.emojis)).map(config => <Text
-                draggable={config['data-id'] === this.props.activeEmojiId}
+              {emojiConfigs.map(config => <Text
                 useCache
-                key={`${config['data-id']}${config.emoji}`}
                 ref={ref => this.props.emojiRefs[config['data-id']] = ref}
-                onDragEnd={this.props.handleDragEnd}
+                key={`${config['data-id']}${config.emoji}`}
                 {...config}
               />)}
+
+              <Group
+                draggable
+                onDragEnd={this.onDragEnd}
+                x={this.state.prevX}
+                y={this.state.prevX}
+              >
+                <Rect
+                  width={theme.canvas.width}
+                  height={theme.canvas.height}
+                  fill={theme.colors.white}
+                  opacity={0.5}
+                  x={this.state.prevX}
+                  y={this.state.prevX}
+                />
+                <Text
+                  useCache
+                  {...activeEmojiConfig}
+                />
+              </Group>
             </Layer>
           </Stage>
         </FixedCanvasContainer>

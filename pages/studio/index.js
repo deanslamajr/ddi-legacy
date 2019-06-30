@@ -182,7 +182,6 @@ class StudioRoute extends Component {
   doPostEmojiSelect = () => {
     this.updateCache()
     this.updateAllEmojisCache() // clear all outlines
-    this.outlineActiveEmoji()
   }
 
   createNewEmoji = (emoji) => {
@@ -414,7 +413,7 @@ class StudioRoute extends Component {
     }, this.updateCache)
   }
 
-  updateEmojiCache = (emojiId = this.state.activeEmojiId, useOutline = true) => {
+  updateEmojiCache = (emojiId = this.state.activeEmojiId, useOutline) => {
     const activeEmojiRef = this.emojiRefs[emojiId]
 
     if (activeEmojiRef) {
@@ -427,17 +426,16 @@ class StudioRoute extends Component {
   }
 
   updateAllEmojisCache = () => {
-    Object.keys(this.state.emojis).forEach(emoji => this.updateEmojiCache(emoji, this.state.activeEmojiId === emoji.id))
+    Object.keys(this.state.emojis).forEach(emoji => this.updateEmojiCache(emoji))
     this.updateMaskCache();
   }
 
   updateMaskCache = () => {
-    this.updateEmojiCache(EMOJI_MASK_REF_ID, false);
+    this.updateEmojiCache(EMOJI_MASK_REF_ID, true);
   }
 
   updateEmojiAndSessionCache = () => {
     this.updateAllEmojisCache()
-    this.outlineActiveEmoji()
     this.forceUpdate()
   }
 
@@ -468,11 +466,6 @@ class StudioRoute extends Component {
 
     const store = require('store2')
     store(STORAGEKEY_STUDIO, latestState)
-  }
-
-  outlineActiveEmoji = () => {
-    // set outline
-    this.updateEmojiCache(undefined, true)
   }
 
   restoreFromCache = (cache) => {
@@ -620,11 +613,6 @@ class StudioRoute extends Component {
   handlePublishClick = async () => {
     this.toggleActionsModal(false)
     this.props.showSpinner()
-
-    // generate preview
-    // clears active emoji border
-    this.updateEmojiCache(undefined, false)
-    this.incrementField('red', 1) // hack bc we need to get a konva image refresh for the canvas to get the 'remove border' update
 
     const cellImageUrl = await this.generateCellImage(this.state.emojis);
 

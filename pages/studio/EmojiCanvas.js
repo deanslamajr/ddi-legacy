@@ -100,7 +100,7 @@ class EmojiCanvas extends Component {
                   ref={ref => this.props.emojiRefs[EMOJI_MASK_REF_ID] = ref}
                   opacity={0.3}
                   filters={[Konva.Filters.RGBA]}
-                  alpha={1.0}
+                  alpha={0.75}
                   red={255}
                   green={76}
                   blue={127}

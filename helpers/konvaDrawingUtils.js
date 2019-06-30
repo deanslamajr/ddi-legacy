@@ -16,6 +16,8 @@ const filters = {
   [RGBA]: Konva.Filters.RGBA
 }
 
+export const EMOJI_MASK_REF_ID = 'EMOJI_MASK_REF_ID';
+
 export const konvaCacheConfig = {
   offset: 30,
   pixelRatio: 1, /// fixes android graphics glitch

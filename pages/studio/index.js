@@ -24,6 +24,7 @@ import {
   generateCellImage,
   konvaCacheConfig,
   CELL_IMAGE_ID,
+  EMOJI_MASK_REF_ID,
   RGBA
 } from '../../helpers/konvaDrawingUtils'
 
@@ -426,6 +427,7 @@ class StudioRoute extends Component {
 
   updateAllEmojisCache = () => {
     Object.keys(this.state.emojis).forEach(emoji => this.updateEmojiCache(emoji, this.state.activeEmojiId === emoji.id))
+    this.updateEmojiCache(EMOJI_MASK_REF_ID, false);
   }
 
   updateEmojiAndSessionCache = () => {

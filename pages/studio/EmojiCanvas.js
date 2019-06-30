@@ -4,7 +4,7 @@ import { Stage, Layer, Rect, Text, Group } from 'react-konva';
 
 import theme from '../../helpers/theme';
 
-import {getEmojiConfigs} from '../../helpers/konvaDrawingUtils'
+import {getEmojiConfigs, EMOJI_MASK_REF_ID} from '../../helpers/konvaDrawingUtils'
 
 //
 // Styled Components
@@ -44,7 +44,6 @@ class EmojiCanvas extends Component {
     const emojiConfigs = getEmojiConfigs(Object.values(this.props.emojis));
     const activeEmojiConfig = emojiConfigs.find(config => config['data-id'] === this.props.activeEmojiId)
 
-    console.log('activeEmojiConfig.x', activeEmojiConfig && activeEmojiConfig.x)
     return (
         <FixedCanvasContainer>
           <Stage
@@ -58,7 +57,7 @@ class EmojiCanvas extends Component {
                 y={0}
                 width={theme.canvas.width}
                 height={theme.canvas.height}
-                fill={theme.colors.black}
+                fill={theme.colors.white}
               />
 
               {/* /**
@@ -82,6 +81,7 @@ class EmojiCanvas extends Component {
                 {...config}
               />)}
 
+              {/* Draggable layer */}
               <Group
                 draggable
                 onDragEnd={this.onDragEnd}
@@ -91,14 +91,19 @@ class EmojiCanvas extends Component {
                 <Rect
                   width={theme.canvas.width}
                   height={theme.canvas.height}
-                  fill={theme.colors.white}
-                  opacity={0.5}
                   x={this.state.prevX}
                   y={this.state.prevX}
                 />
                 <Text
-                  useCache
                   {...activeEmojiConfig}
+                  useCache
+                  ref={ref => this.props.emojiRefs[EMOJI_MASK_REF_ID] = ref}
+                  opacity={0.3}
+                  filters={[Konva.Filters.RGBA]}
+                  alpha={1.0}
+                  red={255}
+                  green={76}
+                  blue={127}
                 />
               </Group>
             </Layer>

@@ -1,6 +1,7 @@
 const shortid = require('shortid')
 const axios = require('axios')
 const queryString = require('query-string');
+const newrelic = require('newrelic');
 
 const { sign: signViaS3 } = require('../adapters/s3')
 const { Cells, Comics } = require('../models/index')
@@ -50,7 +51,14 @@ async function sign (req, res) {
     const isV2Token = !!v2Token;
 
     if (clientEnvironment.CAPTCHA_V3_SITE_KEY) {
-      const { data: captchaVerifyResponse } = await verifyCaptchaToken(v3Token || v2Token, isV2Token);
+      const { data: captchaVerifyResponse = {} } = await verifyCaptchaToken(v3Token || v2Token, isV2Token);
+
+      newrelic.recordCustomEvent('server/sign/captcha', {
+        ...captchaVerifyResponse,
+        isV2Token,
+        v2Token: v2Token && v2Token.substring(0, 5),
+        v3Token: v3Token && v3Token.substring(0, 5)
+      });
 
       // v2 captcha
       if (isV2Token) {

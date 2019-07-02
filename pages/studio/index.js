@@ -288,6 +288,7 @@ class StudioRoute extends Component {
 
     }
     catch (e) {
+      console.error(e)
       const isCaptchaFail = e && e.response && e.response.status === 400;
       // @todo log this
       this.togglePublishFailModal(true, isCaptchaFail);

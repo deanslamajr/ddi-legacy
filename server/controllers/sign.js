@@ -56,8 +56,8 @@ async function sign (req, res) {
       newrelic.recordCustomEvent('server/sign/captcha', {
         ...captchaVerifyResponse,
         isV2Token,
-        v2Token: v2Token && v2Token.substring(0, 5),
-        v3Token: v3Token && v3Token.substring(0, 5)
+        v2Token: v2Token ? v2Token.substring(0, 5) : 'n/a',
+        v3Token: v3Token ? v3Token.substring(0, 5) : 'n/a'
       });
 
       // v2 captcha

@@ -272,26 +272,28 @@ class StudioRoute extends Component {
       }
         
       this.setState({ showSaveButton: false }, async () => {
-        const {
-          comicId,
-          id,
-          signedRequest
-        } = await this.getSignedRequest({
-          v2: v2CaptchaToken,
-          v3: token
-        });
-
-        await uploadImage(this.cellImageFile, signedRequest);
-
-        this.finishCellPublish(id, comicId);
+        try {
+          const {
+            comicId, id, signedRequest
+          } = await this.getSignedRequest({
+            v2: v2CaptchaToken,
+            v3: token
+          });
+  
+          await uploadImage(this.cellImageFile, signedRequest);
+  
+          this.finishCellPublish(id, comicId);
+        }
+        catch (e) {
+          const isCaptchaFail = e && e.response && e.response.status === 400;
+          // @todo log this
+          this.togglePublishFailModal(true, isCaptchaFail);
+        }
       })
-
     }
     catch (e) {
-      console.error(e)
-      const isCaptchaFail = e && e.response && e.response.status === 400;
       // @todo log this
-      this.togglePublishFailModal(true, isCaptchaFail);
+      this.togglePublishFailModal(true, false);
     }
   }
 

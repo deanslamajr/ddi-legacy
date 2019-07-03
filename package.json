@@ -1,6 +1,6 @@
 {
   "name": "draw-draw-ink",
-  "version": "0.16.2-g0b74c.0",
+  "version": "0.16.2-g0a35c.0",
   "main": "app.js",
   "scripts": {
     "deploy:qa": "npm version prerelease --preid=g\"$(git rev-parse --short=5 HEAD)\" && eb deploy ddi-qa --label \"$(git describe)\" --timeout 20",

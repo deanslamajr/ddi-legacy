@@ -758,7 +758,7 @@ class StudioRoute extends Component {
 
         {this.state.showPublishFailModal && <PublishFailModal
           hasFailedCaptcha={this.state.hasFailedCaptcha}
-          onRetryClick={this.retryPublish}
+          onRetryClick={token => this.retryPublish(token)}
           onCancelClick={() => this.cancelPublishAttemp()}
         />}
 

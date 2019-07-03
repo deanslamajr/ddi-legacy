@@ -53,7 +53,7 @@ async function sign (req, res) {
     if (clientEnvironment.CAPTCHA_V3_SITE_KEY) {
       const { data: captchaVerifyResponse = {} } = await verifyCaptchaToken(v3Token || v2Token, isV2Token);
 
-      newrelic.recordCustomEvent('server/sign/captcha', {
+      newrelic.recordCustomEvent('captcha', {
         ...captchaVerifyResponse,
         isV2Token,
         v2Token: v2Token ? v2Token.substring(0, 5) : 'n/a',

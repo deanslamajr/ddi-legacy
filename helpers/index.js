@@ -37,3 +37,9 @@ export function sortByOrder ({ order: orderA }, { order: orderB }) {
   }
   return orderA - orderB;
 }
+
+export function getCellUrl(imageUrl, schemaVersion) {
+  return schemaVersion >= 3
+    ? `https://${publicRuntimeConfig.CELL_IMAGES_DOMAIN}/${imageUrl}`
+    : imageUrl;
+}

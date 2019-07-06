@@ -78,7 +78,7 @@ async function sign (req, res) {
 
     // throws on fail
     validateFilename(filename)
-    
+
     const validatedTitle = validateTitle(title)
 
     let comicId = req.body.comicId;
@@ -87,11 +87,9 @@ async function sign (req, res) {
     const id = shortid.generate()
     signData.id = id
 
-    const image_url = serverEnvironment.ASSETS_DOMAIN ? `https://${serverEnvironment.ASSETS_DOMAIN}/${filename}` : signData.url;
-
     const newCellConfiguration = {
       creator_user_id: req.session.userId,
-      image_url,
+      image_url: filename,
       title: validatedTitle,
       order: 0,
       url_id: id

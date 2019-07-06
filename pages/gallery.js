@@ -10,7 +10,7 @@ import {
 
 import Cell from '../components/Cell'
 
-import { sortByOrder } from '../helpers'
+import { getCellUrl, sortByOrder } from '../helpers'
 import { media, shadow } from '../helpers/style-utils'
 
 import { Link, Router } from '../routes'
@@ -98,7 +98,7 @@ const CellsThumb = ({cells = []}) => {
       />)
       : (<OldThumb
         cellsCount={sortedCells.length}
-        imageUrl={cell.image_url}
+        imageUrl={getCellUrl(cell.image_url, cell.schema_version)}
         caption={cell.title}
       />)
   }

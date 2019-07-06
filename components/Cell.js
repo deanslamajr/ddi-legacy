@@ -4,7 +4,8 @@ import nl2br from 'react-newline-to-break';
 
 import {DynamicTextContainer} from '../components/DynamicTextContainer'
 
-import { media } from '../helpers/style-utils'
+import { getCellUrl } from '../helpers';
+import { media } from '../helpers/style-utils';
 
 const CellContainer = styled.div`
   margin: 0;
@@ -47,8 +48,12 @@ const CellImage = styled.img`
 `
 
 export default function Cell ({
-  className, imageUrl, title, clickable, onClick, removeBorders, schemaVersion, width
+  className, imageUrl, isPreview, title, clickable, onClick, removeBorders, schemaVersion, width
 }) {
+  const cellUrl = isPreview
+    ? imageUrl
+    : getCellUrl(imageUrl, schemaVersion)
+
   return (<CellContainer
     className={className}
     clickable={clickable || onClick}
@@ -60,13 +65,13 @@ export default function Cell ({
       ? (<CellBorder>
         <CellImage
           removeBorders={removeBorders}
-          src={imageUrl}
+          src={cellUrl}
         />
       </CellBorder>)
       : (<OldCellBorder removeBorders={removeBorders} width={width}>
         <CellImage
           removeBorders={removeBorders}
-          src={imageUrl}
+          src={cellUrl}
           width={width}
         />
         {title && title.length && <DynamicTextContainer fontRatio={17}>

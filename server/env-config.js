@@ -7,7 +7,8 @@ const clientEnvironment = {
   APP_URL_DOMAIN: fromProcessEnv('APP_URL_DOMAIN'),
   GA_ID: fromProcessEnv('GA_ID'),
   CAPTCHA_V3_SITE_KEY: fromProcessEnv('CAPTCHA_V3_SITE_KEY'),
-  CAPTCHA_V2_SITE_KEY: fromProcessEnv('CAPTCHA_V2_SITE_KEY')
+  CAPTCHA_V2_SITE_KEY: fromProcessEnv('CAPTCHA_V2_SITE_KEY'),
+  CELL_IMAGES_DOMAIN: fromProcessEnv('CELL_IMAGES_DOMAIN')
 }
 
 function fromProcessEnv (name) {
@@ -19,7 +20,6 @@ const serverSecrets = {
   PORT: fromProcessEnv('PORT'),
   NODE_ENV: fromProcessEnv('NODE_ENV'),
   COOKIE_SECRET: fromProcessEnv('COOKIE_SECRET'),
-  ASSETS_DOMAIN: fromProcessEnv('ASSETS_DOMAIN'),
   CAPTCHA_V3_SECRET: fromProcessEnv('CAPTCHA_V3_SECRET'),
   CAPTCHA_V2_SECRET: fromProcessEnv('CAPTCHA_V2_SECRET'),
 

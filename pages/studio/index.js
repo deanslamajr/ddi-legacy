@@ -25,6 +25,7 @@ import {
   konvaCacheConfig,
   CELL_IMAGE_ID,
   EMOJI_MASK_REF_ID,
+  EMOJI_MASK_OUTLINE_REF_ID,
   RGBA
 } from '../../helpers/konvaDrawingUtils'
 
@@ -434,7 +435,8 @@ class StudioRoute extends Component {
   }
 
   updateMaskCache = () => {
-    this.updateEmojiCache(EMOJI_MASK_REF_ID, true);
+    this.updateEmojiCache(EMOJI_MASK_REF_ID);
+    this.updateEmojiCache(EMOJI_MASK_OUTLINE_REF_ID, true);
   }
 
   updateEmojiAndSessionCache = () => {

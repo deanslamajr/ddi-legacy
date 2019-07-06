@@ -17,6 +17,7 @@ const filters = {
 }
 
 export const EMOJI_MASK_REF_ID = 'EMOJI_MASK_REF_ID';
+export const EMOJI_MASK_OUTLINE_REF_ID = 'EMOJI_MASK_OUTLINE_REF_ID';
 
 export const konvaCacheConfig = {
   offset: 30,

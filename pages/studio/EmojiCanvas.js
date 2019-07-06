@@ -4,7 +4,7 @@ import { Stage, Layer, Rect, Text, Group } from 'react-konva';
 
 import theme from '../../helpers/theme';
 
-import {getEmojiConfigs, EMOJI_MASK_REF_ID} from '../../helpers/konvaDrawingUtils'
+import {getEmojiConfigs, EMOJI_MASK_REF_ID, EMOJI_MASK_OUTLINE_REF_ID} from '../../helpers/konvaDrawingUtils'
 
 //
 // Styled Components
@@ -15,10 +15,38 @@ const FixedCanvasContainer = styled.div`
   z-index: 999;
 `
 
+function getOutlineConfig(config = {}) {
+  const {
+    x,
+    y,
+    scaleX,
+    scaleY,
+    rotation,
+    fontSize,
+    useCache
+  } = config;
+
+  return {
+    x,
+    y,
+    scaleX,
+    scaleY,
+    rotation,
+    text: '    ',
+    fontSize,
+    useCache
+  }
+}
+
 class EmojiCanvas extends Component {
   state = {
+    isDragging: false,
     prevX: 0,
     prevY: 0
+  }
+
+  onDragStart = (e) => {
+    this.setState({isDragging: true})
   }
 
   onDragEnd = (e) => {
@@ -35,6 +63,7 @@ class EmojiCanvas extends Component {
     const groupYChange = yDiff > 0 ? .01 : -.01;
 
     this.setState({
+      isDragging: false,
       prevX: this.state.prevX + groupXChange,
       prevY: this.state.prevY + groupYChange
     });
@@ -43,6 +72,14 @@ class EmojiCanvas extends Component {
   render () {
     const emojiConfigs = getEmojiConfigs(Object.values(this.props.emojis));
     const activeEmojiConfig = emojiConfigs.find(config => config['data-id'] === this.props.activeEmojiId)
+
+    const outlineConfig = getOutlineConfig(activeEmojiConfig);
+
+    // hide active emoji during drag action
+    if (this.state.isDragging) {
+      activeEmojiConfig.opacity = 0;
+      outlineConfig.opacity = 0;
+    }
 
     return (
         <FixedCanvasContainer>
@@ -84,6 +121,7 @@ class EmojiCanvas extends Component {
               {/* Draggable layer */}
               <Group
                 draggable
+                onDragStart={this.onDragStart}
                 onDragEnd={this.onDragEnd}
                 x={this.state.prevX}
                 y={this.state.prevX}
@@ -98,12 +136,17 @@ class EmojiCanvas extends Component {
                   {...activeEmojiConfig}
                   useCache
                   ref={ref => this.props.emojiRefs[EMOJI_MASK_REF_ID] = ref}
-                  opacity={0.3}
+                  opacity={this.state.isDragging ? 0.25 : 0}
+                />
+                <Text
+                  {...outlineConfig}
+                  ref={ref => this.props.emojiRefs[EMOJI_MASK_OUTLINE_REF_ID] = ref}
                   filters={[Konva.Filters.RGBA]}
-                  alpha={0.75}
+                  alpha={1}
                   red={255}
                   green={76}
                   blue={127}
+                  opacity={0.5}
                 />
               </Group>
             </Layer>

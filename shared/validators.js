@@ -26,6 +26,7 @@ const ERR_MUST_BE_A_NUMBER = 'must be a number type'
 const ERR_MUST_BE_A_STRING = 'must be a string type'
 const ERR_VALUE_MUST_BE_SET = 'must be set'
 const ERR_EXCEED_MAX_EMOJIS = `Emojis datastructure cannot exceed a count of ${MAX_EMOJIS_COUNT} emojis`
+const ERR_MUST_BE_A_HEX_COLOR = 'must be a valid hex color string'
 
 function validateTitle (title) {
   let validatedTitle = title
@@ -63,6 +64,14 @@ function validateId (id, field) {
     throw new Error(`${field} ${ERR_CANNOT_BE_NEGATIVE}`)
   }
   return id
+}
+
+function validateBackgroundColor (hex, field) {
+  const hexRegExp = /^#[0-9A-F]{6}$/i;
+  if(!hexRegExp.test(hex)) {
+    throw new Error(`${field} ${ERR_MUST_BE_A_HEX_COLOR}`);
+  }
+  return hex;
 }
 
 function coerceBoolean (value) {
@@ -266,18 +275,18 @@ function validateStudioState (studioState) {
 
   const validatedStudioState = {
     activeEmojiId: validateId(studioState.activeEmojiId, 'activeEmojiId'),
+    backgroundColor: validateBackgroundColor(studioState.backgroundColor, 'backgroundColor'),
     currentEmojiId: validateId(studioState.currentEmojiId, 'currentEmojiId'),
     showEmojiPicker: coerceBoolean(studioState.showEmojiPicker),
     title: validateTitle(studioState.title),
     emojis: validateEmojis(studioState.emojis)
   }
 
-  // const validatedStudioState = cloneDeep(strippedStudioState)
-
   return validatedStudioState
 }
 
 module.exports = {
+  ERR_MUST_BE_A_HEX_COLOR,
   ERR_FILENAME_INVALID,
   ERR_CANNOT_BE_NEGATIVE,
   ERR_INCORRECT_SCALE_VALUE,
@@ -285,6 +294,7 @@ module.exports = {
   ERR_MUST_BE_A_STRING,
   ERR_VALUE_MUST_BE_SET,
   ERR_EXCEED_MAX_EMOJIS,
+  validateBackgroundColor,
   validateEmojis,
   validateFilename,
   validateId,

@@ -1,6 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep'
 
 import {
+  ERR_MUST_BE_A_HEX_COLOR,
   ERR_FILENAME_INVALID,
   ERR_CANNOT_BE_NEGATIVE,
   ERR_INCORRECT_SCALE_VALUE,
@@ -8,6 +9,7 @@ import {
   ERR_MUST_BE_A_STRING,
   ERR_VALUE_MUST_BE_SET,
   ERR_EXCEED_MAX_EMOJIS,
+  validateBackgroundColor,
   validateEmojis,
   validateFilename,
   validateId,
@@ -52,6 +54,7 @@ function generateEmoji (newId) {
 
 const validStudioState = {
   activeEmojiId: 1,
+  backgroundColor: '#aaaaaa',
   currentEmojiId: 2,
   emojis: {
     '1': {
@@ -188,6 +191,25 @@ describe('validators', () => {
       })
     })
   })
+
+  describe('validateBackgroundColor', () => {
+    const SOME_FIELD = 'SOME_FIELD';
+
+    it('should return a valid hex string', () => {
+      const validHex = '#aabbcc';
+
+      const actual = validateBackgroundColor(validHex, SOME_FIELD);
+      expect(actual).toEqual(validHex);
+    });
+
+    describe('if not a hex string', () => {
+      it('should throw ERR_MUST_BE_A_HEX_COLOR', () => {
+        expect(() => {
+          validateBackgroundColor('not a hex', SOME_FIELD);
+        }).toThrow(`${SOME_FIELD} ${ERR_MUST_BE_A_HEX_COLOR}`);
+      });
+    });
+  });
 
   describe('validateId', () => {
     const SOME_FIELD = 'SOME_FIELD'

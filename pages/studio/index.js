@@ -31,6 +31,8 @@ import {
 
 import { getApi, sortByOrder } from '../../helpers'
 
+import theme from '../../helpers/theme';
+
 import { CAPTCHA_ACTION_CELL_PUBLISH } from '../../config/constants.json'
 
 import {
@@ -112,6 +114,7 @@ class StudioRoute extends Component {
 
     this.initialState = {
       activeEmojiId: null,
+      backgroundColor: theme.colors.white,
       cellImageUrl: null,
       comicId: this.props.comicId,
       currentEmojiId: 1,
@@ -172,6 +175,7 @@ class StudioRoute extends Component {
       backActionPath = '/gallery'
     }
 
+    console.log('studioState', studioState)
     return {
       comicId,
       backActionPath,
@@ -226,7 +230,7 @@ class StudioRoute extends Component {
   }
 
   getStudioState = () => {
-    return pick(this.state, ['activeEmojiId', 'currentEmojiId', 'emojis', 'showEmojiPicker', 'title', 'parentId'])
+    return pick(this.state, ['activeEmojiId', 'backgroundColor', 'currentEmojiId', 'emojis', 'showEmojiPicker', 'title', 'parentId'])
   }
 
   finishCellPublish = async (cellId, comicId) => {
@@ -606,7 +610,7 @@ class StudioRoute extends Component {
   }
 
   generateCellImage = async (emojis) => {
-    const cellImageBlob = await generateCellImage(emojis);
+    const cellImageBlob = await generateCellImage(emojis, this.state.backgroundColor);
   
     this.cellImageFile = new File([cellImageBlob], generateCellImageFilename(), {
       type: S3_ASSET_FILETYPE,
@@ -647,6 +651,10 @@ class StudioRoute extends Component {
     this.state.activeEmojiId
       ? this.closeEmojiPicker()
       : resetStudioAndNavidateAway()
+  }
+
+  onColorChange = (hex) => {
+    this.setState({backgroundColor: hex}, () => this.updateCache());
   }
 
   componentDidMount () {
@@ -710,6 +718,7 @@ class StudioRoute extends Component {
         <CenteredContainer>
           <EmojiCanvas
             activeEmojiId={this.state.activeEmojiId}
+            backgroundColor={this.state.backgroundColor}
             emojis={this.state.emojis}
             emojiRefs={this.emojiRefs}
             handleDragEnd={this.handleDragEnd}
@@ -719,11 +728,13 @@ class StudioRoute extends Component {
               <BuilderMenu
                 activeEmoji={activeEmoji}
                 changeActiveEmoji={this.changeActiveEmoji}
+                backgroundColor={this.state.backgroundColor}
                 decreaseStackOrder={this.decreaseStackOrder}
                 emojis={this.state.emojis}
                 increaseStackOrder={this.increaseStackOrder}
                 incrementField={this.incrementField}
                 onChangeClick={this.openEmojiPickerToChangeEmoji}
+                onColorChange={this.onColorChange}
                 onDeleteClick={this.deleteActiveEmoji}
                 onDuplicateClick={this.duplicateActiveEmoji}
                 openEmojiPicker={this.openEmojiPicker}

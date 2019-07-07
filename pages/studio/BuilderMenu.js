@@ -1,5 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
+import { SliderPicker } from 'react-color';
+import theme from '../../helpers/theme'
 
 import NewSlider from '../../components/NewSlider'
 
@@ -26,6 +28,11 @@ import {
 import { sortByOrder } from '../../helpers'
 
 import EmojiEditModal from './EmojiEditModal'
+
+const ColorPickerContainer = styled.div`
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+`
 
 const CenteredButtons = styled.div`
   display: flex;
@@ -98,6 +105,7 @@ const AddEmojiButton = styled(PinkMenuButton)`
 const MAIN = 'MAIN'
 const SECONDARY = 'SECONDARY'
 const FILTERS = 'FILTERS'
+const BG_COLOR = 'BG_COLOR';
 
 function getOpacity (activeEmoji) {
   const defaultOpacity = 1
@@ -122,7 +130,8 @@ class BuilderMenu extends React.Component {
     this.menus = {
       [MAIN]: this.renderMainMenu,
       [SECONDARY]: this.renderSecondaryMenu,
-      [FILTERS]: this.renderFiltersMenu
+      [FILTERS]: this.renderFiltersMenu,
+      [BG_COLOR]: this.renderBackgroundColorMenu
     }
   }
 
@@ -234,6 +243,10 @@ class BuilderMenu extends React.Component {
         SIMPLE
       </PinkMenuButton>
 
+      <MenuButton onClick={() => this.setState({ currentMenu: BG_COLOR })}>
+        BG COLOR
+      </MenuButton>
+
       <MenuButton onClick={() => this.setState({ currentMenu: FILTERS })}>
         FILTERS
       </MenuButton>
@@ -265,6 +278,24 @@ class BuilderMenu extends React.Component {
         </HalfMenuButton>
       </CenteredButtons>
     </React.Fragment>)
+  }
+
+  renderBackgroundColorMenu = () => {
+    return (<React.Fragment>
+      <PinkMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
+        BACK
+      </PinkMenuButton>
+      <ColorPickerContainer>
+        <SliderPicker
+          color={this.props.backgroundColor}
+          onChange={(e) => this.props.onColorChange(e.hex)}
+          width={theme.canvas.width}
+        />
+      </ColorPickerContainer>
+      <MenuButton onClick={() => this.props.onColorChange(theme.colors.white)}>
+        RESET
+      </MenuButton>
+    </React.Fragment>);
   }
 
   renderFiltersMenu = () => {

@@ -94,7 +94,7 @@ class EmojiCanvas extends Component {
                 y={0}
                 width={theme.canvas.width}
                 height={theme.canvas.height}
-                fill={theme.colors.white}
+                fill={this.props.backgroundColor}
               />
 
               {/* /**

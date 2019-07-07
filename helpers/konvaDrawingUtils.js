@@ -45,7 +45,7 @@ export function getEmojiConfigs (emojis) {
   }));
 }
 
-export function generateCellImage (emojis) {
+export function generateCellImage (emojis, backgroundColor) {
   const stageHeight = theme.canvas.height;
   const stageWidth = theme.canvas.width;
 
@@ -65,7 +65,7 @@ export function generateCellImage (emojis) {
     y: 0,
     width: theme.canvas.width,
     height: theme.canvas.height,
-    fill: theme.colors.white
+    fill: backgroundColor
   });
   layer.add(canvas);
 

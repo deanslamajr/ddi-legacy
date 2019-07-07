@@ -399,6 +399,21 @@ class StudioRoute extends Component {
     })
   }
 
+  setFilterColor = (rgb) => {
+    this.setState(({ activeEmojiId, emojis }) => {
+      const clonedEmojis = cloneDeep(emojis)
+      clonedEmojis[activeEmojiId].red = rgb.r;
+      clonedEmojis[activeEmojiId].blue = rgb.b;
+      clonedEmojis[activeEmojiId].green = rgb.g;
+      
+      return { emojis: clonedEmojis }
+    }, () => {
+      this.updateCache();
+      this.updateEmojiCache();
+      this.updateMaskCache();
+    })
+  }
+
   scaleField = (field, amount) => {
     this.setState(({ activeEmojiId, emojis }) => {
       const clonedEmojis = cloneDeep(emojis)
@@ -740,6 +755,7 @@ class StudioRoute extends Component {
                 openEmojiPicker={this.openEmojiPicker}
                 scaleField={this.scaleField}
                 setField={this.setField}
+                setFilterColor={this.setFilterColor}
                 toggleFilter={this.toggleFilter}
               />
 

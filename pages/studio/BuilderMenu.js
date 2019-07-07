@@ -20,8 +20,6 @@ import {
   MAX_OPACITY,
   MIN_ALPHA,
   MAX_ALPHA,
-  MIN_RGB,
-  MAX_RGB,
   MAX_EMOJIS_COUNT
 } from '../../config/constants.json'
 
@@ -305,6 +303,10 @@ class BuilderMenu extends React.Component {
       toggleFilter
     } = this.props
 
+    const rgb = activeEmoji
+      ? { r: activeEmoji.red, g: activeEmoji.green, b: activeEmoji.blue }
+      : { r: 0, g: 0, b: 0 };
+
     return (<React.Fragment>
       <PinkMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
         BACK
@@ -336,38 +338,13 @@ class BuilderMenu extends React.Component {
           />
         </SliderContainer>
         
-        <SliderContainer>
-          <Label>RED</Label>
-          <NewSlider
-            min={MIN_RGB}
-            max={MAX_RGB}
-            step={1}
-            value={(activeEmoji && activeEmoji.red) || 0}
-            onChange={(value) => setField('red', value)}
+        <ColorPickerContainer>
+          <SliderPicker
+            color={rgb}
+            onChange={(e) => this.props.setFilterColor(e.rgb)}
+            width={theme.canvas.width}
           />
-        </SliderContainer>
-        
-        <SliderContainer>
-          <Label>BLUE</Label>
-          <NewSlider
-            min={MIN_RGB}
-            max={MAX_RGB}
-            step={1}
-            value={(activeEmoji && activeEmoji.blue) || 0}
-            onChange={(value) => setField('blue', value)}
-          />
-        </SliderContainer>
-        
-        <SliderContainer>
-          <Label>GREEN</Label>
-          <NewSlider
-            min={MIN_RGB}
-            max={MAX_RGB}
-            step={1}
-            value={(activeEmoji && activeEmoji.green) || 0}
-            onChange={(value) => setField('green', value)}
-          />
-        </SliderContainer>
+        </ColorPickerContainer>
       </React.Fragment>)}
     </React.Fragment>)
   }

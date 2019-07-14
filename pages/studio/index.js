@@ -175,7 +175,6 @@ class StudioRoute extends Component {
       backActionPath = '/gallery'
     }
 
-    console.log('studioState', studioState)
     return {
       comicId,
       backActionPath,

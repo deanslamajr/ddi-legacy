@@ -57,6 +57,11 @@ class ComicRoute extends Component {
   }
 
   navigateToStudio = () => {
+    this.props.showSpinner();
+    Router.pushRoute(`/s/comic/${this.props.comicId}`);
+  }
+
+  navigateToOldStudio = () => {
     this.props.showSpinner()
     Router.pushRoute('/studio/new/new')
   }
@@ -161,8 +166,8 @@ class ComicRoute extends Component {
 
         {userCanEdit && <NavButton
           accented
-          value='ADD CELL'
-          cb={this.showAddCellModal}
+          value='EDIT'
+          cb={this.navigateToStudio}
           position={BOTTOM_CENTER}
         />}
 
@@ -182,7 +187,7 @@ class ComicRoute extends Component {
         <CreateButton
           accented={!userCanEdit}
           value='+'
-          cb={this.navigateToStudio}
+          cb={this.navigateToOldStudio}
           position={BOTTOM_RIGHT}
         />
       </div>

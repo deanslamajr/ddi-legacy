@@ -56,11 +56,6 @@ class CellRoute extends Component {
     Router.pushRoute(`/studio/new/${this.props.cellId}`)
   }
 
-  navigateToParent = () => {
-    this.props.showSpinner()
-    Router.pushRoute(`/cell/${this.props.parentId}`)
-  }
-
   componentDidMount () {
     this.props.hideSpinner()
   }
@@ -107,12 +102,6 @@ class CellRoute extends Component {
         <CenteredContainer>
           <Cell imageUrl={imageUrl} title={title} schemaVersion={schemaVersion}/>
         </CenteredContainer>
-
-        {this.props.parentId && <NavButton
-          value='PARENT'
-          cb={this.navigateToParent}
-          position={TOP_CENTER}
-        />}
 
         <NavButton
           value='GALLERY'

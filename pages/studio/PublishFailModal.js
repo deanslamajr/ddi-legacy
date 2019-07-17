@@ -32,7 +32,7 @@ function PublishFailModal ({hasFailedCaptcha, onRetryClick, onCancelClick}) {
         sitekey={publicRuntimeConfig.CAPTCHA_V2_SITE_KEY}
         onChange={onChange}
       />
-      : <PinkMenuButton onClick={onRetryClick}>
+      : <PinkMenuButton onClick={() => onRetryClick()}>
         TRY AGAIN
       </PinkMenuButton>}
     </CenteredButtons>

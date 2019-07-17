@@ -6,7 +6,6 @@ import axios from 'axios'
 import { sortByOrder } from '../../helpers'
 import { media } from '../../helpers/style-utils'
 import Comic from './Comic'
-import AddCellModal from './AddCellModal'
 
 import {
   NavButton,
@@ -36,10 +35,6 @@ const CreateButton = styled(NavButton)`
 `
 
 class ComicRoute extends Component {
-  state = {
-    showAddCellModal: false
-  }
-
   static async getInitialProps ({ query, req }) {
     const { data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req), forwardCookies(req))
 
@@ -59,35 +54,6 @@ class ComicRoute extends Component {
   navigateToStudio = () => {
     this.props.showSpinner();
     Router.pushRoute(`/s/comic/${this.props.comicId}`);
-  }
-
-  navigateToOldStudio = () => {
-    this.props.showSpinner()
-    Router.pushRoute('/studio/new/new')
-  }
-
-  navigateToAddCellFromNew = () => {
-    const { comicId } = this.props
-
-    this.props.showSpinner()
-    this.hideAddCellModal();
-    Router.pushRoute(`/studio/${comicId}/new`)
-  }
-
-  navigateToAddCell = (cellUrlId) => {
-    const { comicId } = this.props
-
-    this.props.showSpinner()
-    this.hideAddCellModal();
-    Router.pushRoute(`/studio/${comicId}/${cellUrlId}`)
-  }
-
-  hideAddCellModal = () => {
-    this.setState({ showAddCellModal: false })
-  }
-
-  showAddCellModal = () => {
-    this.setState({ showAddCellModal: true })
   }
 
   /**
@@ -168,27 +134,13 @@ class ComicRoute extends Component {
           accented
           value='EDIT'
           cb={this.navigateToStudio}
-          position={BOTTOM_CENTER}
-        />}
-
-        {this.state.showAddCellModal && <AddCellModal
-          onCancelClick={this.hideAddCellModal}
-          onAddCellFromNewClick={this.navigateToAddCellFromNew}
-          onAddCellFromDuplicate={this.navigateToAddCell}
-          cells={cells}
+          position={BOTTOM_RIGHT}
         />}
 
         <NavButton
           value='GALLERY'
           cb={this.navigateToGallery}
           position={BOTTOM_LEFT}
-        />
-
-        <CreateButton
-          accented={!userCanEdit}
-          value='+'
-          cb={this.navigateToOldStudio}
-          position={BOTTOM_RIGHT}
         />
       </div>
     )

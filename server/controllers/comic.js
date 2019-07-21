@@ -77,8 +77,28 @@ async function get (req, res) {
   })
 }
 
+async function inactivate (req, res) {
+  if (!req.session.userId) {
+    throw new Error('User session does not exist!')
+  }
+
+  const comicId = req.params.comicId
+  const comic = await Comics.findOne({ where: { url_id: comicId }})
+  
+  if (!comic) {
+    return falsePositiveResponse(`comic::delete - There is not a Comic with id:${comicId}`, res)
+  }
+
+  if (comic.creator_user_id !== req.session.userId) {
+    return falsePositiveResponse(`comic::delete - User with id:${req.session.userId} is not authorized to delete the comic with id:${comicId}`, res)
+  }
+
+  return res.sendStatus(200)
+}
+
 module.exports = {
   all,
+  inactivate,
   get,
   getNewerThan
 }

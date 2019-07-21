@@ -6,7 +6,7 @@ import propTypes from 'prop-types'
 
 import Cell from '../../components/Cell'
 
-import ActionsModal from './ActionsModal'
+import ComicActionsModal from './ComicActionsModal'
 import AddCellModal from './AddCellModal'
 
 import {
@@ -76,7 +76,8 @@ class StudioV2 extends Component {
   }
 
   state = {
-    showActionsModal: false,
+    showComicActionsModal: false,
+    showCellActionsModal: false,
     showAddCellModal: false
   }
 
@@ -109,13 +110,17 @@ class StudioV2 extends Component {
     Router.pushRoute(`/studio/${comicId}/${cellUrlId}`)
   }
 
-  toggleActionsModal = (newValue) => {
-    this.setState({ showActionsModal: newValue })
+  toggleComicActionsModal = (newValue) => {
+    this.setState({ showComicActionsModal: newValue })
+  }
+
+  toggleCellActionsModal = (newValue) => {
+    this.setState({ showCellActionsModal: newValue })
   }
 
   navigateBack = () => {
     this.props.showSpinner()
-    this.toggleActionsModal(false)
+    this.toggleComicActionsModal(false)
     Router.pushRoute(`/comic/${this.props.comicId}`)
   }
 
@@ -123,6 +128,21 @@ class StudioV2 extends Component {
     return (<AddCellButton onClick={() => this.showAddCellModal()}>
       +
     </AddCellButton>)
+  }
+
+  handleDeleteComicClick = async () => {
+    this.props.showSpinner();
+    this.toggleComicActionsModal(false);
+    try {
+      await axios.delete(`/api/comic/${this.props.comicId}`);
+    }
+    catch(error) {
+      this.props.hideSpinner();
+      // @todo log error
+      console.error(error);
+      return;
+    }
+    Router.pushRoute('/gallery');
   }
 
   render () {
@@ -149,14 +169,20 @@ class StudioV2 extends Component {
         cells={this.props.cells}
       />}
 
-      {this.state.showActionsModal && <ActionsModal
-        onCancelClick={() => this.toggleActionsModal(false)}
+      {this.state.showComicActionsModal && <ComicActionsModal
+        onCancelClick={() => this.toggleComicActionsModal(false)}
+        onDeleteClick={() => this.handleDeleteComicClick()}
         onExitClick={() => this.navigateBack()}
       />}
 
+      {/* {this.state.showCellActionsModal && <CellActionsModal
+        onCancelClick={() => this.toggleCellActionsModal(false)}
+        onEditClick={() => this.handleCellEdit()}
+      />} */}
+
       <NavButton
         value='ACTIONS'
-        cb={() => this.toggleActionsModal(true)}
+        cb={() => this.toggleComicActionsModal(true)}
         position={BOTTOM_RIGHT}
         accented
       />

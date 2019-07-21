@@ -32,13 +32,11 @@ export const CenteredButtons = styled.div`
 
 export const MessageContainer = styled.div`
   color: ${props => props.theme.colors.black};
-  font-size: 2rem;
+  font-size: 1.5rem;
+  text-align: center;
   display: flex;
   justify-content: center;
-
-  ${media.phoneMax`
-    font-size: 1.5rem;
-  `}
+  margin-bottom: 1.5rem;
 `
 
 function Modal ({ children, className }) {

@@ -9,6 +9,7 @@ const {
 } = require('./cell')
 const {
   all: getComics,
+  inactivate: deleteComic,
   get: getComic,
   getNewerThan
 } = require('./comic')
@@ -22,8 +23,10 @@ router.get('/cell/:cellId', getCell)
 router.put('/cell/:cellId', updateCell)
 router.get('/cells', getCells)
 
-router.get('/comics', getComics)
+
 router.get('/comic/:comicId', getComic)
+router.delete('/comic/:comicId', deleteComic);
+router.get('/comics', getComics)
 router.get('/comics/latest', getNewerThan)
 
 module.exports = router

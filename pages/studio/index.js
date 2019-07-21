@@ -1,7 +1,6 @@
 import { Component } from 'react'
 import styled from 'styled-components'
 import axios from 'axios'
-import shortid from 'shortid'
 import cloneDeep from 'lodash/cloneDeep'
 import pick from 'lodash/pick'
 import Head from 'next/head'
@@ -21,26 +20,21 @@ import PublishFailModal from './PublishFailModal'
 import EmojiCanvas from './EmojiCanvas';
 
 import {
-  generateCellImage,
   konvaCacheConfig,
-  CELL_IMAGE_ID,
   EMOJI_MASK_REF_ID,
   EMOJI_MASK_OUTLINE_REF_ID,
   RGBA
 } from '../../helpers/konvaDrawingUtils'
 
 import { getApi, sortByOrder } from '../../helpers'
-
+import {generateCellImageFromEmojis} from '../../helpers/generateCellImageFromEmojis'
 import theme from '../../helpers/theme';
-
 import { CAPTCHA_ACTION_CELL_PUBLISH } from '../../config/constants.json'
-
-import {
-  S3_ASSET_FILETYPE,
-  STORAGEKEY_STUDIO
-} from '../../config/constants.json'
+import {STORAGEKEY_STUDIO} from '../../config/constants.json'
 
 const { publicRuntimeConfig } = getConfig();
+
+const CELL_IMAGE_ID = 'cell-image';
 
 function uploadImage(imageFile, signedRequest) {
   return new Promise((resolve, reject) => {
@@ -60,10 +54,6 @@ function uploadImage(imageFile, signedRequest) {
     }
     xhr.send(imageFile)
   });
-}
-
-function generateCellImageFilename () {
-  return `${shortid.generate()}.png`
 }
 
 function createNewEmojiComponentState (emoji, currentEmojiId) {
@@ -623,21 +613,20 @@ class StudioRoute extends Component {
     this.toggleCaptionModal(true)
   }
 
-  generateCellImage = async (emojis) => {
-    const cellImageBlob = await generateCellImage(emojis, this.state.backgroundColor);
-  
-    this.cellImageFile = new File([cellImageBlob], generateCellImageFilename(), {
-      type: S3_ASSET_FILETYPE,
-    });
-
-    return URL.createObjectURL(this.cellImageFile);
-  }
-
   handlePublishClick = async () => {
     this.toggleActionsModal(false)
     this.props.showSpinner()
 
-    const cellImageUrl = await this.generateCellImage(this.state.emojis);
+    const {
+      url: cellImageUrl,
+      file
+    } = await generateCellImageFromEmojis({
+      emojis: this.state.emojis,
+      backgroundColor: this.state.backgroundColor,
+      htmlElementId: CELL_IMAGE_ID
+    });
+
+    this.cellImageFile = file;
 
     this.setState({
       cellImageUrl

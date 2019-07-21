@@ -10,7 +10,6 @@ import {sortByOrder} from '.'
  **
  */
 
-export const CELL_IMAGE_ID = 'cell-image';
 export const RGBA = 'RGBA';
 const filters = {
   [RGBA]: Konva.Filters.RGBA
@@ -45,12 +44,12 @@ export function getEmojiConfigs (emojis) {
   }));
 }
 
-export function generateCellImage (emojis, backgroundColor) {
+export function generateCellImage (emojis, backgroundColor, htmlElementId) {
   const stageHeight = theme.canvas.height;
   const stageWidth = theme.canvas.width;
 
   const stage = new Konva.Stage({
-    container: CELL_IMAGE_ID,
+    container: htmlElementId,
     width: stageWidth,
     height: stageHeight
   });

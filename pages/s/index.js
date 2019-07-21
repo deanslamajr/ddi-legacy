@@ -4,30 +4,44 @@ import axios from 'axios'
 import shortid from 'shortid'
 import propTypes from 'prop-types'
 
+import Cell from '../../components/Cell'
+
 import ActionsModal from './ActionsModal'
 import AddCellModal from './AddCellModal'
 
 import {
-  PinkMenuButton
+  MenuButton
 } from '../../components/Buttons'
 
 import { NavButton, BOTTOM_RIGHT } from '../../components/navigation'
 
 import { Router } from '../../routes'
 import { forwardCookies, getApi } from '../../helpers'
+import theme from '../../helpers/theme'
 
 import {DRAFT_SUFFIX} from '../../config/constants.json'
+
+const cellWidth = `${.6 * theme.layout.width}px`;
 
 function generateDraftUrl() {
   return `/s/comic/${shortid.generate()}${DRAFT_SUFFIX}`
 }
 
-const AddCellButton = styled(PinkMenuButton)`
+const AddCellButton = styled(MenuButton)`
   font-size: 2.5rem;
+  width: ${props => props.theme.layout.width}px;
 `
 
 const OuterContainer = styled.div`
-  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  margin: 1rem auto 0;
+`
+
+const StudioCell = styled(Cell)`
+  margin: 0 auto;
+  width: ${cellWidth};
 `
 
 //
@@ -73,7 +87,8 @@ class StudioV2 extends Component {
     this.setState({ showAddCellModal: false })
   }
 
-  showAddCellModal = () => {
+  showAddCellModal = (position) => {
+    console.log('position', position)
     this.setState({ showAddCellModal: true })
   }
 
@@ -103,13 +118,30 @@ class StudioV2 extends Component {
     Router.pushRoute(`/comic/${this.props.comicId}`)
   }
 
+  renderAddCellButton = (position = 0) => {
+    return (<AddCellButton onClick={() => this.showAddCellModal(position)}>
+      +
+    </AddCellButton>)
+  }
+
   render () {
     return <React.Fragment>
       <OuterContainer>
-        <AddCellButton onClick={this.showAddCellModal}>
-          +
-        </AddCellButton>
+        {this.renderAddCellButton(0)}
+
+        {/* CELLS */}
+        {this.props.cells.map(({imageUrl, schemaVersion, title}, index) => (<div key={imageUrl}>
+          <StudioCell
+            imageUrl={imageUrl}
+            schemaVersion={schemaVersion}
+            title={title}
+            width={cellWidth}
+          />
+          {this.renderAddCellButton(index + 1)}
+        </div>))}
       </OuterContainer>
+
+      
 
       {this.state.showAddCellModal && <AddCellModal
         onCancelClick={this.hideAddCellModal}

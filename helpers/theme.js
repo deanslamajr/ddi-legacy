@@ -12,7 +12,8 @@ const theme = {
     height: 250
   },
   layout: {
-    width: 250
+    width: 250,
+    bottomPadding: 75
   },
   padding: 7
 }

@@ -10,7 +10,7 @@ import ActionsModal from './ActionsModal'
 import AddCellModal from './AddCellModal'
 
 import {
-  MenuButton
+  PinkMenuButton
 } from '../../components/Buttons'
 
 import { NavButton, BOTTOM_RIGHT } from '../../components/navigation'
@@ -21,13 +21,14 @@ import theme from '../../helpers/theme'
 
 import {DRAFT_SUFFIX} from '../../config/constants.json'
 
-const cellWidth = `${.6 * theme.layout.width}px`;
+const SIDE_BUTTONS_SPACER = 0//.4
+const cellWidth = `${(1 - SIDE_BUTTONS_SPACER) * theme.layout.width}px`;
 
 function generateDraftUrl() {
   return `/s/comic/${shortid.generate()}${DRAFT_SUFFIX}`
 }
 
-const AddCellButton = styled(MenuButton)`
+const AddCellButton = styled(PinkMenuButton)`
   font-size: 2.5rem;
   width: ${props => props.theme.layout.width}px;
 `
@@ -36,7 +37,7 @@ const OuterContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 250px;
-  margin: 1rem auto 0;
+  margin: 1rem auto ${props => props.theme.layout.bottomPadding}px;
 `
 
 const StudioCell = styled(Cell)`
@@ -81,14 +82,14 @@ class StudioV2 extends Component {
 
   componentDidMount() {
     this.props.hideSpinner();
+    window.scrollTo(0,document.body.scrollHeight);
   }
 
   hideAddCellModal = () => {
     this.setState({ showAddCellModal: false })
   }
 
-  showAddCellModal = (position) => {
-    console.log('position', position)
+  showAddCellModal = () => {
     this.setState({ showAddCellModal: true })
   }
 
@@ -118,8 +119,8 @@ class StudioV2 extends Component {
     Router.pushRoute(`/comic/${this.props.comicId}`)
   }
 
-  renderAddCellButton = (position = 0) => {
-    return (<AddCellButton onClick={() => this.showAddCellModal(position)}>
+  renderAddCellButton = () => {
+    return (<AddCellButton onClick={() => this.showAddCellModal()}>
       +
     </AddCellButton>)
   }
@@ -127,8 +128,6 @@ class StudioV2 extends Component {
   render () {
     return <React.Fragment>
       <OuterContainer>
-        {this.renderAddCellButton(0)}
-
         {/* CELLS */}
         {this.props.cells.map(({imageUrl, schemaVersion, title}, index) => (<div key={imageUrl}>
           <StudioCell
@@ -137,8 +136,8 @@ class StudioV2 extends Component {
             title={title}
             width={cellWidth}
           />
-          {this.renderAddCellButton(index + 1)}
         </div>))}
+        {this.renderAddCellButton()}
       </OuterContainer>
 
       

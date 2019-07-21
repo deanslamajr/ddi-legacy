@@ -230,7 +230,7 @@ class StudioRoute extends Component {
     try {
       await axios.put(`/api/cell/${cellId}`, { studioState });
       this.clearCache();
-      Router.pushRoute(`/comic/${comicId}`);
+      Router.pushRoute(`/s/comic/${comicId}`);
     }
     catch (e) {
       // @todo better UX

@@ -146,6 +146,28 @@ class MyApp extends App {
     this.setState({ activeComicId: comicId })
   }
 
+  deleteComicFromCache = (comicId, cb) => {
+    const clonedComics = Array.from(this.state.comics);
+
+    const indexToDelete = clonedComics.findIndex(comic => comic.url_id === comicId);
+
+    if (indexToDelete >= 0) {
+      clonedComics.splice(indexToDelete, 1);
+
+      const newActiveComicId = this.state.comics.length > indexToDelete
+        ? this.state.comics[indexToDelete].id
+        : this.state.comics[0].id;
+
+      this.setState({
+        activeComicId: newActiveComicId,
+        comics: clonedComics
+      }, cb);
+    }
+    else {
+      cb();
+    }
+  }
+
   componentDidMount () {
     if (publicRuntimeConfig.CAPTCHA_V3_SITE_KEY) {
       load(publicRuntimeConfig.CAPTCHA_V3_SITE_KEY, {
@@ -194,6 +216,7 @@ class MyApp extends App {
           <Component
             activeComicId={this.state.activeComicId}
             comics={this.state.comics}
+            deleteComicFromCache={this.deleteComicFromCache}
             fetchComics={this.fetchComics}
             appendLatestComics={this.appendLatestComics}
             fetchMoreComics={this.fetchMoreComics}

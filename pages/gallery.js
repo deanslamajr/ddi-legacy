@@ -163,8 +163,10 @@ class GalleryRoute extends Component {
     this.props.fetchComics(this.props.hideSpinner)
     if (this.props.activeComicId) {
       const activeComic = document.getElementById(this.props.activeComicId);
-      activeComic.scrollIntoView()
-      this.props.setActiveComicId(null)
+      if (activeComic) {
+        activeComic.scrollIntoView()
+        this.props.setActiveComicId(null)
+      }
     }
   }
 

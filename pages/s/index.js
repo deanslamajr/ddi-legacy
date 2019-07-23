@@ -135,6 +135,8 @@ class StudioV2 extends Component {
     this.toggleComicActionsModal(false);
     try {
       await axios.delete(`/api/comic/${this.props.comicId}`);
+      // remove this comic from the gallery cache
+      this.props.deleteComicFromCache(this.props.comicId, () => Router.pushRoute('/gallery'));
     }
     catch(error) {
       this.props.hideSpinner();
@@ -142,7 +144,6 @@ class StudioV2 extends Component {
       console.error(error);
       return;
     }
-    Router.pushRoute('/gallery');
   }
 
   render () {

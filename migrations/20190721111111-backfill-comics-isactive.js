@@ -6,14 +6,6 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     const comics = await Comics.findAll();
 
-    // const response = await comics[0].update({
-    //   'is_active': true
-    // }, {
-    //   silent: true
-    // });
-
-    // console.log('response', response)
-
     return Promise.all(comics.map(comic => comic.update({
       'is_active': true
     }, {

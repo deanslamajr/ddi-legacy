@@ -71,7 +71,6 @@ export default class ComicActionsModal extends React.Component {
   }
 
   render () {
-    console.log('this.views', this.views)
     return (<HomeModal>
       {this.views[this.state.currentView]()}
     </HomeModal>)

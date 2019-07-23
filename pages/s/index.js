@@ -16,7 +16,7 @@ import {
 import { NavButton, BOTTOM_RIGHT } from '../../components/navigation'
 
 import { Router } from '../../routes'
-import { forwardCookies, getApi } from '../../helpers'
+import { forwardCookies, getApi, sortByOrder } from '../../helpers'
 import theme from '../../helpers/theme'
 
 import {DRAFT_SUFFIX} from '../../config/constants.json'
@@ -150,7 +150,7 @@ class StudioV2 extends Component {
     return <React.Fragment>
       <OuterContainer>
         {/* CELLS */}
-        {this.props.cells.map(({imageUrl, schemaVersion, title}, index) => (<div key={imageUrl}>
+        {this.props.cells.sort(sortByOrder).map(({imageUrl, schemaVersion, title}, index) => (<div key={imageUrl}>
           <StudioCell
             imageUrl={imageUrl}
             schemaVersion={schemaVersion}

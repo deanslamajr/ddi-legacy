@@ -15,7 +15,7 @@ import {
 } from '../../components/navigation'
 
 import { Router } from '../../routes'
-import { getApi, forwardCookies } from '../../helpers'
+import { getApi, forwardCookies, redirect } from '../../helpers'
 
 const CenteredContainer = styled.div`
   display: flex;
@@ -35,8 +35,22 @@ const CreateButton = styled(NavButton)`
 `
 
 class ComicRoute extends Component {
-  static async getInitialProps ({ query, req }) {
-    const { data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req), forwardCookies(req))
+  static async getInitialProps ({ query, req, res }) {
+    let data;
+    let comicIdIsValid = true;
+
+    try{
+      // destructuring syntax - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#Assignment_without_declaration
+      ({ data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req), forwardCookies(req)));
+    }
+    catch(error) {
+      // @todo log error
+      comicIdIsValid = false;
+    }
+
+    if (!comicIdIsValid || !data.isActive) {
+      redirect('/gallery', res);
+    }
 
     return {
       cells: data.cells,

@@ -75,8 +75,9 @@ async function get (req, res) {
 
   res.json({
     cells,
-    urlId: comic.url_id,
+    isActive: comic.is_active,
     title: comic.title,
+    urlId: comic.url_id,
     userCanEdit
   })
 }

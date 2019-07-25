@@ -16,7 +16,7 @@ import {
 import { NavButton, BOTTOM_RIGHT } from '../../components/navigation'
 
 import { Router } from '../../routes'
-import { forwardCookies, getApi, sortByOrder } from '../../helpers'
+import { forwardCookies, getApi, redirect, sortByOrder } from '../../helpers'
 import theme from '../../helpers/theme'
 
 import {DRAFT_SUFFIX} from '../../config/constants.json'
@@ -58,14 +58,7 @@ class StudioV2 extends Component {
 
     // redirect to new comic if user isn't authorized to edit this comic
     if (!data.userCanEdit) {
-      if (res) {
-        res.writeHead(302, {
-          Location: generateDraftUrl()
-        })
-        res.end()
-      } else {
-        Router.pushRoute(generateDraftUrl());
-      }
+      redirect(generateDraftUrl(), res);
       return {}
     }
 
@@ -150,7 +143,7 @@ class StudioV2 extends Component {
     return <React.Fragment>
       <OuterContainer>
         {/* CELLS */}
-        {this.props.cells.sort(sortByOrder).map(({imageUrl, schemaVersion, title}, index) => (<div key={imageUrl}>
+        {this.props.cells && this.props.cells.sort(sortByOrder).map(({imageUrl, schemaVersion, title}, index) => (<div key={imageUrl}>
           <StudioCell
             imageUrl={imageUrl}
             schemaVersion={schemaVersion}

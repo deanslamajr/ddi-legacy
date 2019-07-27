@@ -156,11 +156,11 @@ class StudioRoute extends Component {
     let backActionPath
 
     if (comicId && parentId) {
-      backActionPath = `/comic/${comicId}`
+      backActionPath = `/s/comic/${comicId}`
     } else if (parentId) {
       backActionPath = `/cell/${parentId}`
     } else if (comicId) {
-      backActionPath = `/comic/${comicId}`
+      backActionPath = `/s/comic/${comicId}`
     } else {
       backActionPath = '/gallery'
     }

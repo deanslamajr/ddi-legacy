@@ -44,6 +44,11 @@ async function all (req, res) {
   res.json(cells)
 }
 
+async function activateComic (cell) {
+  const comic = await cell.getComic();
+  return comic.update({is_active: true});
+}
+
 async function update (req, res) {
   try {
     const cellId = req.params.cellId
@@ -63,8 +68,18 @@ async function update (req, res) {
       return res.sendStatus(401)
     }
 
-    await cell.update({ studio_state: studioState })
-    res.sendStatus(200)
+    const activateComicPromise = req.body.activateComic
+      ? activateComic(cell)
+      : Promise.resolve();
+
+    const updateCellPromise = cell.update({ studio_state: studioState });
+
+    await Promise.all([
+      updateCellPromise,
+      activateComicPromise
+    ]);
+    
+    res.sendStatus(200);
   }
   catch (e) {
     console.error(e)

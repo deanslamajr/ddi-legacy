@@ -49,6 +49,7 @@ class ComicRoute extends Component {
     }
 
     if (!comicIdIsValid || !data.isActive) {
+      // @todo log this case
       redirect('/gallery', res);
     }
 

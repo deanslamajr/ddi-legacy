@@ -57,7 +57,8 @@ class StudioV2 extends Component {
     const { data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req), forwardCookies(req))
 
     // redirect to new comic if user isn't authorized to edit this comic
-    if (!data.userCanEdit) {
+    if (!data.userCanEdit || !data.isActive) {
+      // @todo log this case
       redirect(generateDraftUrl(), res);
       return {}
     }

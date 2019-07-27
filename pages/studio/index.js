@@ -228,7 +228,10 @@ class StudioRoute extends Component {
     delete studioState.parentId
 
     try {
-      await axios.put(`/api/cell/${cellId}`, { studioState });
+      await axios.put(`/api/cell/${cellId}`, {
+        activateComic: !this.props.comicId,
+        studioState
+      });
       this.clearCache();
       Router.pushRoute(`/s/comic/${comicId}`);
     }

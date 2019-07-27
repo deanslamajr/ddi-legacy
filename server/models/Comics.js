@@ -16,7 +16,8 @@ const Comics = sequelize.define('comics',
       allowNull: false
     },
     is_active: {
-      type: Sequelize.BOOLEAN
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
     },
     url_id: {
       type: Sequelize.STRING,

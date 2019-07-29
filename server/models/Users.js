@@ -37,6 +37,9 @@ const Users = sequelize.define('users',
 );
 
 Users.createNewUser = async function ({username, password, options}) {
+  // @todo check if username exists yet
+  // if it does, respond 4xx
+
   const saltRounds = 10;
   const passHash = await bcrypt.hash(password, saltRounds);
 

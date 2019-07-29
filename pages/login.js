@@ -48,7 +48,7 @@ class Login extends Component {
     event.preventDefault()
 
     try{
-      await axios.post('/api/login', {
+      await axios.post('/api/user/login', {
         username: this.state.username,
         password: this.state.password
       })

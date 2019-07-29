@@ -1,5 +1,6 @@
 const express = require('express')
 
+const {authenticate: authenticateUser} = require('./user')
 const { sign } = require('./sign')
 const {
   all: getCells,
@@ -15,6 +16,8 @@ const {
 } = require('./comic')
 
 const router = express.Router()
+
+router.post('/user/login', authenticateUser)
 
 router.post('/sign', sign)
 

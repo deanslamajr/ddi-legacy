@@ -1,6 +1,11 @@
 const bcrypt = require('bcrypt');
 const { Users } = require('../models')
 
+function hydrateSession(user, req) {
+  req.session.userId = user.id;
+  req.session.isAdmin = user.is_admin;
+}
+
 async function authenticate (req, res) {
   const {
     username,
@@ -19,9 +24,8 @@ async function authenticate (req, res) {
     }
     // this doesn't seem to fail with a bad password
     const match = await bcrypt.compare(passwordFromInput, user.password)
-    if (match) {
-      // spread whitelisted user fields into user session
-      console.log('user', user)
+    if (match) {      
+      hydrateSession(user, req);
       return res.sendStatus(200)
     } else {
       // @todo log

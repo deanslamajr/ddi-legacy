@@ -1,5 +1,5 @@
 const { Cells } = require('../models')
-const { falsePositiveResponse } = require('./utils')
+const { falsePositiveResponse, isUserAuthorized } = require('./utils')
 const { validateStudioState } = require('../../shared/validators')
 
 async function getParentFromChild (cell) {
@@ -61,7 +61,7 @@ async function update (req, res) {
       return falsePositiveResponse(`cell::update - There is not a Cell with id:${cellId}`, res)
     }
 
-    if (cell.creator_user_id !== req.session.userId) {
+    if (!isUserAuthorized(req.session, cell.creator_user_id)) {
       // @todo proper log
       // @todo this should probably provide some kind of false positive response
       console.error('Unauthorized user!')

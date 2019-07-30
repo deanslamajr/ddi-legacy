@@ -5,7 +5,7 @@ const newrelic = require('newrelic');
 
 const { sign: signViaS3 } = require('../adapters/s3')
 const { Cells, Comics } = require('../models/index')
-const { falsePositiveResponse } = require('./utils')
+const { falsePositiveResponse, isUserAuthorized } = require('./utils')
 const {
   validateFilename,
   validateTitle
@@ -118,7 +118,7 @@ async function sign (req, res) {
           falsePositiveResponse(`sign::sign - There is not a Comic with url_id:${comicId}`, res)
         }
 
-        if (comic.creator_user_id !== req.session.userId) {
+        if (!isUserAuthorized(req.session, comic.creator_user_id)) {
           // @todo proper log
           // @todo this should probably provide some kind of false positive response
           console.error('Unauthorized user!')
@@ -155,7 +155,7 @@ async function sign (req, res) {
       }
 
       // @todo verify user is authorized to add a cell to this comic
-      if (comic.creator_user_id !== req.session.userId) {
+      if (!isUserAuthorized(req.session, comic.creator_user_id)) {
         // @todo proper log
         // @todo this should probably provide some kind of false positive response
         console.error('Unauthorized user!')

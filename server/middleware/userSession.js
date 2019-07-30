@@ -5,10 +5,11 @@ const shortid = require('shortid')
  */
 function handleUserSession (req, res, next) {
   if (!req.session.userId) {
-    req.session.userId = shortid.generate()
+    req.session.userId = shortid.generate();
+    req.session.isAdmin = false;
   }
 
-  next()
+  next();
 }
 
 module.exports = handleUserSession

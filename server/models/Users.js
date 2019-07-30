@@ -37,8 +37,11 @@ const Users = sequelize.define('users',
 );
 
 Users.createNewUser = async function ({username, password, options}) {
-  // @todo check if username exists yet
-  // if it does, respond 4xx
+  // assert that given username doesn't already exist
+  const existingUserWithUsername = await Users.findOne({ where: { username }})
+  if (existingUserWithUsername) {
+    throw new Error(`User with username:${username} already exists!`);
+  }
 
   const saltRounds = 10;
   const passHash = await bcrypt.hash(password, saltRounds);

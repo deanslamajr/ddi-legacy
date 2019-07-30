@@ -5,6 +5,12 @@ function falsePositiveResponse (errorMessage, res) {
   return res.sendStatus(200)
 }
 
+function isUserAuthorized (userSession, authorizedUserId) {
+  return userSession.isAdmin === true ||
+    authorizedUserId === userSession.userId;
+}
+
 module.exports = {
-  falsePositiveResponse
+  falsePositiveResponse,
+  isUserAuthorized
 }

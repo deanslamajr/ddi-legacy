@@ -1,5 +1,5 @@
 const { Cells, Comics } = require('../models')
-const { falsePositiveResponse } = require('./utils')
+const { falsePositiveResponse, isUserAuthorized } = require('./utils')
 
 const LIMIT = 20;
 
@@ -57,7 +57,7 @@ async function get (req, res) {
     return falsePositiveResponse(`comic::get - There is not a Comic with id:${comicId}`, res)
   }
 
-  if (comic.creator_user_id === req.session.userId) {
+  if (isUserAuthorized(req.session, comic.creator_user_id)) {
     userCanEdit = true
   }
 
@@ -94,7 +94,7 @@ async function inactivate (req, res) {
     return falsePositiveResponse(`comic::delete - There is not a Comic with id:${comicId}`, res)
   }
 
-  if (comic.creator_user_id !== req.session.userId) {
+  if (!isUserAuthorized(req.session, comic.creator_user_id)) {
     return falsePositiveResponse(`comic::delete - User with id:${req.session.userId} is not authorized to delete the comic with id:${comicId}`, res)
   }
 

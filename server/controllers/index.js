@@ -1,6 +1,6 @@
 const express = require('express')
 
-const {authenticate: authenticateUser} = require('./user')
+const {login, logout} = require('./user')
 const { sign } = require('./sign')
 const {
   all: getCells,
@@ -17,7 +17,8 @@ const {
 
 const router = express.Router()
 
-router.post('/user/login', authenticateUser)
+router.post('/user/login', login);
+router.post('/user/logout', logout);
 
 router.post('/sign', sign)
 

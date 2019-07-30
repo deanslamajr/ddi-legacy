@@ -2,13 +2,8 @@ import axios from 'axios'
 import { Component } from 'react'
 import styled from 'styled-components'
 
+import { Router } from '../routes'
 import { media } from '../helpers/style-utils'
-
-const SUCCESS = 'success'
-const FAILURE = 'failure'
-const LOGGEDOUT = 'logged out'
-const AUTHENTICATED = 'authenticated'
-const NOTAUTHENTICATED = 'not authenticated'
 
 const Form = styled.form`
   display: flex;
@@ -17,10 +12,10 @@ const Form = styled.form`
 `
 
 const Input = styled.input`
-  width: 20%;
+  width: 15%;
   margin: 0.75rem auto;
   ${media.phoneMax`
-    width: 45%;
+    width: 75%;
     margin: 0.75rem auto;
   `}
 `
@@ -30,9 +25,7 @@ const Input = styled.input`
 class Login extends Component {
   state = {
     username: '',
-    password: '',
-    loginResult: '',
-    authenticated: ''
+    password: ''
   }
 
   componentDidMount () {
@@ -53,22 +46,31 @@ class Login extends Component {
         password: this.state.password
       })
   
-      this.setState({
-        loginResult: SUCCESS,
-        authenticated: AUTHENTICATED
-      })
+      Router.pushRoute('/gallery')
     }
     catch(error) {
       console.error(error);
       // @todo log error
-      this.setState({ loginResult: FAILURE })
+      this.setState({error})
+    }
+  }
+
+  logout = async () => {
+    try{
+      await axios.post('/api/user/logout')
+  
+      Router.pushRoute('/gallery')
+    }
+    catch(error) {
+      console.error(error);
+      // @todo log error
+      this.setState({error})
     }
   }
 
   render () {
     return <div>
       <Form onSubmit={this.handleSubmit}>
-        {/* { this.renderAuthenticationCheckDiv() } */}
         <Input
           type='text'
           onChange={e => this.handleChange('username', e)}
@@ -83,6 +85,12 @@ class Login extends Component {
           type='submit'
           value='Login'
         />
+        <Input
+          type='button'
+          value='Logout'
+          onClick={() => this.logout()}
+        />
+        {this.state.error && <Input as='div'>{this.state.error.message}</Input>}
       </Form>
     </div>
   }

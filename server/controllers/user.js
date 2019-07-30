@@ -6,7 +6,12 @@ function hydrateSession(user, req) {
   req.session.isAdmin = user.is_admin;
 }
 
-async function authenticate (req, res) {
+async function logout (req, res) {
+  req.session = null;
+  res.sendStatus(200);
+}
+
+async function login (req, res) {
   const {
     username,
     password: passwordFromInput
@@ -42,5 +47,6 @@ async function authenticate (req, res) {
 // async function logout
 
 module.exports = {
-  authenticate
+  login,
+  logout
 }

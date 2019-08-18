@@ -101,7 +101,8 @@ const AddEmojiButton = styled(PinkMenuButton)`
 `
 
 const NudgeButton = styled(HalfMenuButton)`
-  font-size: 2.5rem; 
+  font-size: 2rem; 
+  margin: 1px auto;
 `;
 
 const MAIN = 'MAIN'
@@ -331,7 +332,7 @@ class BuilderMenu extends React.Component {
       </SliderContainer>
 
       {/* TOGGLE FILTER*/}
-      <MenuButton onClick={toggleFilter}>{activeEmoji.filters ? 'INACTIVATE RGB' : 'ACTIVATE RGB'}</MenuButton>
+      <MenuButton onClick={toggleFilter}>{activeEmoji.filters ? 'DISABLE COLOR' : 'ENABLE COLOR'}</MenuButton>
 
       {activeEmoji.filters && (<React.Fragment>
         <SliderContainer>

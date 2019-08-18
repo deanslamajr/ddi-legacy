@@ -42,25 +42,19 @@ export default class ComicActionsModal extends React.Component {
 
   renderMain = () => {
     const {
-      onCancelClick,
-      onExitClick
+      onCancelClick
     } = this.props;
 
     return (<React.Fragment>
-      <CenteredButtons>
-        <PinkMenuButton onClick={onExitClick}>
-          EXIT
-        </PinkMenuButton>
-      </CenteredButtons>
       <CenteredButtons>
         <MenuButton onClick={() => this.setState({currentView: DELETE_WARNING})}>
           DELETE
         </MenuButton>
       </CenteredButtons>
       <CenteredButtons>
-        <MenuButton onClick={onCancelClick}>
+        <PinkMenuButton onClick={onCancelClick}>
           CANCEL
-        </MenuButton>
+        </PinkMenuButton>
       </CenteredButtons>
     </React.Fragment>);
   }

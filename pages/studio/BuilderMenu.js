@@ -100,6 +100,10 @@ const AddEmojiButton = styled(PinkMenuButton)`
   font-size: 2.5rem;
 `
 
+const NudgeButton = styled(HalfMenuButton)`
+  font-size: 2.5rem; 
+`;
+
 const MAIN = 'MAIN'
 const SECONDARY = 'SECONDARY'
 const FILTERS = 'FILTERS'
@@ -251,30 +255,32 @@ class BuilderMenu extends React.Component {
       </MenuButton>
 
       <Label>FLIP</Label>
-      <MenuButton onClick={() => scaleField('scaleX', -1)}>
-        X
-      </MenuButton>
-      <MenuButton onClick={() => scaleField('scaleY', -1)}>
-        Y
-      </MenuButton>
+      <CenteredButtons>
+        <HalfMenuButton onClick={() => scaleField('scaleX', -1)}>
+          X
+        </HalfMenuButton>
+        <HalfMenuButton onClick={() => scaleField('scaleY', -1)}>
+          Y
+        </HalfMenuButton>
+      </CenteredButtons>
 
       <CenteredButtons>
-        <HalfMenuButton onClick={() => incrementField('y', -5)}>
-          UP
-        </HalfMenuButton>
+        <NudgeButton onClick={() => incrementField('y', -1)}>
+          ↑
+        </NudgeButton>
       </CenteredButtons>
       <CenteredButtons>
-        <HalfMenuButton onClick={() => incrementField('x', -5)}>
-          LEFT
-        </HalfMenuButton>
-        <HalfMenuButton onClick={() => incrementField('x', 5)}>
-          RIGHT
-        </HalfMenuButton>
+        <NudgeButton onClick={() => incrementField('x', -1)}>
+          ←
+        </NudgeButton>
+        <NudgeButton onClick={() => incrementField('x', 1)}>
+          →
+        </NudgeButton>
       </CenteredButtons>
       <CenteredButtons>
-        <HalfMenuButton onClick={() => incrementField('y', 5)}>
-          DOWN
-        </HalfMenuButton>
+        <NudgeButton onClick={() => incrementField('y', 1)}>
+          ↓
+        </NudgeButton>
       </CenteredButtons>
     </React.Fragment>)
   }

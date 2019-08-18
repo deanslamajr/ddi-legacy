@@ -746,7 +746,18 @@ class StudioRoute extends Component {
                 scaleField={this.scaleField}
                 setField={this.setField}
                 setFilterColor={this.setFilterColor}
+                hideActionsMenu={() => this.toggleActionsModal(false)}
+                isActionsModalVisible={showActionsModal}
                 toggleFilter={this.toggleFilter}
+                renderActionsMenu={({showCanvaColorMenu}) => (
+                  <ActionsModal
+                    onCancelClick={() => this.toggleActionsModal(false)}
+                    onCanvasColorSelect={() => showCanvaColorMenu()}
+                    onResetClick={() => this.onResetClick()}
+                    onPublishClick={() => this.handlePublishClick()}
+                    toggleCaptionModal={this.showCaptionModalFromActionsModal}
+                  />
+                )}
               />
 
               {this.state.showEmojiPicker && <EmojiPicker
@@ -772,13 +783,6 @@ class StudioRoute extends Component {
             accented
           />
         </React.Fragment>}
-
-        {showActionsModal && <ActionsModal
-          onCancelClick={() => this.toggleActionsModal(false)}
-          onResetClick={() => this.onResetClick()}
-          onPublishClick={() => this.handlePublishClick()}
-          toggleCaptionModal={this.showCaptionModalFromActionsModal}
-        />}
 
         {this.state.showPublishFailModal && <PublishFailModal
           hasFailedCaptcha={this.state.hasFailedCaptcha}

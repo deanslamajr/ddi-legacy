@@ -13,12 +13,18 @@ export default class ActionsModal extends React.Component {
   render () {
     const {
       onCancelClick,
+      onCanvasColorSelect,
       onResetClick,
       onPublishClick,
       toggleCaptionModal
     } = this.props
 
     return (<HomeModal>
+      <CenteredButtons>
+        <MenuButton onClick={onCanvasColorSelect}>
+          CANVAS COLOR
+        </MenuButton>
+      </CenteredButtons>
       <CenteredButtons>
         <MenuButton onClick={toggleCaptionModal}>
           CAPTION

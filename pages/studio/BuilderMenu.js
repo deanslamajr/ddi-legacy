@@ -230,6 +230,11 @@ class BuilderMenu extends React.Component {
     </React.Fragment>)
   }
 
+  showCanvaColorMenu = () => {
+    this.setState({ currentMenu: BG_COLOR });
+    this.props.hideActionsMenu();
+  }
+
   renderSecondaryMenu = () => {
     const {
       incrementField,
@@ -240,10 +245,6 @@ class BuilderMenu extends React.Component {
       <PinkMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
         SIMPLE
       </PinkMenuButton>
-
-      <MenuButton onClick={() => this.setState({ currentMenu: BG_COLOR })}>
-        BG COLOR
-      </MenuButton>
 
       <MenuButton onClick={() => this.setState({ currentMenu: FILTERS })}>
         FILTERS
@@ -358,7 +359,9 @@ class BuilderMenu extends React.Component {
       activeEmoji,
       onChangeClick,
       onDeleteClick,
-      onDuplicateClick
+      onDuplicateClick,
+      renderActionsMenu,
+      isActionsModalVisible
     } = this.props
     const { showEmojiEditModal } = this.state
 
@@ -373,6 +376,8 @@ class BuilderMenu extends React.Component {
           onDeleteClick={() => onDeleteClick(this.toggleEmojiEditModal.bind(this, false))}
           onDuplicateClick={() => onDuplicateClick(this.toggleEmojiEditModal.bind(this, false))}
         />}
+
+        {isActionsModalVisible && renderActionsMenu({showCanvaColorMenu: this.showCanvaColorMenu})}
       </React.Fragment>
     )
   }

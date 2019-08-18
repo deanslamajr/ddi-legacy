@@ -66,15 +66,6 @@ const Thumb = ({cellsCount, imageUrl}) => {
   </>)
 }
 
-const Caption = styled.div`
-  ${media.phoneMax`
-    font-size: .7rem;
-  `}
-
-  padding: .25rem;
-  padding-top: .15rem;
-`
-
 const OldThumb = ({caption, cellsCount, imageUrl}) => {
   return (<OldThumbNail as='div'>
     {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}

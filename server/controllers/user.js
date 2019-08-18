@@ -27,7 +27,7 @@ async function login (req, res) {
       // @todo log
       res.sendStatus(404);
     }
-    // this doesn't seem to fail with a bad password
+
     const match = await bcrypt.compare(passwordFromInput, user.password)
     if (match) {      
       hydrateSession(user, req);

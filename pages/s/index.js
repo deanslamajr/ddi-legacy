@@ -13,7 +13,7 @@ import {
   PinkMenuButton
 } from '../../components/Buttons'
 
-import { NavButton, BOTTOM_RIGHT } from '../../components/navigation'
+import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../components/navigation'
 
 import { Router } from '../../routes'
 import { forwardCookies, getApi, redirect, sortByOrder } from '../../helpers'
@@ -114,7 +114,6 @@ class StudioV2 extends Component {
 
   navigateBack = () => {
     this.props.showSpinner()
-    this.toggleComicActionsModal(false)
     Router.pushRoute(`/comic/${this.props.comicId}`)
   }
 
@@ -167,7 +166,6 @@ class StudioV2 extends Component {
       {this.state.showComicActionsModal && <ComicActionsModal
         onCancelClick={() => this.toggleComicActionsModal(false)}
         onDeleteClick={() => this.handleDeleteComicClick()}
-        onExitClick={() => this.navigateBack()}
       />}
 
       {/* {this.state.showCellActionsModal && <CellActionsModal
@@ -175,6 +173,11 @@ class StudioV2 extends Component {
         onEditClick={() => this.handleCellEdit()}
       />} */}
 
+      <NavButton
+        value='EXIT'
+        cb={() => this.navigateBack()}
+        position={BOTTOM_LEFT}
+      />
       <NavButton
         value='ACTIONS'
         cb={() => this.toggleComicActionsModal(true)}

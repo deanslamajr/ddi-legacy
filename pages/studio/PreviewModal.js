@@ -28,7 +28,7 @@ function PreviewModal ({
   onOkClick,
   title
 }) {
-  return (<PreviewModalContainer>
+  return (<PreviewModalContainer onCancelClick={onCancelClick}>
     <MessageContainer>
       Publish this Canvas?
     </MessageContainer>
@@ -51,11 +51,6 @@ function PreviewModal ({
       <PinkMenuButton onClick={onOkClick}>
         PUBLISH
       </PinkMenuButton>
-    </CenteredButtons>
-    <CenteredButtons>
-      <MenuButton onClick={onCancelClick}>
-        CANCEL
-      </MenuButton>
     </CenteredButtons>
   </PreviewModalContainer>)
 }

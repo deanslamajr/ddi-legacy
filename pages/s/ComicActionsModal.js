@@ -32,29 +32,15 @@ export default class ComicActionsModal extends React.Component {
           DELETE
         </MenuButton>
       </CenteredButtons>
-      <CenteredButtons>
-        <PinkMenuButton onClick={onCancelClick}>
-          CANCEL
-        </PinkMenuButton>
-      </CenteredButtons>
     </React.Fragment>)
   }
 
   renderMain = () => {
-    const {
-      onCancelClick
-    } = this.props;
-
     return (<React.Fragment>
       <CenteredButtons>
         <MenuButton onClick={() => this.setState({currentView: DELETE_WARNING})}>
           DELETE
         </MenuButton>
-      </CenteredButtons>
-      <CenteredButtons>
-        <PinkMenuButton onClick={onCancelClick}>
-          CANCEL
-        </PinkMenuButton>
       </CenteredButtons>
     </React.Fragment>);
   }
@@ -65,7 +51,7 @@ export default class ComicActionsModal extends React.Component {
   }
 
   render () {
-    return (<HomeModal>
+    return (<HomeModal onCancelClick={this.props.onCancelClick}>
       {this.views[this.state.currentView]()}
     </HomeModal>)
   }

@@ -19,7 +19,7 @@ export default class ActionsModal extends React.Component {
       toggleCaptionModal
     } = this.props
 
-    return (<HomeModal>
+    return (<HomeModal onCancelClick={onCancelClick}>
       <CenteredButtons>
         <MenuButton onClick={onCanvasColorSelect}>
           CANVAS COLOR
@@ -38,11 +38,6 @@ export default class ActionsModal extends React.Component {
       <CenteredButtons>
         <MenuButton onClick={onResetClick}>
           RESET
-        </MenuButton>
-      </CenteredButtons>
-      <CenteredButtons>
-        <MenuButton onClick={onCancelClick}>
-          CANCEL
         </MenuButton>
       </CenteredButtons>
     </HomeModal>)

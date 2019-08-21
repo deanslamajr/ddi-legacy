@@ -1,22 +1,25 @@
 import React from 'react'
+import styled from 'styled-components'
 
-import { MenuButton, PinkMenuButton } from '../../components/Buttons'
+import { MenuButton } from '../../components/Buttons'
 import Modal, { CenteredButtons, MessageContainer } from '../../components/Modal'
 
+const StyledModal = styled(Modal)`
+  width: 315px;
+  height: inherit;
+`
+
 function WarningModal ({ message, onCancelClick, onOkClick, okButtonLabel }) {
-  return (<Modal>
+  return (<StyledModal onCancelClick={onCancelClick}>
     <MessageContainer>
       {message}
     </MessageContainer>
     <CenteredButtons>
-      <PinkMenuButton onClick={onCancelClick}>
-        CANCEL
-      </PinkMenuButton>
       <MenuButton onClick={onOkClick}>
         {okButtonLabel}
       </MenuButton>
     </CenteredButtons>
-  </Modal>)
+  </StyledModal>)
 }
 
 export default WarningModal

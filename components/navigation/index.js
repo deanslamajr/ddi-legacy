@@ -50,6 +50,10 @@ const BottomCenterButton = styled(Button)`
   bottom: 0;
   left: 0;
   right: 0;
+
+  ${media.phoneMax`
+    margin: 3px auto;
+  `}
 `
 
 const BottomRightButton = styled(Button)`
@@ -63,6 +67,10 @@ const TopCenterButton = styled(Button)`
   top: 0;
   left: 0;
   right: 0;
+
+  ${media.phoneMax`
+    margin: 3px auto;
+  `}
 ` 
 
 const TopRightButton = styled(Button)`
@@ -72,27 +80,29 @@ const TopRightButton = styled(Button)`
 ` 
 
 function getButtonByPosition (position) {
-  let Button
+  let button
 
   switch (position) {
     case TOP_CENTER:
-      Button = TopCenterButton
+      button = TopCenterButton
       break
     case TOP_RIGHT:
-      Button = TopRightButton
+      button = TopRightButton
       break
     case BOTTOM_LEFT:
-      Button = BottomLeftButton
+      button = BottomLeftButton
       break
     case BOTTOM_CENTER:
-      Button = BottomCenterButton
+      button = BottomCenterButton
       break
     case BOTTOM_RIGHT:
-      Button = BottomRightButton
+      button = BottomRightButton
       break
+    default:
+      button = Button
   }
 
-  return Button
+  return button
 }
 
 class NavButton extends React.Component {

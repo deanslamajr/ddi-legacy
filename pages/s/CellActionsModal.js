@@ -22,7 +22,7 @@ export default class CellActionsModal extends React.Component {
       title
     } = this.props.cell;
 
-    return (<HomeModal>
+    return (<HomeModal onCancelClick={this.props.onCancelClick}>
       <CellPreview
         imageUrl={imageUrl}
         schemaVersion={schemaVersion}
@@ -33,11 +33,6 @@ export default class CellActionsModal extends React.Component {
         <MenuButton>
           EDIT
         </MenuButton>
-      </CenteredButtons>
-      <CenteredButtons>
-        <PinkMenuButton onClick={this.props.onCancelClick}>
-          CANCEL
-        </PinkMenuButton>
       </CenteredButtons>
     </HomeModal>)
   }

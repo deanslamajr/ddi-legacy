@@ -50,7 +50,7 @@ class CaptionModal extends React.Component {
   }
   
   render () {
-    return (<PreviewModalContainer>
+    return (<PreviewModalContainer onCancelClick={this.props.onCancelClick}>
       <CenteredContainer>
         <TitleInput
           wrap='soft'
@@ -61,9 +61,6 @@ class CaptionModal extends React.Component {
         />
       </CenteredContainer>
       <CenteredButtons>
-        <MenuButton onClick={this.props.onCancelClick}>
-          CANCEL
-        </MenuButton>
         <PinkMenuButton onClick={this.onUpdateClick}>
           UPDATE
         </PinkMenuButton>

@@ -7,6 +7,7 @@ import propTypes from 'prop-types'
 import Cell from '../../components/Cell'
 
 import ComicActionsModal from './ComicActionsModal'
+import CellActionsModal from './CellActionsModal'
 import AddCellModal from './AddCellModal'
 
 import {
@@ -70,6 +71,7 @@ class StudioV2 extends Component {
   }
 
   state = {
+    activeCell: null,
     showComicActionsModal: false,
     showCellActionsModal: false,
     showAddCellModal: false
@@ -143,18 +145,19 @@ class StudioV2 extends Component {
     return <React.Fragment>
       <OuterContainer>
         {/* CELLS */}
-        {this.props.cells && this.props.cells.sort(sortByOrder).map(({imageUrl, schemaVersion, title}, index) => (<div key={imageUrl}>
-          <StudioCell
-            imageUrl={imageUrl}
-            schemaVersion={schemaVersion}
-            title={title}
-            width={cellWidth}
-          />
-        </div>))}
+        {this.props.cells && this.props.cells.sort(sortByOrder).map((cell) => (
+          <div key={cell.imageUrl}>
+            <StudioCell
+              imageUrl={cell.imageUrl}
+              onClick={() => this.setState({activeCell: cell})}
+              schemaVersion={cell.schemaVersion}
+              title={cell.title}
+              width={cellWidth}
+            />
+          </div>
+        ))}
         {this.renderAddCellButton()}
       </OuterContainer>
-
-      
 
       {this.state.showAddCellModal && <AddCellModal
         onCancelClick={this.hideAddCellModal}
@@ -168,10 +171,10 @@ class StudioV2 extends Component {
         onDeleteClick={() => this.handleDeleteComicClick()}
       />}
 
-      {/* {this.state.showCellActionsModal && <CellActionsModal
-        onCancelClick={() => this.toggleCellActionsModal(false)}
-        onEditClick={() => this.handleCellEdit()}
-      />} */}
+      {this.state.activeCell && <CellActionsModal
+        cell={this.state.activeCell}
+        onCancelClick={() => this.setState({activeCell: null})}
+      />}
 
       <NavButton
         value='EXIT'

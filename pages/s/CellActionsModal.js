@@ -1,0 +1,44 @@
+import React from 'react'
+import styled from 'styled-components'
+
+import Cell from '../../components/Cell'
+import Modal, { CenteredButtons } from '../../components/Modal'
+import { PinkMenuButton, MenuButton } from '../../components/Buttons'
+
+const HomeModal = styled(Modal)`
+  width: 315px;
+  height: inherit;
+`
+
+const CellPreview = styled(Cell)`
+  margin-bottom: 1rem;
+`
+
+export default class CellActionsModal extends React.Component {
+  render () {
+    const {
+      imageUrl,
+      schemaVersion,
+      title
+    } = this.props.cell;
+
+    return (<HomeModal>
+      <CellPreview
+        imageUrl={imageUrl}
+        schemaVersion={schemaVersion}
+        title={title}
+        removeBorders
+      />
+      <CenteredButtons>
+        <MenuButton>
+          EDIT
+        </MenuButton>
+      </CenteredButtons>
+      <CenteredButtons>
+        <PinkMenuButton onClick={this.props.onCancelClick}>
+          CANCEL
+        </PinkMenuButton>
+      </CenteredButtons>
+    </HomeModal>)
+  }
+}

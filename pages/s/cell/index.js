@@ -8,29 +8,34 @@ import { Router } from '../../../routes'
 import { forwardCookies, getApi, redirect, sortByOrder } from '../../../helpers'
 import theme from '../../../helpers/theme'
 
+import {DRAFT_SUFFIX} from '../../../config/constants.json'
+
+function generateDraftUrl() {
+  // @todo verify this id doesn't already exist in localstorage
+  return `/s/cell/${shortid.generate()}${DRAFT_SUFFIX}`
+}
+
 //
 // Cell Studio
 class CellStudio extends Component {
-  // static async getInitialProps ({ query, req, res }) {
-  //   // if on an unpublished comic, don't fetch comic data
-  //   if(query.comicId.includes(DRAFT_SUFFIX)) {
-  //     return {}
-  //   }
+  static async getInitialProps ({ query, req, res }) {
+    // if on an unpublished comic, don't fetch comic data
+    if(query.cellId === 'new') {
+      redirect(generateDraftUrl(), res);
+      return {}
+    }
 
-  //   const { data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req), forwardCookies(req))
+    if(query.cellId.includes(DRAFT_SUFFIX)) {
+      return {}
+    }
 
-  //   // redirect to new comic if user isn't authorized to edit this comic
-  //   if (!data.userCanEdit || !data.isActive) {
-  //     // @todo log this case
-  //     redirect(generateDraftUrl(), res);
-  //     return {}
-  //   }
+    return {
+    }
+  }
 
-  //   return {
-  //     ...data,
-  //     comicId: query.comicId
-  //   }
-  // }
+  componentDidMount() {
+    this.props.hideSpinner();
+  }
 
   render () {
     return <div>Cell Studio!</div>

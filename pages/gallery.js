@@ -128,7 +128,7 @@ const CreateButton = styled(NavButton)`
 class GalleryRoute extends Component {
   navigateToStudio = () => {
     this.props.showSpinner()
-    Router.pushRoute('/studio/new/new')
+    Router.pushRoute('/s/cell/new')
   }
 
   showMoreComics = async () => {

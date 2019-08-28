@@ -26,6 +26,7 @@ const SIDE_BUTTONS_SPACER = 0//.4
 const cellWidth = `${(1 - SIDE_BUTTONS_SPACER) * theme.layout.width}px`;
 
 function generateDraftUrl() {
+  // @todo verify this id doesn't already exist in localstorage
   return `/s/comic/${shortid.generate()}${DRAFT_SUFFIX}`
 }
 

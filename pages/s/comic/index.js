@@ -4,7 +4,7 @@ import axios from 'axios'
 import shortid from 'shortid'
 import propTypes from 'prop-types'
 
-import Cell from '../../components/Cell'
+import Cell from '../../../components/Cell'
 
 import ComicActionsModal from './ComicActionsModal'
 import CellActionsModal from './CellActionsModal'
@@ -12,15 +12,15 @@ import AddCellModal from './AddCellModal'
 
 import {
   PinkMenuButton
-} from '../../components/Buttons'
+} from '../../../components/Buttons'
 
-import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../components/navigation'
+import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../../components/navigation'
 
-import { Router } from '../../routes'
-import { forwardCookies, getApi, redirect, sortByOrder } from '../../helpers'
-import theme from '../../helpers/theme'
+import { Router } from '../../../routes'
+import { forwardCookies, getApi, redirect, sortByOrder } from '../../../helpers'
+import theme from '../../../helpers/theme'
 
-import {DRAFT_SUFFIX} from '../../config/constants.json'
+import {DRAFT_SUFFIX} from '../../../config/constants.json'
 
 const SIDE_BUTTONS_SPACER = 0//.4
 const cellWidth = `${(1 - SIDE_BUTTONS_SPACER) * theme.layout.width}px`;

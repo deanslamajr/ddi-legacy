@@ -1,12 +1,12 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import Modal, { CenteredButtons, MessageContainer as Message } from '../../components/Modal'
-import { MenuButton } from '../../components/Buttons'
-import Cell from '../../components/Cell'
+import Modal, { CenteredButtons, MessageContainer as Message } from '../../../components/Modal'
+import { MenuButton } from '../../../components/Buttons'
+import Cell from '../../../components/Cell'
 
-import { media } from '../../helpers/style-utils'
-import { sortByOrder } from '../../helpers'
+import { media } from '../../../helpers/style-utils'
+import { sortByOrder } from '../../../helpers'
 
 const HOME = 'HOME'
 const CELL_LIST = 'CELL_LIST'

@@ -50,12 +50,12 @@ const ExitButton = styled(NavButton)`
 function Modal ({ children, className, onCancelClick }) {
   return (<TransparentDarkBackground>
     <ModalContainer className={className}>
-      <ExitButton
+      {onCancelClick && <ExitButton
         accented
         cb={onCancelClick}
         position={TOP_CENTER}
         value='&times;'
-      />
+      />}
       {children}
     </ModalContainer>
   </TransparentDarkBackground>)

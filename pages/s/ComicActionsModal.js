@@ -19,7 +19,6 @@ export default class ComicActionsModal extends React.Component {
 
   renderDeleteWarning = () => {
     const {
-      onCancelClick,
       onDeleteClick
     } = this.props;
 

@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import Modal, { CenteredButtons, MessageContainer as Message } from '../../components/Modal'
-import { MenuButton, PinkMenuButton } from '../../components/Buttons'
+import { MenuButton } from '../../components/Buttons'
 import Cell from '../../components/Cell'
 
 import { media } from '../../helpers/style-utils'
@@ -72,7 +72,7 @@ export default class AddCellModal extends React.Component {
     } = this.props
 
     return this.state.currentView === HOME
-      ? (<HomeModal>
+      ? (<HomeModal onCancelClick={onCancelClick}>
         <Message>
           Add a new cell
         </Message>
@@ -86,11 +86,6 @@ export default class AddCellModal extends React.Component {
           <MenuButton onClick={onAddCellFromNewClick}>
             FROM NEW
           </MenuButton>
-        </CenteredButtons>
-        <CenteredButtons>
-          <PinkMenuButton onClick={onCancelClick}>
-            CANCEL
-          </PinkMenuButton>
         </CenteredButtons>
       </HomeModal>)
       : (<DuplicateModal>

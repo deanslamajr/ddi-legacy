@@ -2,9 +2,9 @@ import { Component } from 'react';
 import styled from 'styled-components';
 import { Stage, Layer, Rect, Text, Group } from 'react-konva';
 
-import theme from '../../helpers/theme';
+import theme from '../../../helpers/theme';
 
-import {getEmojiConfigs, EMOJI_MASK_REF_ID, EMOJI_MASK_OUTLINE_REF_ID} from '../../helpers/konvaDrawingUtils'
+import {getEmojiConfigs, EMOJI_MASK_REF_ID, EMOJI_MASK_OUTLINE_REF_ID} from '../../../helpers/konvaDrawingUtils'
 
 //
 // Styled Components

@@ -2,6 +2,8 @@ import store from 'store2';
 import shortid from 'shortid';
 import cloneDeep from 'lodash/cloneDeep';
 
+import theme from '../helpers/theme'
+
 import {
   DRAFT_SUFFIX,
   STORAGEKEY_STUDIO
@@ -54,10 +56,29 @@ function generateComicId () {
 const emptyCache = {
   cells: {},
   comics: {}
-}
+};
+
+const emptyStudioState = {
+  backgroundColor: theme.colors.white,
+  caption: '',
+  currentEmojiId: 1,
+  emojis: {}
+};
+
+const emptyComic = {
+  cells: []
+};
 
 const getInitializedCache = () => {
   return cloneDeep(emptyCache);
+}
+
+const getInitializedStudioState = () => {
+  return cloneDeep(emptyStudioState);
+}
+
+const getInitializedComic = () => {
+  return cloneDeep(emptyComic);
 }
 
 export const doesCellIdExist = (cellId) => {
@@ -96,7 +117,7 @@ export const createNewCell = (comicId) => {
   if (!cache.cells) {
     cache.cells = {};
   }
-  cache.cells[cellId] = {};
+  cache.cells[cellId] = getInitializedStudioState();
 
   // create new comic
   if (!comicId && !doesComicIdExist(comicId)) {
@@ -104,9 +125,7 @@ export const createNewCell = (comicId) => {
     if (!cache.comics) {
       cache.comics = {};
     }
-    cache.comics[comicId] = {
-      cells: []
-    };
+    cache.comics[comicId] = getInitializedComic();
   }
 
   // add new cellId to comic
@@ -115,4 +134,9 @@ export const createNewCell = (comicId) => {
   setCache(cache);
 
   return cellId;
+}
+
+export const getStudioState = (cellId) => {
+  const cache = getCache();
+  return cache.cells[cellId];
 }

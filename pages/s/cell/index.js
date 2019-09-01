@@ -57,7 +57,7 @@ class CellStudio extends Component {
         "blue": 0,
         "opacity": 1
       }}
-    };
+    }
 
     // this.initialState = {
     //   activeEmojiId: null,
@@ -91,7 +91,13 @@ class CellStudio extends Component {
   }
 
   componentDidMount() {
-    if (this.props.cellId === 'new') {
+    const {getStudioState} = require('../../../helpers/clientCache');
+    const cachedStudioState = getStudioState(this.props.cellId);
+
+    if (cachedStudioState) {
+      this.setState({studioState: cachedStudioState});
+    }
+    else {
       // create new cell in cache
       const {createNewCell} = require('../../../helpers/clientCache');
       const cellId = createNewCell();

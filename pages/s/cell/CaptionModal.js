@@ -1,9 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { MenuButton, PinkMenuButton } from '../../components/Buttons'
-import Modal, { CenteredButtons } from '../../components/Modal'
-import { validateTitle } from '../../shared/validators'
+import { MenuButton, PinkMenuButton } from '../../../components/Buttons'
+import Modal, { CenteredButtons } from '../../../components/Modal'
+import { validateCaption } from '../../../shared/validators'
 
 const CenteredContainer = styled.div`
   display: flex;
@@ -20,7 +20,7 @@ const PreviewModalContainer = styled(Modal)`
   max-width: 100vw;
 `
 
-const TitleInput = styled.textarea`
+const CaptionInput = styled.textarea`
   font-size: 16px;
   height: 4rem;
   width: calc(100% - ${props => props.theme.padding}px);
@@ -37,27 +37,27 @@ const TitleInput = styled.textarea`
 
 class CaptionModal extends React.Component {
   state = {
-    title: this.props.title
+    caption: this.props.caption
   }
 
-  handleTitleChange = (event) => {
-    let newTitle = validateTitle(event.target.value)
-    this.setState({ title: newTitle })
+  handleCaptionChange = (event) => {
+    const newCaption = validateCaption(event.target.value)
+    this.setState({ caption: newCaption })
   }
 
   onUpdateClick = () => {
-    this.props.onUpdateClick(this.state.title)
+    this.props.onUpdateClick(this.state.caption)
   }
   
   render () {
     return (<PreviewModalContainer onCancelClick={this.props.onCancelClick}>
       <CenteredContainer>
-        <TitleInput
+        <CaptionInput
           wrap='soft'
           type='text'
           placeholder='add a caption'
-          value={this.state.title}
-          onChange={this.handleTitleChange}
+          value={this.state.caption}
+          onChange={this.handleCaptionChange}
         />
       </CenteredContainer>
       <CenteredButtons>

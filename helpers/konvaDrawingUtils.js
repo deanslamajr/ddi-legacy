@@ -21,7 +21,28 @@ export const EMOJI_MASK_OUTLINE_REF_ID = 'EMOJI_MASK_OUTLINE_REF_ID';
 export const konvaCacheConfig = {
   offset: 30,
   pixelRatio: 1, /// fixes android graphics glitch
-  //drawBorder: true /// for debugging
+  //drawBorder: true /// set 'true' for debugging image drawing
+}
+
+export function createNewEmojiComponentState (emoji, currentEmojiId) {
+  return {
+    emoji,
+    id: currentEmojiId,
+    order: currentEmojiId,
+    filters: undefined,
+    selectedEmoji: undefined,
+    x: 100,
+    y: 100,
+    scaleX: 1,
+    scaleY: 1,
+    rotation: 0,
+    size: 100,
+    alpha: .5,
+    red: 125,
+    green: 0,
+    blue: 0,
+    opacity: 1
+  }
 }
 
 export function getEmojiConfigs (emojis) {

@@ -1,11 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import Modal, { CenteredButtons, MessageContainer } from '../../components/Modal'
+import Modal, { CenteredButtons, MessageContainer } from '../../../components/Modal'
 import { 
   PinkMenuButton,
   MenuButton
-} from '../../components/Buttons'
+} from '../../../components/Buttons'
 
 const HomeModal = styled(Modal)`
   width: 315px;

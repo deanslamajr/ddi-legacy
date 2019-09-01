@@ -59,6 +59,7 @@ const emptyCache = {
 };
 
 const emptyStudioState = {
+  activeEmojiId: null,
   backgroundColor: theme.colors.white,
   caption: '',
   currentEmojiId: 1,
@@ -141,4 +142,9 @@ export const getStudioState = (cellId) => {
   return cache
     ? cache.cells[cellId]
     : null;
+}
+
+export const clearStudioState = (cellId, initialStudioState) => {
+  const newStudioState = initialStudioState || getInitializedStudioState();
+  setCellStudioState(cellId, newStudioState);
 }

@@ -14,7 +14,7 @@ import {
   validateFilename,
   validateId,
   validateStudioState,
-  validateTitle
+  validateCaption
 } from './validators'
 
 import {
@@ -126,8 +126,7 @@ const validStudioState = {
       opacity: 1
     }
   },
-  showEmojiPicker: false,
-  title: ''
+  caption: ''
 }
 
 describe('validators', () => {
@@ -182,12 +181,12 @@ describe('validators', () => {
     })
   })
 
-  describe('validateTitle', () => {
+  describe('validateCaption', () => {
     describe('if value is longer than 255 characters', () => {
       it('should be clipped to the first 255 characters', () => {
-        const tooLongTitle = 'PMjiGzHtLxMUns5ZhbIlaoogREylI8DEDRBQclE9H62ZAOoKifQj054UArwLSly69oECbNeCSiq0PAwJz02qE35jFjYB7WCvuM77zmFKbldhYcmxidffi8u4OQGHarXcn5FFY28oTufNYuk2cLgnXaEoN6PU2u20ci3Cm2iHxD1NljRjhfHuj9hWxzu7YZbmoS5LtRzBwwMJ3tYSeEeqAqcTc7a2SqXenBTTVW2zi8WS9gmxMmQsPD0pb6mJHY6X'
-        const validatedTitle = validateTitle(tooLongTitle)
-        expect(validatedTitle.length).toEqual(255)
+        const tooLongCaption = 'PMjiGzHtLxMUns5ZhbIlaoogREylI8DEDRBQclE9H62ZAOoKifQj054UArwLSly69oECbNeCSiq0PAwJz02qE35jFjYB7WCvuM77zmFKbldhYcmxidffi8u4OQGHarXcn5FFY28oTufNYuk2cLgnXaEoN6PU2u20ci3Cm2iHxD1NljRjhfHuj9hWxzu7YZbmoS5LtRzBwwMJ3tYSeEeqAqcTc7a2SqXenBTTVW2zi8WS9gmxMmQsPD0pb6mJHY6X'
+        const validatedCaption = validateCaption(tooLongCaption)
+        expect(validatedCaption.length).toEqual(255)
       })
     })
   })
@@ -288,38 +287,20 @@ describe('validators', () => {
       })
     })
 
-    describe('showEmojiPicker', () => {
-      describe('if not a Boolean type', () => {
-        it('should be coerced into a boolean type', () => {
-          expect.assertions(2)
-
-          const incorrectStudioState = {
-            ...validStudioState,
-            showEmojiPicker: -1
-          }
-
-          const validatedStudioState = validateStudioState(incorrectStudioState)
-
-          expect(validatedStudioState.showEmojiPicker).not.toEqual(-1)
-          expect(validatedStudioState.showEmojiPicker).toEqual(true)
-        })
-      })
-    })
-
-    describe('title', () => {
-      describe('if title is longer than 255 characters', () => {
+    describe('caption', () => {
+      describe('if caption is longer than 255 characters', () => {
         it('should be clipped to the first 255 characters', () => {
-          const tooLongTitle = 'PMjiGzHtLxMUns5ZhbIlaoogREylI8DEDRBQclE9H62ZAOoKifQj054UArwLSly69oECbNeCSiq0PAwJz02qE35jFjYB7WCvuM77zmFKbldhYcmxidffi8u4OQGHarXcn5FFY28oTufNYuk2cLgnXaEoN6PU2u20ci3Cm2iHxD1NljRjhfHuj9hWxzu7YZbmoS5LtRzBwwMJ3tYSeEeqAqcTc7a2SqXenBTTVW2zi8WS9gmxMmQsPD0pb6mJHY6X'
-          expect(tooLongTitle.length).toEqual(256)
+          const tooLongCaption = 'PMjiGzHtLxMUns5ZhbIlaoogREylI8DEDRBQclE9H62ZAOoKifQj054UArwLSly69oECbNeCSiq0PAwJz02qE35jFjYB7WCvuM77zmFKbldhYcmxidffi8u4OQGHarXcn5FFY28oTufNYuk2cLgnXaEoN6PU2u20ci3Cm2iHxD1NljRjhfHuj9hWxzu7YZbmoS5LtRzBwwMJ3tYSeEeqAqcTc7a2SqXenBTTVW2zi8WS9gmxMmQsPD0pb6mJHY6X'
+          expect(tooLongCaption.length).toEqual(256)
 
           const incorrectStudioState = {
             ...validStudioState,
-            title: tooLongTitle
+            caption: tooLongCaption
           }
 
           const validatedStudioState = validateStudioState(incorrectStudioState)
 
-          expect(validatedStudioState.title.length).toEqual(255)
+          expect(validatedStudioState.caption.length).toEqual(255)
         })
       })
     })

@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import Modal, { CenteredButtons } from '../../components/Modal'
-import { PinkMenuButton, MenuButton } from '../../components/Buttons'
+import Modal, { CenteredButtons } from '../../../components/Modal'
+import { PinkMenuButton, MenuButton } from '../../../components/Buttons'
 
 const HomeModal = styled(Modal)`
   width: 315px;
@@ -15,7 +15,7 @@ export default class ActionsModal extends React.Component {
       onCancelClick,
       onCanvasColorSelect,
       onResetClick,
-      onPublishClick,
+      onPreviewClick,
       toggleCaptionModal
     } = this.props
 
@@ -31,8 +31,8 @@ export default class ActionsModal extends React.Component {
         </MenuButton>
       </CenteredButtons>
       <CenteredButtons>
-        <PinkMenuButton onClick={onPublishClick}>
-          PUBLISH
+        <PinkMenuButton onClick={onPreviewClick}>
+          PREVIEW
         </PinkMenuButton>
       </CenteredButtons>
       <CenteredButtons>

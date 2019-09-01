@@ -28,14 +28,14 @@ const ERR_VALUE_MUST_BE_SET = 'must be set'
 const ERR_EXCEED_MAX_EMOJIS = `Emojis datastructure cannot exceed a count of ${MAX_EMOJIS_COUNT} emojis`
 const ERR_MUST_BE_A_HEX_COLOR = 'must be a valid hex color string'
 
-function validateTitle (title) {
-  let validatedTitle = title
+function validateCaption (caption) {
+  let validatedCaption = caption
 
-  if (validatedTitle && validatedTitle.length > MAX_CAPTION_LENGTH) {
-    validatedTitle = validatedTitle.substring(0, MAX_CAPTION_LENGTH)
+  if (validatedCaption && validatedCaption.length > MAX_CAPTION_LENGTH) {
+    validatedCaption = validatedCaption.substring(0, MAX_CAPTION_LENGTH)
   }
 
-  return validatedTitle
+  return validatedCaption
 }
 
 function validateFilename (filename) {
@@ -72,10 +72,6 @@ function validateBackgroundColor (hex, field) {
     throw new Error(`${field} ${ERR_MUST_BE_A_HEX_COLOR}`);
   }
   return hex;
-}
-
-function coerceBoolean (value) {
-  return Boolean(value)
 }
 
 function validatePosition (value, field) {
@@ -277,8 +273,7 @@ function validateStudioState (studioState) {
     activeEmojiId: validateId(studioState.activeEmojiId, 'activeEmojiId'),
     backgroundColor: validateBackgroundColor(studioState.backgroundColor, 'backgroundColor'),
     currentEmojiId: validateId(studioState.currentEmojiId, 'currentEmojiId'),
-    showEmojiPicker: coerceBoolean(studioState.showEmojiPicker),
-    title: validateTitle(studioState.title),
+    caption: validateCaption(studioState.caption),
     emojis: validateEmojis(studioState.emojis)
   }
 
@@ -299,5 +294,5 @@ module.exports = {
   validateFilename,
   validateId,
   validateStudioState,
-  validateTitle
+  validateCaption
 }

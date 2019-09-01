@@ -1,15 +1,18 @@
 import React from 'react'
 import styled from 'styled-components'
 import { SliderPicker } from 'react-color';
-import theme from '../../helpers/theme'
 
-import NewSlider from '../../components/NewSlider'
+import EmojiEditModal from './EmojiEditModal'
 
+import NewSlider from '../../../components/NewSlider'
 import {
   MenuButton,
   PinkMenuButton,
   DisabledButton
-} from '../../components/Buttons'
+} from '../../../components/Buttons'
+
+import theme from '../../../helpers/theme'
+import { sortByOrder } from '../../../helpers'
 
 import {
   MIN_SIZE,
@@ -21,11 +24,7 @@ import {
   MIN_ALPHA,
   MAX_ALPHA,
   MAX_EMOJIS_COUNT
-} from '../../config/constants.json'
-
-import { sortByOrder } from '../../helpers'
-
-import EmojiEditModal from './EmojiEditModal'
+} from '../../../config/constants.json'
 
 const ColorPickerContainer = styled.div`
   margin-top: 1rem;

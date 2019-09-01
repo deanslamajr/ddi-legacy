@@ -1,11 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import Cell from '../../components/Cell'
-import { MenuButton, PinkMenuButton } from '../../components/Buttons'
-import Modal, { CenteredButtons, MessageContainer } from '../../components/Modal'
+import Cell from '../../../components/Cell'
+import {PinkMenuButton} from '../../../components/Buttons'
+import Modal, { CenteredButtons } from '../../../components/Modal'
 
-import {SCHEMA_VERSION} from '../../config/constants.json'
+import {SCHEMA_VERSION} from '../../../config/constants.json'
 
 const CenteredContainer = styled.div`
   display: flex;
@@ -25,31 +25,22 @@ function PreviewModal ({
   cellImageUrl,
   onCancelClick,
   onEditCaptionClick,
-  onOkClick,
-  title
+  caption
 }) {
   return (<PreviewModalContainer onCancelClick={onCancelClick}>
-    <MessageContainer>
-      Publish this Canvas?
-    </MessageContainer>
     <CenteredContainer>
       <Cell
         removeBorders
         imageUrl={cellImageUrl}
         schemaVersion={SCHEMA_VERSION}
-        title={title}
+        title={caption}
         width="250px"
         isPreview
       />
     </CenteredContainer>
     <CenteredButtons>
-      <MenuButton onClick={onEditCaptionClick}>
+      <PinkMenuButton onClick={onEditCaptionClick}>
         CAPTION
-      </MenuButton>
-    </CenteredButtons>
-    <CenteredButtons>
-      <PinkMenuButton onClick={onOkClick}>
-        PUBLISH
       </PinkMenuButton>
     </CenteredButtons>
   </PreviewModalContainer>)

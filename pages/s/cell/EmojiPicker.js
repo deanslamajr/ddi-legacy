@@ -3,7 +3,7 @@ import { emojiIndex } from 'emoji-mart'
 import styled from 'styled-components'
 import emojiRegexFactory from 'emoji-regex'
 
-import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../components/navigation'
+import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../../components/navigation'
 
 const emojis = Object.values(emojiIndex.emojis).filter(emoji => emoji.native).map(o => o.native)
 

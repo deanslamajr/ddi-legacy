@@ -8,12 +8,16 @@ import ActionsModal from './ActionsModal';
 import BuilderMenu from './BuilderMenu';
 import CaptionModal from './CaptionModal';
 import EmojiCanvas from './EmojiCanvas';
+import EmojiPicker from './EmojiPicker';
+import PreviewModal from './PreviewModal';
 import WarningModal from './WarningModal';
 
 import {NavButton, BOTTOM_LEFT, BOTTOM_RIGHT} from '../../../components/navigation'
 
 import { Router } from '../../../routes';
 
+import {generateCellImageFromEmojis} from '../../../helpers/generateCellImageFromEmojis'
+import {sortByOrder} from '../../../helpers'
 import theme from '../../../helpers/theme';
 import {
   createNewEmojiComponentState,
@@ -52,58 +56,24 @@ class CellStudio extends Component {
     super();
     this.emojiRefs = [];
 
-    // this.initialStudioState = {
-    //   activeEmojiId: null,
-    //   backgroundColor: theme.colors.white,
-    //   caption: '',
-    //   currentEmojiId: 1,
-    //   emojis: {}
-    // }
-
     this.initialStudioState = {
-      activeEmojiId: 1,
+      activeEmojiId: null,
       backgroundColor: theme.colors.white,
       caption: '',
-      currentEmojiId: 2,
-      emojis: {"1": {
-        "emoji": "👨‍🔬",
-        "id": 1,
-        "order": 1,
-        "x": 100,
-        "y": 100,
-        "scaleX": 1,
-        "scaleY": 1,
-        "rotation": 0,
-        "size": 100,
-        "alpha": 0.5,
-        "red": 125,
-        "green": 0,
-        "blue": 0,
-        "opacity": 1
-      }}
+      currentEmojiId: 1,
+      emojis: {}
     }
 
-    // this.initialState = {
-    //   onEmojiSelect: this.createNewEmoji,
-    //   showEmojiPicker: true,
-    //   showCaptionModal: false,
-    //   showActionsModal: false,
-    //   showResetWarningModal: false,
-    //   showPublishPreviewModal: false,
-    //   studioState: this.initialStudioState
-    // };
-
-    this.initialState = {
+    this.state = {
       onEmojiSelect: this.createNewEmoji,
+      cellImageUrl: '',
       showEmojiPicker: false,
       showCaptionModal: false,
       showActionsModal: false,
       showResetWarningModal: false,
-      showPublishPreviewModal: false,
-      studioState: this.initialStudioState
+      showPreviewModal: false,
+      studioState: cloneDeep(this.initialStudioState)
     };
-
-    this.state = this.initialState
   }
 
   static async getInitialProps ({ query, req, res }) {
@@ -117,13 +87,18 @@ class CellStudio extends Component {
     const cachedStudioState = getStudioState(this.props.cellId);
 
     if (cachedStudioState) {
-      this.setState({studioState: cachedStudioState}, () => {
+      const showEmojiPicker = Object.keys(cachedStudioState.emojis).length === 0;
+      this.setState({
+        showEmojiPicker,
+        studioState: cachedStudioState
+      }, () => {
         this.updateKonvaCache();
         this.updateMaskKonvaCache();
       });
     }
     else {
       this.createNewComicAndCell();
+      this.setState({showEmojiPicker: true})
     }
 
     this.props.hideSpinner();
@@ -335,7 +310,7 @@ class CellStudio extends Component {
       const clonedEmojis = clonedStudioState.emojis;
 
       delete clonedEmojis[activeEmojiId]
-      
+
       const clonedEmojisValues = Object.values(clonedEmojis)
 
       let newActiveEmojiId
@@ -347,20 +322,22 @@ class CellStudio extends Component {
         newActiveEmojiId = null
         // 2. 
         actionsAfterStateUpdate = () => {
-          cb()
-          this.openEmojiPicker()
+          this.openEmojiPicker();
+          cb();
         }
       }
       else {
         newActiveEmojiId = clonedEmojisValues[0].id
-        actionsAfterStateUpdate = cb
+        actionsAfterStateUpdate = () => {
+          this.updateAllKonvaCachesAndForceComponentUpdate();
+          cb();
+        };
       }
 
       clonedStudioState.activeEmojiId = newActiveEmojiId;
 
       return {studioState: clonedStudioState};
     }, () => {
-      this.updateAllKonvaCachesAndForceComponentUpdate();
       this.saveStudioStateToCache();
       actionsAfterStateUpdate();
     })
@@ -402,7 +379,10 @@ class CellStudio extends Component {
 
       activeEmoji.emoji = emoji
 
-      return {studioState: clonedStudioState}
+      return {
+        showEmojiPicker: false,
+        studioState: clonedStudioState
+      };
     }, () => {
       // if bugs with refactor, try replacing 'updateAllKonvaCachesAndForceComponentUpdate' with 'updateAllKonvaCaches'
       // (this was the original implementation)
@@ -506,8 +486,8 @@ class CellStudio extends Component {
 
     this.setState({
       showEmojiPicker: true, // @todo false if this is a duplicated comic
-      studioState: this.initialStudioState
-    }, () => this.toggleResetWarningModal(false))
+      studioState: cloneDeep(this.initialStudioState)
+    }, () => this.toggleResetWarningModal(false));
   }
 
   /*******
@@ -515,6 +495,39 @@ class CellStudio extends Component {
    ***** 
    **** 
    **/
+  closeEmojiPicker = () => {
+    this.setState({ showEmojiPicker: false })
+  }
+
+  exit = () => {
+    this.props.showSpinner();
+    // @todo implement conditional logic
+    // if this is a new cell for a new comic
+    //  * clear this cell and comic from client cache
+    //  * redirect to /gallery
+    // if this is a new cell associated with a comic with more than just this cell
+    //  * clear this cell from the client cache
+    //  * redirect to /s/comic/:comicId where :comicId is that associated with comic this cell was to be added to
+    
+    Router.pushRoute('/gallery')
+  }
+
+  handlePreviewClick = async () => {
+    this.toggleActionsModal(false);
+    this.props.showSpinner();
+
+    const {url: cellImageUrl} = await generateCellImageFromEmojis({
+      emojis: this.state.studioState.emojis,
+      backgroundColor: this.state.studioState.backgroundColor,
+      htmlElementId: CELL_IMAGE_ID
+    });
+
+    this.setState({cellImageUrl}, () => {
+      this.togglePreviewModal(true);
+      this.props.hideSpinner();
+    });
+  }
+
   openEmojiPickerToChangeEmoji = (cb = () => {}) => {
     this.setState({
       onEmojiSelect: this.changeEmoji,
@@ -527,6 +540,15 @@ class CellStudio extends Component {
       onEmojiSelect: this.createNewEmoji,
       showEmojiPicker: true
     });
+  }
+
+  onPickerCancel = () => {
+    if (this.state.studioState.activeEmojiId) {
+      this.closeEmojiPicker()
+    }
+    else {
+      this.exit();
+    }
   }
 
   onResetClick = () => {
@@ -545,6 +567,10 @@ class CellStudio extends Component {
 
   toggleCaptionModal = (newValue) => {
     this.setState({ showCaptionModal: newValue });
+  }
+
+  togglePreviewModal = (newValue = !this.state.showPreviewModal) => {
+    this.setState({ showPreviewModal: newValue })
   }
 
   toggleResetWarningModal = (newValue = !this.state.showResetWarningModal) => {
@@ -575,7 +601,7 @@ class CellStudio extends Component {
             emojiRefs={this.emojiRefs}
             handleDragEnd={this.handleDragEnd}
           />
-          {activeEmoji && (<EverythingElseContainer>
+          <EverythingElseContainer>
             <BuilderMenu
               activeEmoji={activeEmoji}
               changeActiveEmoji={this.changeActiveEmoji}
@@ -600,25 +626,25 @@ class CellStudio extends Component {
                   onCancelClick={() => this.toggleActionsModal(false)}
                   onCanvasColorSelect={() => showCanvaColorMenu()}
                   onResetClick={() => this.onResetClick()}
-                  onPreviewClick={() => {}/*this.handlePublishClick()*/}
+                  onPreviewClick={() => this.handlePreviewClick()}
                   toggleCaptionModal={this.showCaptionModalFromActionsModal}
                 />
               )}
             />
 
-            {/* {this.state.showEmojiPicker && <EmojiPicker
+            {this.state.showEmojiPicker && <EmojiPicker
               onSelect={this.state.onEmojiSelect}
               onCancel={this.onPickerCancel}
-              backButtonLabel={this.state.activeEmojiId ? 'BACK' : 'EXIT'}
-            />} */}
-          </EverythingElseContainer>)}
+              backButtonLabel={this.state.studioState.activeEmojiId ? 'BACK' : 'EXIT'}
+            />}
+          </EverythingElseContainer>
         </CenteredContainer>
 
-        {/* <NavButton
+        <NavButton
           value='EXIT'
-          cb={() => this.navigateBack()}
+          cb={() => this.exit()}
           position={BOTTOM_LEFT}
-        /> */}
+        />
 
         {!this.state.showEmojiPicker && <NavButton
           value='ACTIONS'
@@ -627,19 +653,12 @@ class CellStudio extends Component {
           accented
         />}
 
-        {/* {this.state.showPublishFailModal && <PublishFailModal
-          hasFailedCaptcha={this.state.hasFailedCaptcha}
-          onRetryClick={token => this.retryPublish(token)}
-          onCancelClick={() => this.cancelPublishAttemp()}
-        />}
-
-        {this.state.showPublishPreviewModal && <PreviewModal
+        {this.state.showPreviewModal && <PreviewModal
           cellImageUrl={this.state.cellImageUrl}
-          onCancelClick={() => this.togglePublishPreviewModal(false)}
+          onCancelClick={() => this.togglePreviewModal(false)}
           onEditCaptionClick={() => this.toggleCaptionModal(true)}
-          onOkClick={() => this.handleSaveCellConfirm()}
-          title={this.state.title || ''}
-        />} */}
+          caption={this.state.studioState.caption || ''}
+        />}
 
         {this.state.showCaptionModal && <CaptionModal
           onCancelClick={() => this.toggleCaptionModal(false)}
@@ -658,7 +677,7 @@ class CellStudio extends Component {
 }
 
 CellStudio.propTypes = {
-  shouldCreateNewComic: PropTypes.bool
+  cellId: PropTypes.string
 };
 
 export default CellStudio 

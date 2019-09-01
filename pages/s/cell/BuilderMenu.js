@@ -171,30 +171,32 @@ class BuilderMenu extends React.Component {
     const canAddEmojis = emojisArray.length <= MAX_EMOJIS_COUNT
 
     return (<React.Fragment>
-      <SliderContainer>
-        <Label>SIZE</Label>
-        <NewSlider
-          min={MIN_SIZE}
-          max={MAX_SIZE}
-          step={1}
-          value={(activeEmoji && activeEmoji.size) || 0}
-          onChange={(value) => setField('size', value)}
-        />
-      </SliderContainer>
-      <SliderContainer>
-        <Label>ROTATION</Label>
-        <NewSlider
-          min={MIN_ROTATION}
-          max={MAX_ROTATION}
-          step={1}
-          value={(activeEmoji && activeEmoji.rotation) || 0}
-          onChange={(value) => setField('rotation', value)}
-        />
-      </SliderContainer>
+      {activeEmoji && <React.Fragment>
+        <SliderContainer>
+          <Label>SIZE</Label>
+          <NewSlider
+            min={MIN_SIZE}
+            max={MAX_SIZE}
+            step={1}
+            value={(activeEmoji && activeEmoji.size) || 0}
+            onChange={(value) => setField('size', value)}
+          />
+        </SliderContainer>
+        <SliderContainer>
+          <Label>ROTATION</Label>
+          <NewSlider
+            min={MIN_ROTATION}
+            max={MAX_ROTATION}
+            step={1}
+            value={(activeEmoji && activeEmoji.rotation) || 0}
+            onChange={(value) => setField('rotation', value)}
+          />
+        </SliderContainer>
 
-      <MenuButton onClick={() => this.setState({ currentMenu: SECONDARY })}>
-        ADVANCED
-      </MenuButton>
+        <MenuButton onClick={() => this.setState({ currentMenu: SECONDARY })}>
+          ADVANCED
+        </MenuButton>
+      </React.Fragment>}
       
       {canAddEmojis
         ? (<AddEmojiButton onClick={this.props.openEmojiPicker}>

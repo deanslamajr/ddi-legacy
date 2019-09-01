@@ -123,30 +123,6 @@ describe('clientCache', () => {
 
       expect(updatedCache.cells[cellId]).toBe(newStudioState);
     });
-
-    xdescribe('if cache does not exist', () => {
-      it('should create a cache object', () => {
-        store('', null);
-
-        setCellStudioState(cellId, newStudioState);
-
-        const updatedCache = store('');
-
-        expect(updatedCache.cells[cellId]).toBe(newStudioState);
-      })
-    });
-
-    xdescribe('if cache does not have `cells` field', () => {
-      it('should create a `cells` field', () => {
-
-      });
-    });
-
-    xdescribe('if cache does not have `comics` field', () => {
-      it('should create a `comics` field', () => {
-
-      });
-    });
   });
 
   describe('createNewCell', () => {

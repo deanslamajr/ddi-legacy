@@ -98,19 +98,32 @@ class CellStudio extends Component {
       this.setState({studioState: cachedStudioState});
     }
     else {
-      // create new cell in cache
-      const {createNewCell} = require('../../../helpers/clientCache');
-      const cellId = createNewCell();
-
-      Router.pushRoute(`/s/cell/${cellId}`);
+      this.createNewComicAndCell();
     }
 
     this.props.hideSpinner();
   }
 
+  createNewComicAndCell = (initialStudioState) => {
+    // create new cell in cache
+    const {createNewCell} = require('../../../helpers/clientCache');
+    const cellId = createNewCell(undefined, initialStudioState);
+
+    Router.pushRoute(`/s/cell/${cellId}`);
+  }
+
   saveStudioStateToCache = () => {
-    const {setCellStudioState} = require('../../../helpers/clientCache');
-    setCellStudioState(this.props.cellId, this.state.studioState);
+    const {
+      doesCellIdExist,
+      setCellStudioState
+    } = require('../../../helpers/clientCache');
+
+    if (!doesCellIdExist(this.props.cellId)) {
+      this.createNewComicAndCell(this.state.studioState);
+    }
+    else {
+      setCellStudioState(this.props.cellId, this.state.studioState);
+    }
   }
 
   handleDragEnd = ({xDiff, yDiff}) => {

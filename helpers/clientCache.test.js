@@ -84,6 +84,28 @@ describe('clientCache', () => {
   describe('setCellStudioState', () => {
     const cellId = 'someCellId';
 
+    const newStudioState = {
+      backgroundColor: '#fff',
+      caption: '',
+      currentEmojiId: 2,
+      emojis: {"1": {
+        "emoji": "👨‍🔬",
+        "id": 1,
+        "order": 1,
+        "x": 100,
+        "y": 100,
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "size": 100,
+        "alpha": 0.5,
+        "red": 125,
+        "green": 0,
+        "blue": 0,
+        "opacity": 1
+      }}
+    };
+
     beforeEach(() => {
       const cache = {
         cells: {
@@ -95,28 +117,6 @@ describe('clientCache', () => {
     });
 
     it('should set the given cell`s studio state with the given studio state', () => {
-      const newStudioState = {
-        backgroundColor: '#fff',
-        caption: '',
-        currentEmojiId: 2,
-        emojis: {"1": {
-          "emoji": "👨‍🔬",
-          "id": 1,
-          "order": 1,
-          "x": 100,
-          "y": 100,
-          "scaleX": 1,
-          "scaleY": 1,
-          "rotation": 0,
-          "size": 100,
-          "alpha": 0.5,
-          "red": 125,
-          "green": 0,
-          "blue": 0,
-          "opacity": 1
-        }}
-      };
-
       setCellStudioState(cellId, newStudioState);
 
       const updatedCache = store('');
@@ -124,19 +124,15 @@ describe('clientCache', () => {
       expect(updatedCache.cells[cellId]).toBe(newStudioState);
     });
 
-    xdescribe('if the given cellId doesn`t exist in cache', () => {
-      it('should add a new cell to the cache with the given cellId', () => {
-
-      });
-
-      it('should create a new comic and add the new cell to this comic', () => {
-
-      });
-    });
-
     xdescribe('if cache does not exist', () => {
       it('should create a cache object', () => {
+        store('', null);
 
+        setCellStudioState(cellId, newStudioState);
+
+        const updatedCache = store('');
+
+        expect(updatedCache.cells[cellId]).toBe(newStudioState);
       })
     });
 

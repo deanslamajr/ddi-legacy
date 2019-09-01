@@ -105,7 +105,7 @@ export const setCellStudioState = (cellId, newStudioState) => {
   setCache(cache);
 }
 
-export const createNewCell = (comicId) => {  
+export const createNewCell = (comicId, initialStudioState) => {  
   let cache = getCache();
 
   if (!cache) {
@@ -117,7 +117,7 @@ export const createNewCell = (comicId) => {
   if (!cache.cells) {
     cache.cells = {};
   }
-  cache.cells[cellId] = getInitializedStudioState();
+  cache.cells[cellId] = initialStudioState || getInitializedStudioState();
 
   // create new comic
   if (!comicId && !doesComicIdExist(comicId)) {
@@ -138,5 +138,7 @@ export const createNewCell = (comicId) => {
 
 export const getStudioState = (cellId) => {
   const cache = getCache();
-  return cache.cells[cellId];
+  return cache
+    ? cache.cells[cellId]
+    : null;
 }

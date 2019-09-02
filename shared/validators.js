@@ -1,4 +1,3 @@
-const emojiRegexFactory = require('emoji-regex')
 const shortid = require('shortid')
 
 const {
@@ -104,14 +103,8 @@ function validateEmojiField (value) {
     throw new Error(`emoji.emoji ${ERR_VALUE_MUST_BE_SET}`)
   }
 
-  const emojiRegex = emojiRegexFactory()
-  const emojiMatch = emojiRegex.exec(value)
-  if (emojiMatch) {
-    return emojiMatch[0]
-  }
-
-  if (value.length > 1) {
-    return value.substring(0, 1)
+  if (value.length > 8) {
+    return value.substring(0, 8)
   }
 
   return value

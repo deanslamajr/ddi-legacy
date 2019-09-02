@@ -137,6 +137,8 @@ class EmojiPicker extends Component {
             <SearchContainer>
               <SearchInput
                 type='text'
+                // lots of emojis counts for 2 chars(e.g. 🦔)
+                // some can count for up to 7 chars (e.g. 🚣🏿‍♀️)
                 maxLength={8}
                 name='search'
                 onChange={this.handleChange}

@@ -404,21 +404,13 @@ describe('validators', () => {
           })
         })
 
-        describe('if value contains an emoji', () => {
-          it('should clip the value to only contain the emoji part', () => {
-            Object.values(emojis).forEach(emoji => emoji.emoji = 'abcd🦔sdf🤣')
+        describe('if value is longer than 8 chars', () => {
+          it('should clip the value to the first 8 chars', () => {
+            Object.values(emojis).forEach(emoji => emoji.emoji = 'abcd🦔sdlkjm')
             const validatedEmojis = validateEmojis(emojis)
             const arrayOfEmojis = Object.values(validatedEmojis)
-            expect(arrayOfEmojis[0].emoji).toEqual('🦔')
-          })
-        })
-
-        describe('if value does not contain an emoji', () => {
-          it('should clip the value to only contain the first char', () => {
-            Object.values(emojis).forEach(emoji => emoji.emoji = 'ab')
-            const validatedEmojis = validateEmojis(emojis)
-            const arrayOfEmojis = Object.values(validatedEmojis)
-            expect(arrayOfEmojis[0].emoji).toEqual('a')
+            // 🦔 counts as 2 chars, some can count for up to 7 chars (e.g. 🚣🏿‍♀️)
+            expect(arrayOfEmojis[0].emoji).toEqual('abcd🦔sd')
           })
         })
       })

@@ -46,6 +46,9 @@ const toRgb = (hex) => {
 const ColorPicker = styled.input`
   padding: 0;
   width: 100%;
+  /* hack to disable zoom on focus (iOS) */
+  /* @see https://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone#answer-6394497 */
+  font-size: 16px;
 `
 
 const ColorPickerContainer = styled.div`

@@ -79,6 +79,8 @@ const ThirdOfAButton = styled.span`
 
 const EmojiContainer = styled(ThirdOfAButton)`
   width: 40%;
+  white-space: nowrap;
+  overflow: hidden;
 `
 
 const ChangeLayerButton = styled(ThirdOfAButton)`

@@ -3,8 +3,6 @@ import styled from 'styled-components'
 import rgbHex from 'rgb-hex';
 import hexRgb from 'hex-rgb';
 
-import theme from '../../helpers/theme'
-
 import EmojiEditModal from './EmojiEditModal'
 
 import NewSlider from '../../../components/NewSlider'

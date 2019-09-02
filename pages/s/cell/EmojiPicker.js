@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../../components/navigation'
 
-import {validateEmojiField} from '../../shared/validators';
+import {validateEmojiField} from '../../../shared/validators';
 
 const emojis = Object.values(emojiIndex.emojis).filter(emoji => emoji.native).map(o => o.native)
 

@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import { SliderPicker } from 'react-color';
+import rgbHex from 'rgb-hex';
+import hexRgb from 'hex-rgb';
+
 import theme from '../../helpers/theme'
 
 import NewSlider from '../../components/NewSlider'
@@ -26,6 +28,25 @@ import {
 import { sortByOrder } from '../../helpers'
 
 import EmojiEditModal from './EmojiEditModal'
+
+// function toRgb (hex) {
+//   const cleanedHex = parseInt(hex.substr(1), 16);
+//   var r = cleanedHex >> 16;
+//   var g = cleanedHex >> 8 & 0xFF;
+//   var b = cleanedHex & 0xFF;
+//   return {r,g,b};
+// }
+
+const toHex = ({r, g, b}) => `#${rgbHex(r, g, b)}`;
+const toRgb = (hex) => {
+  const {red: r, green: g, blue: b} = hexRgb(hex.substr(1));
+  return {r, g, b};
+}
+
+const ColorPicker = styled.input`
+  padding: 0;
+  width: 100%;
+`
 
 const ColorPickerContainer = styled.div`
   margin-top: 1rem;
@@ -294,10 +315,10 @@ class BuilderMenu extends React.Component {
         BACK
       </PinkMenuButton>
       <ColorPickerContainer>
-        <SliderPicker
-          color={this.props.backgroundColor}
-          onChange={(e) => this.props.onColorChange(e.hex)}
-          width={theme.canvas.width}
+        <ColorPicker
+          type='color'
+          value={this.props.backgroundColor}
+          onChange={e => this.props.onColorChange(e.target.value)}
         />
       </ColorPickerContainer>
       <MenuButton onClick={() => this.props.onColorChange(theme.colors.white)}>
@@ -349,10 +370,10 @@ class BuilderMenu extends React.Component {
         </SliderContainer>
         
         <ColorPickerContainer>
-          <SliderPicker
-            color={rgb}
-            onChange={(e) => this.props.setFilterColor(e.rgb)}
-            width={theme.canvas.width}
+          <ColorPicker
+            type='color'
+            value={toHex(rgb)}
+            onChange={e => this.props.setFilterColor(toRgb(e.target.value))}
           />
         </ColorPickerContainer>
       </React.Fragment>)}

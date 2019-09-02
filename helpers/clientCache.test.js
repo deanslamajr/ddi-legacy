@@ -1,8 +1,11 @@
 import store from 'store2';
+import cloneDeep from 'lodash/cloneDeep';
 import {
   createNewCell,
+  deleteCell,
   doesCellIdExist,
   doesComicIdExist,
+  getComicIdFromCellId,
   setCellStudioState
 } from './clientCache';
 
@@ -200,6 +203,82 @@ describe('clientCache', () => {
         createNewCell();
         const cache = store('');
         expect(cache.comics).toBeDefined();
+      });
+    });
+  });
+
+  describe('getComicIdFromCellId', () => {
+    const cellId = 'cellId';
+    const comicId = 'comicId';
+
+    beforeEach(() => {
+      const cache = {
+        comics: {
+          [comicId]: {
+            cells: [cellId]
+          }
+        },
+        cells: {
+          [cellId]: {}
+        }
+      };
+
+      store('', cloneDeep(cache));
+    });
+
+    it('should return the comicId of the comic that the given cellId is associated with', () => {
+      expect(getComicIdFromCellId(cellId)).toBe(comicId);
+    });
+  });
+
+  describe('deleteCell', () => {
+    const cellId = 'cellId';
+    const aSecondCellId = 'aSecondCellId';
+
+    const comicId = 'comicId';
+
+    beforeEach(() => {
+      const cache = {
+        comics: {
+          [comicId]: {
+            cells: [
+              cellId,
+              aSecondCellId
+            ]
+          }
+        },
+        cells: {
+          [cellId]: {},
+          [aSecondCellId]: {}
+        }
+      };
+
+      store('', cloneDeep(cache));
+    });
+
+    it('should remove the cell from the cache', () => {
+      deleteCell(cellId);
+
+      const cache = store('');
+      expect(cache.cells[cellId]).toBeUndefined();
+    });
+
+    it('should remove the cell`s reference from the associated comic', () => {
+      deleteCell(cellId);
+
+      const cache = store('');
+      const comicCellReferences = cache.comics[comicId].cells;
+      expect(comicCellReferences.includes(cellId)).toBe(false);
+    });
+
+    describe('if the associated comic has 0 cells after this removal', () => {
+      it('should delete the comic', () => {
+        deleteCell(cellId);
+        deleteCell(aSecondCellId);
+
+        const cache = store('');
+
+        expect(cache.comics[comicId]).toBeUndefined();
       });
     });
   });

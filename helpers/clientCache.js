@@ -82,6 +82,60 @@ const getInitializedComic = () => {
   return cloneDeep(emptyComic);
 }
 
+// note: does not delete cell
+const removeCellFromComic = (cache, cellId, comicId) => {
+  if (!cache.comics[comicId]) {
+    return;
+  }
+  const cellReferences = cache.comics[comicId].cells;
+
+  const indexOfRef = cellReferences.findIndex(id => id === cellId)
+
+  if (indexOfRef !== -1) {
+    cellReferences.splice(indexOfRef, 1);
+  }
+}
+
+export const getComicIdFromCellId = (cellId) => {
+  const cache = getCache();
+
+  if (!cache) {
+    return null;
+  }
+
+  const [comicId] = Object.entries(cache.comics)
+    .find(([comicId, comic]) => comic.cells.includes(cellId));
+
+  return comicId;
+}
+
+export const deleteCell = (cellId) => {
+  // get the latest cache
+  let cache = getCache();
+  if (!cache) {
+    cache = getInitializedCache();
+  }
+
+  // get the comic associated with this cellId
+  const comicId = getComicIdFromCellId(cellId);
+
+  // delete this cell from the cloned cache
+  if (comicId) {
+    delete cache.cells[cellId];
+  }
+
+  // delete this cell from the comic
+  removeCellFromComic(cache, cellId, comicId);
+
+  // if the comic has no more cells associated with it, delete the comic from the cloned cache
+  // save cache
+  if (cache.comics[comicId] && !cache.comics[comicId].cells.length) {
+    delete cache.comics[comicId];
+  }
+
+  setCache(cache);
+}
+
 export const doesCellIdExist = (cellId) => {
   const cache = getCache();
   if (!cache || !cache.cells) {

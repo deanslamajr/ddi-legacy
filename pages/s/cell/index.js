@@ -499,17 +499,22 @@ class CellStudio extends Component {
     this.setState({ showEmojiPicker: false })
   }
 
+  deleteDraft = () => {
+    const {deleteCell} = require('../../../helpers/clientCache');
+    deleteCell(this.props.cellId);
+  }
+
   exit = () => {
     this.props.showSpinner();
-    // @todo implement conditional logic
-    // if this is a new cell for a new comic
-    //  * clear this cell and comic from client cache
-    //  * redirect to /gallery
-    // if this is a new cell associated with a comic with more than just this cell
-    //  * clear this cell from the client cache
-    //  * redirect to /s/comic/:comicId where :comicId is that associated with comic this cell was to be added to
-    
-    Router.pushRoute('/gallery')
+
+    if (Object.keys(this.state.studioState.emojis).length) {
+      const {getComicIdFromCellId} = require('../../../helpers/clientCache');
+      const comicId = getComicIdFromCellId(this.props.cellId);
+      Router.pushRoute(`/s/comic/${comicId}`);
+    }
+    else {
+      Router.pushRoute('/gallery');
+    } 
   }
 
   handlePreviewClick = async () => {
@@ -543,10 +548,11 @@ class CellStudio extends Component {
   }
 
   onPickerCancel = () => {
-    if (this.state.studioState.activeEmojiId) {
-      this.closeEmojiPicker()
+    if (Object.keys(this.state.studioState.emojis).length) {
+      this.closeEmojiPicker();
     }
     else {
+      this.deleteDraft();
       this.exit();
     }
   }
@@ -640,11 +646,11 @@ class CellStudio extends Component {
           </EverythingElseContainer>
         </CenteredContainer>
 
-        <NavButton
+        {!this.state.showEmojiPicker && <NavButton
           value='EXIT'
           cb={() => this.exit()}
           position={BOTTOM_LEFT}
-        />
+        />}
 
         {!this.state.showEmojiPicker && <NavButton
           value='ACTIONS'

@@ -13,7 +13,7 @@ export default class ActionsModal extends React.Component {
   render () {
     const {
       onCancelClick,
-      onExitClick,
+      onCanvasColorSelect,
       onResetClick,
       onPublishClick,
       toggleCaptionModal
@@ -21,8 +21,8 @@ export default class ActionsModal extends React.Component {
 
     return (<HomeModal>
       <CenteredButtons>
-        <MenuButton onClick={onExitClick}>
-          EXIT
+        <MenuButton onClick={onCanvasColorSelect}>
+          CANVAS COLOR
         </MenuButton>
       </CenteredButtons>
       <CenteredButtons>

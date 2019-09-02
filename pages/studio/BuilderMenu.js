@@ -100,6 +100,11 @@ const AddEmojiButton = styled(PinkMenuButton)`
   font-size: 2.5rem;
 `
 
+const NudgeButton = styled(HalfMenuButton)`
+  font-size: 2rem; 
+  margin: 1px auto;
+`;
+
 const MAIN = 'MAIN'
 const SECONDARY = 'SECONDARY'
 const FILTERS = 'FILTERS'
@@ -230,6 +235,11 @@ class BuilderMenu extends React.Component {
     </React.Fragment>)
   }
 
+  showCanvaColorMenu = () => {
+    this.setState({ currentMenu: BG_COLOR });
+    this.props.hideActionsMenu();
+  }
+
   renderSecondaryMenu = () => {
     const {
       incrementField,
@@ -241,39 +251,37 @@ class BuilderMenu extends React.Component {
         SIMPLE
       </PinkMenuButton>
 
-      <MenuButton onClick={() => this.setState({ currentMenu: BG_COLOR })}>
-        BG COLOR
-      </MenuButton>
-
       <MenuButton onClick={() => this.setState({ currentMenu: FILTERS })}>
         FILTERS
       </MenuButton>
 
       <Label>FLIP</Label>
-      <MenuButton onClick={() => scaleField('scaleX', -1)}>
-        X
-      </MenuButton>
-      <MenuButton onClick={() => scaleField('scaleY', -1)}>
-        Y
-      </MenuButton>
+      <CenteredButtons>
+        <HalfMenuButton onClick={() => scaleField('scaleX', -1)}>
+          X
+        </HalfMenuButton>
+        <HalfMenuButton onClick={() => scaleField('scaleY', -1)}>
+          Y
+        </HalfMenuButton>
+      </CenteredButtons>
 
       <CenteredButtons>
-        <HalfMenuButton onClick={() => incrementField('y', -5)}>
-          UP
-        </HalfMenuButton>
+        <NudgeButton onClick={() => incrementField('y', -1)}>
+          ↑
+        </NudgeButton>
       </CenteredButtons>
       <CenteredButtons>
-        <HalfMenuButton onClick={() => incrementField('x', -5)}>
-          LEFT
-        </HalfMenuButton>
-        <HalfMenuButton onClick={() => incrementField('x', 5)}>
-          RIGHT
-        </HalfMenuButton>
+        <NudgeButton onClick={() => incrementField('x', -1)}>
+          ←
+        </NudgeButton>
+        <NudgeButton onClick={() => incrementField('x', 1)}>
+          →
+        </NudgeButton>
       </CenteredButtons>
       <CenteredButtons>
-        <HalfMenuButton onClick={() => incrementField('y', 5)}>
-          DOWN
-        </HalfMenuButton>
+        <NudgeButton onClick={() => incrementField('y', 1)}>
+          ↓
+        </NudgeButton>
       </CenteredButtons>
     </React.Fragment>)
   }
@@ -324,7 +332,7 @@ class BuilderMenu extends React.Component {
       </SliderContainer>
 
       {/* TOGGLE FILTER*/}
-      <MenuButton onClick={toggleFilter}>{activeEmoji.filters ? 'INACTIVATE RGB' : 'ACTIVATE RGB'}</MenuButton>
+      <MenuButton onClick={toggleFilter}>{activeEmoji.filters ? 'DISABLE COLOR' : 'ENABLE COLOR'}</MenuButton>
 
       {activeEmoji.filters && (<React.Fragment>
         <SliderContainer>
@@ -358,7 +366,9 @@ class BuilderMenu extends React.Component {
       activeEmoji,
       onChangeClick,
       onDeleteClick,
-      onDuplicateClick
+      onDuplicateClick,
+      renderActionsMenu,
+      isActionsModalVisible
     } = this.props
     const { showEmojiEditModal } = this.state
 
@@ -373,6 +383,8 @@ class BuilderMenu extends React.Component {
           onDeleteClick={() => onDeleteClick(this.toggleEmojiEditModal.bind(this, false))}
           onDuplicateClick={() => onDuplicateClick(this.toggleEmojiEditModal.bind(this, false))}
         />}
+
+        {isActionsModalVisible && renderActionsMenu({showCanvaColorMenu: this.showCanvaColorMenu})}
       </React.Fragment>
     )
   }

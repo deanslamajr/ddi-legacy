@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import {buttonShadow} from '../../helpers/style-utils'
+import {buttonShadow, media} from '../../helpers/style-utils'
 
 export const TOP_CENTER = 'TOP_CENTER'
 export const TOP_RIGHT = 'TOP_RIGHT'
@@ -19,7 +19,6 @@ const Button = styled.div`
   border-radius: 5rem;
   width: 60px;
   height: 60px;
-  margin: .5rem;
   font-size: .9rem;
   text-align: center;
   user-select: none;
@@ -27,8 +26,13 @@ const Button = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: .5rem;
 
   ${buttonShadow()}
+
+  ${media.phoneMax`
+    margin: 3px;
+  `}
 
   &:hover {
     background-color: ${props => props.theme.colors.black};

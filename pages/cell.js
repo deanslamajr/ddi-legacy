@@ -6,9 +6,7 @@ import axios from 'axios'
 import Cell from '../components/Cell'
 import {
   NavButton,
-  TOP_CENTER,
   BOTTOM_LEFT,
-  BOTTOM_CENTER,
   BOTTOM_RIGHT
 } from '../components/navigation'
 
@@ -111,15 +109,10 @@ class CellRoute extends Component {
 
         {canDuplicate && <NavButton
           value='COPY'
+          accented
           cb={this.navigateToDuplicate}
-          position={BOTTOM_CENTER}
-        />}
-
-        <NavButton
-          value='CREATE'
-          cb={this.navigateToStudio}
           position={BOTTOM_RIGHT}
-        />
+        />}
       </div>
     )
   }

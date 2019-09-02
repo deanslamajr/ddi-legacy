@@ -8,7 +8,7 @@ import getConfig from 'next/config'
 
 import { Router } from '../../routes'
 
-import { NavButton, BOTTOM_RIGHT } from '../../components/navigation'
+import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../components/navigation'
 
 import EmojiPicker from './EmojiPicker'
 import BuilderMenu from './BuilderMenu'
@@ -296,7 +296,6 @@ class StudioRoute extends Component {
 
   navigateBack = () => {
     this.props.showSpinner()
-    this.toggleActionsModal(false)
     Router.pushRoute(this.props.backActionPath)
   }
 
@@ -747,7 +746,18 @@ class StudioRoute extends Component {
                 scaleField={this.scaleField}
                 setField={this.setField}
                 setFilterColor={this.setFilterColor}
+                hideActionsMenu={() => this.toggleActionsModal(false)}
+                isActionsModalVisible={showActionsModal}
                 toggleFilter={this.toggleFilter}
+                renderActionsMenu={({showCanvaColorMenu}) => (
+                  <ActionsModal
+                    onCancelClick={() => this.toggleActionsModal(false)}
+                    onCanvasColorSelect={() => showCanvaColorMenu()}
+                    onResetClick={() => this.onResetClick()}
+                    onPublishClick={() => this.handlePublishClick()}
+                    toggleCaptionModal={this.showCaptionModalFromActionsModal}
+                  />
+                )}
               />
 
               {this.state.showEmojiPicker && <EmojiPicker
@@ -759,6 +769,12 @@ class StudioRoute extends Component {
           )}
         </CenteredContainer>
 
+        <NavButton
+          value='EXIT'
+          cb={() => this.navigateBack()}
+          position={BOTTOM_LEFT}
+        />
+
         {!this.state.showEmojiPicker && <React.Fragment>
           <NavButton
             value='ACTIONS'
@@ -767,14 +783,6 @@ class StudioRoute extends Component {
             accented
           />
         </React.Fragment>}
-
-        {showActionsModal && <ActionsModal
-          onCancelClick={() => this.toggleActionsModal(false)}
-          onExitClick={() => this.navigateBack()}
-          onResetClick={() => this.onResetClick()}
-          onPublishClick={() => this.handlePublishClick()}
-          toggleCaptionModal={this.showCaptionModalFromActionsModal}
-        />}
 
         {this.state.showPublishFailModal && <PublishFailModal
           hasFailedCaptcha={this.state.hasFailedCaptcha}

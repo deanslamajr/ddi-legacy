@@ -46,6 +46,7 @@ const toRgb = (hex) => {
 const ColorPicker = styled.input`
   padding: 0;
   width: 100%;
+  height: 2.75rem;
   /* hack to disable zoom on focus (iOS) */
   /* @see https://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone#answer-6394497 */
   font-size: 16px;
@@ -346,6 +347,29 @@ class BuilderMenu extends React.Component {
         BACK
       </PinkMenuButton>
 
+      {activeEmoji.filters && (<React.Fragment>
+        <SliderContainer>
+          <ColorPickerContainer>
+            <ColorPicker
+              type='color'
+              value={toHex(rgb)}
+              onChange={e => this.props.setFilterColor(toRgb(e.target.value))}
+            />
+          </ColorPickerContainer>
+          <Label>AMOUNT</Label>
+          <NewSlider
+            min={MIN_ALPHA}
+            max={MAX_ALPHA}
+            step={.01}
+            value={(activeEmoji && activeEmoji.alpha) || 0}
+            onChange={(value) => setField('alpha', value)}
+          />
+        </SliderContainer>
+      </React.Fragment>)}
+
+      {/* TOGGLE FILTER*/}
+      <MenuButton onClick={toggleFilter}>{activeEmoji.filters ? 'DISABLE COLOR' : 'ENABLE COLOR'}</MenuButton>
+    
       <SliderContainer>
         <Label>OPACITY</Label>
         <NewSlider
@@ -356,30 +380,6 @@ class BuilderMenu extends React.Component {
           onChange={(value) => setField('opacity', value)}
         />
       </SliderContainer>
-
-      {/* TOGGLE FILTER*/}
-      <MenuButton onClick={toggleFilter}>{activeEmoji.filters ? 'DISABLE COLOR' : 'ENABLE COLOR'}</MenuButton>
-
-      {activeEmoji.filters && (<React.Fragment>
-        <SliderContainer>
-          <Label>AMOUNT</Label>
-          <NewSlider
-            min={MIN_ALPHA}
-            max={MAX_ALPHA}
-            step={.01}
-            value={(activeEmoji && activeEmoji.alpha) || 0}
-            onChange={(value) => setField('alpha', value)}
-          />
-        </SliderContainer>
-        
-        <ColorPickerContainer>
-          <ColorPicker
-            type='color'
-            value={toHex(rgb)}
-            onChange={e => this.props.setFilterColor(toRgb(e.target.value))}
-          />
-        </ColorPickerContainer>
-      </React.Fragment>)}
     </React.Fragment>)
   }
 

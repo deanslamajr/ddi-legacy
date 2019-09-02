@@ -4,6 +4,8 @@ import styled from 'styled-components'
 
 import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../../components/navigation'
 
+import {validateEmojiField} from '../../shared/validators';
+
 const emojis = Object.values(emojiIndex.emojis).filter(emoji => emoji.native).map(o => o.native)
 
 // from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array#answer-2450976
@@ -110,7 +112,8 @@ class EmojiPicker extends Component {
   initialEmojiSet = initialEmojiSet
 
   state = {
-    emojis: this.initialEmojiSet
+    emojis: this.initialEmojiSet,
+    inputValue: ''
   }
 
   shuffleEmojis = () => {
@@ -119,14 +122,22 @@ class EmojiPicker extends Component {
   }
 
   handleChange = (event) => {
-    const searchValue = event.target.value
+    const searchValue = event.target.value.trim();
     const emojis = searchValue !== ''
       ? emojiIndex.search(event.target.value).sort(o => o.name).map((o) => o.native)
       : this.initialEmojiSet
 
-    emojis.unshift(searchValue)
+    // lots of emojis counts for 2 chars(e.g. 🦔)
+    // some can count for up to 7 chars (e.g. 🚣🏿‍♀️)
+    const inputValue = validateEmojiField(searchValue);
+    if (inputValue) {
+      emojis.unshift(inputValue);
+    }
 
-    this.setState({ emojis })
+    this.setState({
+      inputValue,
+      emojis
+    });
   }
 
   render () {
@@ -137,12 +148,10 @@ class EmojiPicker extends Component {
             <SearchContainer>
               <SearchInput
                 type='text'
-                // lots of emojis counts for 2 chars(e.g. 🦔)
-                // some can count for up to 7 chars (e.g. 🚣🏿‍♀️)
-                maxLength={8}
                 name='search'
                 onChange={this.handleChange}
                 placeholder='search by keyword'
+                value={this.state.inputValue}
               />
             </SearchContainer>
           

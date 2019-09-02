@@ -94,11 +94,6 @@ function validateEmojiField (value) {
     throw new Error(`emoji.emoji ${ERR_MUST_BE_A_STRING}`)
   }
 
-  // value must be set
-  if (!value) {
-    throw new Error(`emoji.emoji ${ERR_VALUE_MUST_BE_SET}`)
-  }
-
   if (value.length > 8) {
     return value.substring(0, 8)
   }
@@ -283,6 +278,7 @@ module.exports = {
   ERR_VALUE_MUST_BE_SET,
   ERR_EXCEED_MAX_EMOJIS,
   validateBackgroundColor,
+  validateEmojiField,
   validateEmojis,
   validateFilename,
   validateId,

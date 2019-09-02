@@ -375,16 +375,6 @@ describe('validators', () => {
           })
         })
 
-        describe('if value is empty string', () => {
-          it('should throw ERR_VALUE_MUST_BE_SET', () => {
-            Object.values(emojis).forEach(emoji => emoji.emoji = '')
-            
-            expect(() => {
-              validateEmojis(emojis)
-            }).toThrow(`emoji.emoji ${ERR_VALUE_MUST_BE_SET}`)
-          })
-        })
-
         describe('if value is longer than 8 chars', () => {
           it('should clip the value to the first 8 chars', () => {
             Object.values(emojis).forEach(emoji => emoji.emoji = 'abcd🦔sdlkjm')

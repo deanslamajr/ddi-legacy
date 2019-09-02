@@ -1,7 +1,6 @@
 import { Component, Fragment } from 'react'
 import { emojiIndex } from 'emoji-mart'
 import styled from 'styled-components'
-import emojiRegexFactory from 'emoji-regex'
 
 import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../../components/navigation'
 
@@ -95,6 +94,8 @@ const EmojiContainer = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
 `
 
 const Emoji = ({ emoji, onSelect }) => {
@@ -123,15 +124,7 @@ class EmojiPicker extends Component {
       ? emojiIndex.search(event.target.value).sort(o => o.name).map((o) => o.native)
       : this.initialEmojiSet
 
-    if (searchValue && searchValue.length === 1) {
-      emojis.unshift(searchValue)
-    } else {
-      const emojiRegex = emojiRegexFactory()
-      const match = emojiRegex.exec(searchValue)
-      if (match) {
-        emojis.unshift(match[0])
-      }
-    }
+    emojis.unshift(searchValue)
 
     this.setState({ emojis })
   }
@@ -144,6 +137,9 @@ class EmojiPicker extends Component {
             <SearchContainer>
               <SearchInput
                 type='text'
+                // lots of emojis counts for 2 chars(e.g. 🦔)
+                // some can count for up to 7 chars (e.g. 🚣🏿‍♀️)
+                maxLength={8}
                 name='search'
                 onChange={this.handleChange}
                 placeholder='search by keyword'

@@ -8,6 +8,8 @@ const {
   MAX_ROTATION,
   MIN_SIZE,
   MAX_SIZE,
+  MIN_SKEW,
+  MAX_SKEW,
   MIN_ALPHA,
   MAX_ALPHA,
   MIN_RGB,
@@ -87,6 +89,19 @@ function validatePosition (value, field) {
     return MIN_POSITION
   } else if (value > MAX_POSITION) {
     return MAX_POSITION
+  } else {
+    return value
+  }
+}
+
+function validateSkew (value) {
+  if (typeof value !== 'number') {
+    return 0
+  }
+  else if (value < MIN_SKEW) {
+    return MIN_SKEW
+  } else if (value > MAX_SKEW) {
+    return MAX_SKEW
   } else {
     return value
   }
@@ -216,6 +231,8 @@ function validateEmojiDatastructure (validatedEmojis, {
   y,
   scaleX,
   scaleY,
+  skewX,
+  skewY,
   rotation,
   size,
   alpha,
@@ -233,6 +250,8 @@ function validateEmojiDatastructure (validatedEmojis, {
     y: validatePosition(y, 'emoji.y'),
     scaleX: validateScale(scaleX, 'emoji.scaleX'),
     scaleY: validateScale(scaleY, 'emoji.scaleY'),
+    skewX: validateSkew(skewX),
+    skewY: validateSkew(skewY),
     rotation: validateRotation(rotation, 'emoji.rotation'),
     size: validateSize(size, 'emoji.size'),
     alpha: validateAlpha(alpha, 'emoji.alpha'),
@@ -287,6 +306,7 @@ module.exports = {
   validateEmojis,
   validateFilename,
   validateId,
+  validateSkew,
   validateStudioState,
   validateTitle
 }

@@ -1,11 +1,16 @@
 import React from 'react'
+import getConfig from 'next/config'
 import styled from 'styled-components'
 import nl2br from 'react-newline-to-break';
+import Img from 'react-image';
 
 import {DynamicTextContainer} from '../components/DynamicTextContainer'
+import {ErrorCell, LoadingCell} from '../components/Loading'
 
 import { getCellUrl } from '../helpers';
 import { media } from '../helpers/style-utils';
+
+const { publicRuntimeConfig } = getConfig()
 
 const CellContainer = styled.div`
   margin: 0;
@@ -42,7 +47,7 @@ const OldCellBorder = styled.div`
   `}
 `
 
-const CellImage = styled.img`
+const CellImage = styled(Img)`
   width: ${props => props.width || (props.removeBorders ? '100%' : '300px')};
   max-width: calc(100vw - ${props => props.theme.padding}px);
 `
@@ -66,6 +71,8 @@ export default function Cell ({
         <CellImage
           removeBorders={removeBorders}
           src={cellUrl}
+          loader={<LoadingCell removeBorders />}
+          unloader={<ErrorCell removeBorders />}
         />
       </CellBorder>)
       : (<OldCellBorder removeBorders={removeBorders} width={width}>
@@ -73,6 +80,8 @@ export default function Cell ({
           removeBorders={removeBorders}
           src={cellUrl}
           width={width}
+          loader={<LoadingCell removeBorders />}
+          unloader={<ErrorCell removeBorders/>}
         />
         {title && title.length && <DynamicTextContainer fontRatio={17}>
           {nl2br(title)}

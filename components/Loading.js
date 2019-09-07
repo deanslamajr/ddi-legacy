@@ -46,10 +46,7 @@ const Spinner = styled.div`
 }
 `
 
-//
-// MainMenu
-
-function LoadSpinner () {
+export function LoadSpinner () {
   return (
     <LoadSpinnerContainer>
       <Spinner/>
@@ -57,4 +54,17 @@ function LoadSpinner () {
   )
 }
 
-export default LoadSpinner 
+const Image = styled.img`
+  width: ${props => props.width || (props.removeBorders ? '100%' : '300px')};
+  max-width: calc(100vw - 7px);
+`;
+
+export const LoadingCell = ({removeBorders}) => <Image
+    src={`${publicRuntimeConfig.ASSETS_ROOT_URL}/loading.png`}
+    removeBorders
+  />
+
+export const ErrorCell = ({removeBorders}) => <Image
+    src={`${publicRuntimeConfig.ASSETS_ROOT_URL}/error.png`}
+    removeBorders
+  />

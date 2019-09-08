@@ -1,10 +1,11 @@
-import React from 'react'
-import styled from 'styled-components'
+import React from 'react';
+import styled from 'styled-components';
 import rgbHex from 'rgb-hex';
 import hexRgb from 'hex-rgb';
 
 import EmojiEditModal from './EmojiEditModal'
 
+import {Spacer} from '../../../components/Spacer';
 import NewSlider from '../../../components/NewSlider'
 import {
   MenuButton,
@@ -18,6 +19,8 @@ import { sortByOrder } from '../../../helpers'
 import {
   MIN_SIZE,
   MAX_SIZE,
+  MIN_SKEW,
+  MAX_SKEW,
   MIN_ROTATION,
   MAX_ROTATION,
   MIN_OPACITY,
@@ -48,11 +51,6 @@ const ColorPicker = styled.input`
   /* hack to disable zoom on focus (iOS) */
   /* @see https://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone#answer-6394497 */
   font-size: 16px;
-`
-
-const ColorPickerContainer = styled.div`
-  margin-top: 1rem;
-  margin-bottom: 1rem;
 `
 
 const CenteredButtons = styled.div`
@@ -223,6 +221,8 @@ class BuilderMenu extends React.Component {
           ADVANCED
         </MenuButton>
       </React.Fragment>}
+
+      <Spacer/>
       
       {canAddEmojis
         ? (<AddEmojiButton onClick={this.props.openEmojiPicker}>
@@ -269,8 +269,10 @@ class BuilderMenu extends React.Component {
 
   renderSecondaryMenu = () => {
     const {
+      activeEmoji,
       incrementField,
-      scaleField
+      scaleField,
+      setField
     } = this.props
 
     return (<React.Fragment>
@@ -278,9 +280,32 @@ class BuilderMenu extends React.Component {
         SIMPLE
       </PinkMenuButton>
 
+      <Spacer/>
+
       <MenuButton onClick={() => this.setState({ currentMenu: FILTERS })}>
         FILTERS
       </MenuButton>
+
+      <Spacer/>
+
+      <Label>SKEW X</Label>
+        <NewSlider
+          min={MIN_SKEW}
+          max={MAX_SKEW}
+          step={.05}
+          value={(activeEmoji && activeEmoji.skewX) || 0}
+          onChange={(value) => setField('skewX', value)}
+        />
+      <Label>SKEW Y</Label>
+        <NewSlider
+          min={MIN_SKEW}
+          max={MAX_SKEW}
+          step={.05}
+          value={(activeEmoji && activeEmoji.skewY) || 0}
+          onChange={(value) => setField('skewY', value)}
+        />
+
+      <Spacer/>
 
       <Label>FLIP</Label>
       <CenteredButtons>
@@ -291,6 +316,8 @@ class BuilderMenu extends React.Component {
           Y
         </HalfMenuButton>
       </CenteredButtons>
+
+      <Spacer/>
 
       <CenteredButtons>
         <NudgeButton onClick={() => incrementField('y', -1)}>
@@ -318,13 +345,17 @@ class BuilderMenu extends React.Component {
       <PinkMenuButton onClick={() => this.setState({ currentMenu: MAIN })}>
         BACK
       </PinkMenuButton>
-      <ColorPickerContainer>
-        <ColorPicker
-          type='color'
-          value={this.props.backgroundColor}
-          onChange={e => this.props.onColorChange(e.target.value)}
-        />
-      </ColorPickerContainer>
+
+      <Spacer/>
+
+      <ColorPicker
+        type='color'
+        value={this.props.backgroundColor}
+        onChange={e => this.props.onColorChange(e.target.value)}
+      />
+
+      <Spacer/>
+
       <MenuButton onClick={() => this.props.onColorChange(theme.colors.white)}>
         RESET
       </MenuButton>
@@ -347,15 +378,18 @@ class BuilderMenu extends React.Component {
         BACK
       </PinkMenuButton>
 
-      {activeEmoji.filters && (<React.Fragment>
+      <Spacer/>
+
+      {activeEmoji.filters && (<React.Fragment>          
+        <ColorPicker
+          type='color'
+          value={toHex(rgb)}
+          onChange={e => this.props.setFilterColor(toRgb(e.target.value))}
+        />
+        
+        <Spacer/>
+
         <SliderContainer>
-          <ColorPickerContainer>
-            <ColorPicker
-              type='color'
-              value={toHex(rgb)}
-              onChange={e => this.props.setFilterColor(toRgb(e.target.value))}
-            />
-          </ColorPickerContainer>
           <Label>AMOUNT</Label>
           <NewSlider
             min={MIN_ALPHA}
@@ -370,6 +404,8 @@ class BuilderMenu extends React.Component {
       {/* TOGGLE FILTER*/}
       <MenuButton onClick={toggleFilter}>{activeEmoji.filters ? 'DISABLE COLOR' : 'ENABLE COLOR'}</MenuButton>
     
+      <Spacer/>
+
       <SliderContainer>
         <Label>OPACITY</Label>
         <NewSlider

@@ -53,6 +53,8 @@ export function getEmojiConfigs (emojis) {
     y: emoji.y,
     scaleX: emoji.scaleX,
     scaleY: emoji.scaleY,
+    skewX: emoji.skewX,
+    skewY: emoji.skewY,
     text: emoji.emoji,
     fontSize: emoji.size,
     rotation: emoji.rotation,

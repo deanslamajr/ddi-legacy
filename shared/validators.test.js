@@ -24,6 +24,8 @@ import {
   MAX_ROTATION,
   MIN_SIZE,
   MAX_SIZE,
+  MIN_SKEW,
+  MAX_SKEW,
   MIN_ALPHA,
   MAX_ALPHA,
   MIN_RGB,
@@ -42,6 +44,8 @@ function generateEmoji (newId) {
     y: 10,
     scaleX: 1,
     scaleY: 1,
+    skewX: 1,
+    skewY: 1,
     rotation: 0,
     size: 180,
     alpha: 0,
@@ -65,6 +69,8 @@ const validStudioState = {
       y: 10,
       scaleX: 1,
       scaleY: 1,
+      skewX: 1,
+      skewY: 1,
       rotation: -48,
       size: 181,
       alpha: 0.5,
@@ -82,6 +88,8 @@ const validStudioState = {
       y: 2,
       scaleX: 1,
       scaleY: 1,
+      skewX: 1,
+      skewY: 1,
       rotation: 0,
       size: 256,
       alpha: 0.88,
@@ -99,6 +107,8 @@ const validStudioState = {
       y: 37,
       scaleX: 1,
       scaleY: 1,
+      skewX: 1,
+      skewY: 1,
       rotation: 0,
       size: 256,
       alpha: 0.5,
@@ -117,6 +127,8 @@ const validStudioState = {
       y: 84,
       scaleX: 1,
       scaleY: 1,
+      skewX: 1,
+      skewY: 1,
       rotation: 0,
       size: 100,
       alpha: 1,
@@ -574,6 +586,66 @@ describe('validators', () => {
             expect(() => {
               validateEmojis(emojis)
             }).toThrow(`emoji.scaleY ${ERR_INCORRECT_SCALE_VALUE}`)
+          })
+        })
+      })
+
+      describe('emoji.skewX', () => {
+        describe('if not a number', () => {
+          it('should set to 0', () => {
+            Object.values(emojis).forEach(emoji => emoji.skewX = 'taco')
+  
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].skewX).toEqual(0)
+          })
+        })
+
+        describe('if less than MIN_SKEW', () => {
+          it('should set to MIN_SKEW', () => {
+            Object.values(emojis).forEach(emoji => emoji.skewX = MIN_SKEW - 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].skewX).toEqual(MIN_SKEW)
+          })
+        })
+
+        describe('if more than MAX_SKEW', () => {
+          it('should set to MAX_SKEW', () => {
+            Object.values(emojis).forEach(emoji => emoji.skewX = MAX_SKEW + 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].skewX).toEqual(MAX_SKEW)
+          })
+        })
+      })
+
+      describe('emoji.skewY', () => {
+        describe('if not a number', () => {
+          it('should set to 0', () => {
+            Object.values(emojis).forEach(emoji => emoji.skewY = 'taco')
+  
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].skewY).toEqual(0)
+          })
+        })
+
+        describe('if less than MIN_SKEW', () => {
+          it('should set to MIN_SKEW', () => {
+            Object.values(emojis).forEach(emoji => emoji.skewY = MIN_SKEW - 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].skewY).toEqual(MIN_SKEW)
+          })
+        })
+
+        describe('if more than MAX_SKEW', () => {
+          it('should set to MAX_SKEW', () => {
+            Object.values(emojis).forEach(emoji => emoji.skewY = MAX_SKEW + 100)
+            const validatedEmojis = validateEmojis(emojis)
+            const arrayOfEmojis = Object.values(validatedEmojis)
+            expect(arrayOfEmojis[0].skewY).toEqual(MAX_SKEW)
           })
         })
       })

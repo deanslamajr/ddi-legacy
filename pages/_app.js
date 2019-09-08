@@ -13,7 +13,7 @@ import { Router } from '../routes'
 import theme from '../helpers/theme'
 
 import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
-import LoadSpinner from '../components/LoadSpinner'
+import {LoadSpinner} from '../components/Loading'
 
 const { publicRuntimeConfig } = getConfig()
 

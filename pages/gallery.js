@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import styled from 'styled-components'
+import Img from 'react-image';
 
 import {
   NavButton,
@@ -7,15 +8,15 @@ import {
   BOTTOM_CENTER,
   TOP_RIGHT
 } from '../components/navigation'
-
 import Cell from '../components/Cell'
+import {ErrorCell, LoadingCell} from '../components/Loading'
 
 import { getCellUrl, sortByOrder } from '../helpers'
 import { media, shadow } from '../helpers/style-utils'
 
 import { Link, Router } from '../routes'
 
-const Thumbnail = styled.img`
+const Thumbnail = styled(Img)`
   ${shadow()}
 
   ${media.desktopMin`
@@ -37,10 +38,6 @@ const OldThumbNail = styled(Thumbnail)`
   background-color: ${props => props.theme.colors.white};
 `
 
-const OldCellImage = styled.img`
-  width: 100%;
-`
-
 const CellsCount = styled.div`
   z-index: 999;
   position: absolute;
@@ -58,11 +55,19 @@ const CellsCount = styled.div`
   cursor: pointer;
 `
 
+const LoadingImage = styled.div`
+  width: 100%;
+  max-width: calc(100vw - 7px);
+`;
+
 const Thumb = ({cellsCount, imageUrl}) => {
   return (<>
     {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}
-    <Thumbnail src={imageUrl}>
-    </Thumbnail>
+    <Thumbnail
+      src={imageUrl}
+      loader={<LoadingCell/>}
+      unloader={<ErrorCell/>}
+    />
   </>)
 }
 

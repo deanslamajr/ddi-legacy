@@ -14,6 +14,8 @@
   "MAX_ROTATION": 180,
   "MIN_SIZE": 1,
   "MAX_SIZE": 256,
+  "MIN_SKEW": -1.5,
+  "MAX_SKEW": 1.5,
   "MIN_ALPHA": 0,
   "MAX_ALPHA": 1,
   "MIN_RGB": 0,

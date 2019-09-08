@@ -67,6 +67,8 @@ function createNewEmojiComponentState (emoji, currentEmojiId) {
     y: 100,
     scaleX: 1,
     scaleY: 1,
+    skewX: 0,
+    skewY: 0,
     rotation: 0,
     size: 100,
     alpha: .5,

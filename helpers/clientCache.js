@@ -38,18 +38,25 @@ function generateComicId () {
 // const cache = {
 //   cells: {
 //     "someCellId": {
-//
+//       hasNewImage: true,
+//       id: 'someCellId',
+//       imageUrl: null,
+//       comicId: 'someComicId',
+//       previousCellId: null,
+//       studioState: {}
 //     },
 //     "anotherCellId": {
-//
+//       hasNewImage: true,
+//       id: 'anotherCellId',
+//       imageUrl: null,
+//       comicId: 'someComicId',
+//       previousCellId: 'someCellId,
+//       studioState: {}
 //     }
 //   },
 //   comics: {
 //     "someComicId": {
-//       cells: []
-//     },
-//     "anotherComicId": {
-//       cells: []
+//       initialCellId: 'someCellId'
 //     }
 //   }
 // }
@@ -67,8 +74,17 @@ const emptyStudioState = {
 };
 
 const emptyComic = {
-  cells: []
+  initialCellId: null
 };
+
+const emptyCell = {
+  hasNewImage: false,
+  id: null,
+  imageUrl: null,
+  comicId: null,
+  previousCellId: null,
+  studioState: null
+}
 
 const getInitializedCache = () => {
   return cloneDeep(emptyCache);
@@ -82,18 +98,16 @@ const getInitializedComic = () => {
   return cloneDeep(emptyComic);
 }
 
-// note: does not delete cell
-const removeCellFromComic = (cache, cellId, comicId) => {
-  if (!cache.comics[comicId]) {
-    return;
-  }
-  const cellReferences = cache.comics[comicId].cells;
+const getInitializedCell = ({
+  comicId, id, previousCellId, studioState = getInitializedStudioState()
+}) => {
+  const cell = cloneDeep(emptyCell);
 
-  const indexOfRef = cellReferences.findIndex(id => id === cellId)
-
-  if (indexOfRef !== -1) {
-    cellReferences.splice(indexOfRef, 1);
-  }
+  cell.id = id;
+  cell.comicId = comicId;
+  cell.previousCellId = previousCellId;
+  cell.studioState = studioState;
+  return cell;
 }
 
 export const getComicIdFromCellId = (cellId) => {
@@ -103,36 +117,52 @@ export const getComicIdFromCellId = (cellId) => {
     return null;
   }
 
-  const [comicId] = Object.entries(cache.comics)
-    .find(([comicId, comic]) => comic.cells.includes(cellId));
+  const cell = cache.cells[cellId];
 
-  return comicId;
+  if (!cell) {
+    return null;
+  } else {
+    return cell.comicId;
+  }
+}
+
+export const getCellsByComicId = (comicId, cache) => {
+  if (!cache) {
+    cache = getCache();
+  }
+  const cells = Object.values(cache.cells);
+  const comicsCells = cells.filter(cell => cell.comicId === comicId);
+  return comicsCells.reduce((acc, cell) => {
+    acc[cell.id] = cell;
+    return acc;
+  }, {});
 }
 
 export const deleteCell = (cellId) => {
   // get the latest cache
   let cache = getCache();
   if (!cache) {
-    cache = getInitializedCache();
+    return;
   }
 
   // get the comic associated with this cellId
   const comicId = getComicIdFromCellId(cellId);
 
-  // delete this cell from the cloned cache
-  if (comicId) {
-    delete cache.cells[cellId];
-  }
+  // delete this cell from the cache
+  delete cache.cells[cellId];
 
-  // delete this cell from the comic
-  removeCellFromComic(cache, cellId, comicId);
+  const comicsCells = Object.values(getCellsByComicId(comicId, cache));
 
   // if the comic has no more cells associated with it, delete the comic from the cloned cache
-  // save cache
-  if (cache.comics[comicId] && !cache.comics[comicId].cells.length) {
+  if (cache.comics[comicId] && !comicsCells.length) {
     delete cache.comics[comicId];
+  } else if (cellId === cache.comics[comicId].initialCellId) {
+    // if the cell to delete is the initial cell, set comic.initialCell
+    const secondCell = comicsCells.find(({previousCellId}) => previousCellId === cellId);
+    cache.comics[comicId].initialCellId = secondCell.id;
   }
 
+  // save cache
   setCache(cache);
 }
 
@@ -144,20 +174,59 @@ export const doesCellIdExist = (cellId) => {
   return Object.keys(cache.cells).includes(cellId);
 }
 
-export const doesComicIdExist = (comicId) => {
-  const cache = getCache();
+export const doesComicIdExist = (comicId, cache) => {
+  cache = cache || getCache();
   if (!cache || !cache.comics) {
     return false;
   }
   return Object.keys(cache.comics).includes(comicId);
 }
 
+export const getComic = (comicId) => {
+  const cache = getCache();
+
+  if (!cache || !cache.comics || !cache.comics[comicId]) {
+    return null;
+  }
+
+  return cache.comics[comicId];
+}
+
 export const setCellStudioState = (cellId, newStudioState) => {
   const cache = getCache();
 
-  cache.cells[cellId] = newStudioState;
+  cache.cells[cellId].studioState = newStudioState;
 
   setCache(cache);
+}
+
+const getComicsSortedCells = (cache, comicId) => {
+  const sortedCells = [];
+
+  const comic = cache.comics[comicId];
+  if (!comic.initialCellId) {
+    return sortedCells;
+  }
+
+  const comicsCells = getCellsByComicId(comicId, cache);
+
+  let nextCellId = comic.initialCellId;
+
+  while(comicsCells[nextCellId]) {
+    sortedCells.push(comicsCells[nextCellId]);
+    const nextCell = Object.values(comicsCells).find(cell => cell.previousCellId === nextCellId);
+    nextCellId = nextCell && nextCell.id
+  }
+
+  return sortedCells;
+}
+
+const getLastCell = (cache, comicId) => {
+  const sortedCells = getComicsSortedCells(cache, comicId);
+
+  return sortedCells
+    ? sortedCells[sortedCells.length - 1]
+    : null;
 }
 
 export const createNewCell = (comicId, initialStudioState) => {  
@@ -167,15 +236,8 @@ export const createNewCell = (comicId, initialStudioState) => {
     cache = getInitializedCache();
   }
 
-  // create new cell
-  const cellId = generateCellId();
-  if (!cache.cells) {
-    cache.cells = {};
-  }
-  cache.cells[cellId] = initialStudioState || getInitializedStudioState();
-
-  // create new comic
-  if (!comicId && !doesComicIdExist(comicId)) {
+  // conditionally: create new comic
+  if (!comicId || !doesComicIdExist(comicId, cache)) {
     comicId = generateComicId();
     if (!cache.comics) {
       cache.comics = {};
@@ -183,8 +245,25 @@ export const createNewCell = (comicId, initialStudioState) => {
     cache.comics[comicId] = getInitializedComic();
   }
 
-  // add new cellId to comic
-  cache.comics[comicId].cells.push(cellId);
+  const lastCell = getLastCell(cache, comicId);
+  const previousCellId = lastCell && lastCell.id;
+
+  // create new cell
+  const cellId = generateCellId();
+  if (!cache.cells) {
+    cache.cells = {};
+  }
+  cache.cells[cellId] = getInitializedCell({
+    comicId,
+    id: cellId,
+    initialStudioState,
+    previousCellId
+  });
+
+  // set new cellId as initialCellId of comic
+  if (!previousCellId) {
+    cache.comics[comicId].initialCellId = cellId;
+  }
   
   setCache(cache);
 

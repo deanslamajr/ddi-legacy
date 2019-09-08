@@ -4,16 +4,14 @@ import axios from 'axios'
 import shortid from 'shortid'
 import propTypes from 'prop-types'
 
-import Cell from '../../../components/Cell'
-
 import ComicActionsModal from './ComicActionsModal'
 import CellActionsModal from './CellActionsModal'
 import AddCellModal from './AddCellModal'
 
+import Cell from '../../../components/Cell'
 import {
   PinkMenuButton
 } from '../../../components/Buttons'
-
 import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../../components/navigation'
 
 import { Router } from '../../../routes'
@@ -29,6 +27,57 @@ function generateDraftUrl() {
   // @todo verify this id doesn't already exist in localstorage
   return `/s/comic/${shortid.generate()}${DRAFT_SUFFIX}`
 }
+
+function hydrateComicFromApi (comicId) {
+  // try to fetch from api
+  // if doesn't exist in api
+    // return null (this will have the effect of redirecting to /s/cell/new)
+  // if does exist in api
+    // check if user has ability to edit comic
+    // if not
+      // duplicate comic workflow
+    // if so
+      // hydrate client cache from api response
+      // return formatted data
+}
+
+function hydrateComicFromClientCache(comicId) {
+  const {
+    getCellsByComicId, getComic
+  } = require('../../../helpers/clientCache');
+
+  const comic = getComic(comicId);
+  const cells = getCellsByComicId(comicId);
+
+  console.log('comic', comic)
+  console.log('cells', cells)
+
+  return {
+    ...comic,
+    cells
+  };
+}
+
+async function hydrateComic (comicId) {
+  // try to fetch from client cache
+  const {
+    doesComicIdExist
+  } = require('../../../helpers/clientCache');
+
+  // if exists in client cache
+  if (doesComicIdExist(comicId)) {
+    // hydrate the cells and comic from client cache and return formatted data
+    console.log('comic exists in client cache');
+    return hydrateComicFromClientCache(comicId);
+  } else {
+    console.log('comic DOES NOT exist in client cache');
+    return null;
+    // @todo
+    // hydrateComicFromApi(comicId);
+  }
+}
+
+// STYLED COMPONENTS
 
 const AddCellButton = styled(PinkMenuButton)`
   font-size: 2.5rem;
@@ -48,39 +97,48 @@ const StudioCell = styled(Cell)`
 `
 
 //
-// MainMenu
+// Comic Studio
 class StudioV2 extends Component {
   static async getInitialProps ({ query, req, res }) {
     // if on an unpublished comic, don't fetch comic data
-    if(query.comicId.includes(DRAFT_SUFFIX)) {
-      return {}
-    }
+    // if(query.comicId.includes(DRAFT_SUFFIX)) {
+    //   return {}
+    // }
 
-    const { data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req), forwardCookies(req))
+    // const { data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req), forwardCookies(req))
 
-    // redirect to new comic if user isn't authorized to edit this comic
-    if (!data.userCanEdit || !data.isActive) {
-      // @todo log this case
-      redirect(generateDraftUrl(), res);
-      return {}
-    }
+    // // redirect to new comic if user isn't authorized to edit this comic
+    // if (!data.userCanEdit || !data.isActive) {
+    //   // @todo log this case
+    //   redirect(generateDraftUrl(), res);
+    //   return {}
+    // }
 
     return {
-      ...data,
+      //...data,
       comicId: query.comicId
     }
   }
 
   state = {
     activeCell: null,
+    comic: {},
     showComicActionsModal: false,
     showCellActionsModal: false,
     showAddCellModal: false
   }
 
-  componentDidMount() {
-    this.props.hideSpinner();
-    window.scrollTo(0,document.body.scrollHeight);
+  async componentDidMount() {
+    const hydratedComic = await hydrateComic(this.props.comicId);
+
+    if (!hydratedComic) {
+      return this.navigateToNewComic();
+    } else {
+      this.setState({comic: hydratedComic}, () => {
+        // hide spinner and scroll to bottom of comic
+        this.props.hideSpinner(() => window.scrollTo(0,document.body.scrollHeight));
+      });
+    }
   }
 
   hideAddCellModal = () => {
@@ -89,6 +147,11 @@ class StudioV2 extends Component {
 
   showAddCellModal = () => {
     this.setState({ showAddCellModal: true })
+  }
+
+  navigateToNewComic = () => {
+    this.props.showSpinner();
+    Router.pushRoute('/s/cell/new');
   }
 
   navigateToAddCellFromNew = () => {
@@ -143,7 +206,8 @@ class StudioV2 extends Component {
   }
 
   render () {
-    return <React.Fragment>
+    console.log('this.state', this.state);
+    return !this.props.isShowingSpinner && <React.Fragment>
       <OuterContainer>
         {/* CELLS */}
         {this.props.cells && this.props.cells.sort(sortByOrder).map((cell) => (
@@ -194,17 +258,20 @@ class StudioV2 extends Component {
 
 StudioV2.propTypes = {
   comicId: propTypes.string,
-  cells: propTypes.arrayOf(propTypes.shape({
-    urlId: propTypes.string,
-    imageUrl: propTypes.string,
-    order: propTypes.number,
-    schemaVersion: propTypes.number,
-    studioState: propTypes.object,
-    title: propTypes.string
-  })),
-  urlId: propTypes.string,
-  title: propTypes.string,
-  userCanEdit: propTypes.bool
+  isShowingSpinner: propTypes.bool
+
+
+  // cells: propTypes.arrayOf(propTypes.shape({
+  //   urlId: propTypes.string,
+  //   imageUrl: propTypes.string,
+  //   order: propTypes.number,
+  //   schemaVersion: propTypes.number,
+  //   studioState: propTypes.object,
+  //   title: propTypes.string
+  // })),
+  // urlId: propTypes.string,
+  // title: propTypes.string,
+  // userCanEdit: propTypes.bool
 };
 
 export default StudioV2 

@@ -72,8 +72,8 @@ class MyApp extends App {
     return { pageProps };
   }
 
-  hideSpinner = () => {
-    this.setState({ showSpinner: false })
+  hideSpinner = (cb = () => {}) => {
+    this.setState({ showSpinner: false }, cb)
   }
 
   showSpinner = () => {

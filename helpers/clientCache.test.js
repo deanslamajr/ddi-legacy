@@ -5,6 +5,7 @@ import {
   deleteCell,
   doesCellIdExist,
   doesComicIdExist,
+  getComic,
   getComicIdFromCellId,
   setCellStudioState
 } from './clientCache';
@@ -12,25 +13,39 @@ import {
 jest.mock('store2');
 
 describe('clientCache', () => {
+  const mockComicId = 'mockComicId';
+  const mockCellId = 'mockCellId';
+
+  const mockCell = {
+    comicId: mockComicId,
+    id: mockCellId,
+    studioState: {}
+  };
+
+  const mockComic = {
+    initialCellId: mockCellId
+  };
+
+  const mockCache = {
+    comics: {
+      [mockComicId]: mockComic
+    },
+    cells: {
+      [mockCellId]: mockCell
+    }
+  };
+
+  beforeEach(() => {
+    store('', cloneDeep(mockCache));
+  });
+
   describe('doesCellIdExist', () => {
-    const someId = 'someId';
-
-    beforeEach(() => {
-      const cache = {
-        cells: {
-          [someId]: {}
-        }
-      };
-
-      store('', cache);
-    });
-
     it('should return false if cellId doesnt exist in cache', () => {
       expect(doesCellIdExist('shouldNotExist')).toBe(false);
     });
 
     it('should return true if cellId exists in cache', () => {
-      expect(doesCellIdExist(someId)).toBe(true);
+      expect(doesCellIdExist(mockCellId)).toBe(true);
     });
 
     describe('if cache does not exist', () => {
@@ -49,24 +64,12 @@ describe('clientCache', () => {
   });
 
   describe('doesComicIdExist', () => {
-    const someId = 'someId';
-
-    beforeEach(() => {
-      const cache = {
-        comics: {
-          [someId]: {}
-        }
-      };
-
-      store('', cache);
-    });
-
     it('should return false if cellId doesnt exist in cache', () => {
       expect(doesComicIdExist('shouldNotExist')).toBe(false);
     });
 
     it('should return true if cellId exists in cache', () => {
-      expect(doesComicIdExist(someId)).toBe(true);
+      expect(doesComicIdExist(mockComicId)).toBe(true);
     });
 
     describe('if cache does not exist', () => {
@@ -85,8 +88,6 @@ describe('clientCache', () => {
   });
 
   describe('setCellStudioState', () => {
-    const cellId = 'someCellId';
-
     const newStudioState = {
       backgroundColor: '#fff',
       caption: '',
@@ -109,73 +110,54 @@ describe('clientCache', () => {
       }}
     };
 
-    beforeEach(() => {
-      const cache = {
-        cells: {
-          [cellId]: {}
-        }
-      };
-
-      store('', cache);
-    });
-
     it('should set the given cell`s studio state with the given studio state', () => {
-      setCellStudioState(cellId, newStudioState);
+      setCellStudioState(mockCellId, newStudioState);
 
       const updatedCache = store('');
 
-      expect(updatedCache.cells[cellId]).toBe(newStudioState);
+      expect(updatedCache.cells[mockCellId].studioState).toBe(newStudioState);
     });
   });
 
   describe('createNewCell', () => {
-    beforeEach(() => {
-      const cache = {
-        comics: {},
-        cells: {}
-      };
-
-      store('', cache);
-    });
-
     it('creates a new cell in the cache', () => {
       const originalCellsCount = Object.keys(store('').cells).length;
-      createNewCell();
+      createNewCell('someThrowawayComicId');
       const newCellsCount = Object.keys(store('').cells).length;
       expect(newCellsCount).toBe(originalCellsCount + 1);
-    });
-
-    it('associates the new cell with the given comic', () => {
-      const someComicId = 'someComicId';
-      const mockCache = {
-        comics: {
-          [someComicId]: {
-            cells: []
-          }
-        },
-        cells: {}
-      };
-      store('', mockCache);
-
-      const newCellId = createNewCell(someComicId);
-
-      const cache = store('');
-      expect(cache.comics[someComicId].cells.includes(newCellId)).toBe(true);
     });
 
     it('returns the new cell`s cellId', () => {
       const newCellId = createNewCell();
       const cache = store('');
 
-      expect(newCellId).toBe(Object.keys(cache.cells)[0]);
+      expect(Object.keys(cache.cells).includes(newCellId)).toBe(true);
     });
+
+    it('sets the new cell`s previousCellId field properly', () => {
+      const newCellId = createNewCell(mockComicId);
+      const cache = store('');
+      expect(cache.cells[newCellId].previousCellId).toBe(mockCellId);
+    })
+
+    describe('if this is a new cell for a new comic', () => {
+      it('sets the associated comic`s initialCellId field to this cellId', () => {
+        store('', null);
+  
+        const newCellId = createNewCell();
+  
+        const cache = store('');
+
+        expect(Object.values(cache.comics)[0].initialCellId).toBe(newCellId);
+      });
+    })
 
     describe('if no comicId is passed', () => {
       it('creates a new comic', () => {
-        const newCellId = createNewCell();
-        const cache = store('');
-
-        expect(Object.keys(cache.comics).length).toBe(1);
+        const originalCellsCount = Object.keys(store('').cells).length;
+        createNewCell('someNewCellId');
+        const newCellsCount = Object.keys(store('').cells).length;
+        expect(newCellsCount).toBe(originalCellsCount + 1);
       });
     });
 
@@ -208,77 +190,77 @@ describe('clientCache', () => {
   });
 
   describe('getComicIdFromCellId', () => {
-    const cellId = 'cellId';
-    const comicId = 'comicId';
-
-    beforeEach(() => {
-      const cache = {
-        comics: {
-          [comicId]: {
-            cells: [cellId]
-          }
-        },
-        cells: {
-          [cellId]: {}
-        }
-      };
-
-      store('', cloneDeep(cache));
-    });
-
     it('should return the comicId of the comic that the given cellId is associated with', () => {
-      expect(getComicIdFromCellId(cellId)).toBe(comicId);
+      expect(getComicIdFromCellId(mockCellId)).toBe(mockComicId);
     });
+
+    describe('if cellId does not exist in client cache', () => {
+      it('should return null', () => {
+        expect(getComicIdFromCellId('someNonExistentCellId')).toBeNull();
+      });
+    })
   });
 
   describe('deleteCell', () => {
-    const cellId = 'cellId';
-    const aSecondCellId = 'aSecondCellId';
-
-    const comicId = 'comicId';
-
-    beforeEach(() => {
-      const cache = {
-        comics: {
-          [comicId]: {
-            cells: [
-              cellId,
-              aSecondCellId
-            ]
-          }
-        },
-        cells: {
-          [cellId]: {},
-          [aSecondCellId]: {}
-        }
-      };
-
-      store('', cloneDeep(cache));
-    });
-
     it('should remove the cell from the cache', () => {
-      deleteCell(cellId);
+      const newCellId = createNewCell(mockComicId);
+      deleteCell(newCellId);
 
       const cache = store('');
-      expect(cache.cells[cellId]).toBeUndefined();
-    });
-
-    it('should remove the cell`s reference from the associated comic', () => {
-      deleteCell(cellId);
-
-      const cache = store('');
-      const comicCellReferences = cache.comics[comicId].cells;
-      expect(comicCellReferences.includes(cellId)).toBe(false);
+      expect(cache.cells[newCellId]).toBeUndefined();
     });
 
     describe('if the associated comic has 0 cells after this removal', () => {
       it('should delete the comic', () => {
-        deleteCell(cellId);
-        deleteCell(aSecondCellId);
+        const newCellId = createNewCell(mockComicId);
+        deleteCell(mockCellId);
 
-        const cache = store('');
+        expect(store('').comics[mockComicId]).toBeDefined();
 
-        expect(cache.comics[comicId]).toBeUndefined();
+        deleteCell(newCellId);
+
+        expect(store('').comics[mockComicId]).toBeUndefined();
+      });
+    });
+
+    describe('if the comic has more than a single cell and this cell was the first cell of the comic', () => {
+      it('should set comic.initialCellId correctly', () => {
+        const newCellId = createNewCell(mockComicId);
+        deleteCell(mockCellId);
+
+        const comic = store('').comics[mockComicId];
+
+        expect(comic.initialCellId).toBe(newCellId);
+      });
+    })
+  });
+
+  describe('getComic', () => {
+    it('should return the comic datastructure', () => {
+      const comic = getComic(mockComicId);
+      expect(comic).toEqual(mockComic);
+    });
+
+    describe('if comicId does not exist in cache', () => {
+      it('should return null', () => {
+        const comic = getComic('comicIdThatDoesNotExist');
+        expect(comic).toEqual(null);
+      });
+    });
+
+    describe('if cache doesn`t exist', () => {
+      it('should return null', () => {
+        store('', undefined);
+        const comic = getComic('comicIdThatDoesNotExist');
+        expect(comic).toEqual(null);
+      });
+    });
+
+    describe('if cache.comics doesn`t exist', () => {
+      it('should return null', () => {
+        store('', {});
+        const comic = getComic('comicIdThatDoesNotExist');
+        expect(comic).toEqual(null);
       });
     });
   });

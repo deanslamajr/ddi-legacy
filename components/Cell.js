@@ -53,9 +53,9 @@ const CellImage = styled(Img)`
 `
 
 export default function Cell ({
-  className, imageUrl, isPreview, title, clickable, onClick, removeBorders, schemaVersion, width
+  className, imageUrl, isImageUrlAbsolute, title, clickable, onClick, removeBorders, schemaVersion, width
 }) {
-  const cellUrl = isPreview
+  const cellUrl = isImageUrlAbsolute
     ? imageUrl
     : getCellUrl(imageUrl, schemaVersion)
 

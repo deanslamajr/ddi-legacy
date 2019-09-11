@@ -35,7 +35,7 @@ function PreviewModal ({
         schemaVersion={SCHEMA_VERSION}
         title={caption}
         width="250px"
-        isPreview
+        isImageUrlAbsolute
       />
     </CenteredContainer>
     <CenteredButtons>

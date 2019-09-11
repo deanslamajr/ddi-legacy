@@ -78,7 +78,7 @@ const emptyComic = {
 };
 
 const emptyCell = {
-  hasNewImage: false,
+  hasNewImage: true,
   id: null,
   imageUrl: null,
   comicId: null,

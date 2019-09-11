@@ -17,15 +17,33 @@ import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../../components/naviga
 import { Router } from '../../../routes'
 import { forwardCookies, getApi, redirect, sortByOrder } from '../../../helpers'
 import theme from '../../../helpers/theme'
+import {generateCellImageFromEmojis} from '../../../helpers/generateCellImageFromEmojis'
 
-import {DRAFT_SUFFIX} from '../../../config/constants.json'
+import {DRAFT_SUFFIX, SCHEMA_VERSION} from '../../../config/constants.json'
 
 const SIDE_BUTTONS_SPACER = 0//.4
 const cellWidth = `${(1 - SIDE_BUTTONS_SPACER) * theme.layout.width}px`;
+const CELL_IMAGE_ID = 'CELL_IMAGE_ID';
 
 function generateDraftUrl() {
   // @todo verify this id doesn't already exist in localstorage
   return `/s/comic/${shortid.generate()}${DRAFT_SUFFIX}`
+}
+
+async function generateCellImage(cell) {
+  const cellImageElement = document.createElement('div');
+  cellImageElement.hidden = true;
+  const cellImageElementId = `${CELL_IMAGE_ID}-${cell.id}`;
+  cellImageElement.id = cellImageElementId;
+  document.body.appendChild(cellImageElement);
+  
+  const { url } = await generateCellImageFromEmojis({
+    emojis: cell.studioState.emojis,
+    backgroundColor: cell.studioState.backgroundColor,
+    htmlElementId: cellImageElementId
+  })
+
+  cell.imageUrl = url;
 }
 
 function hydrateComicFromApi (comicId) {
@@ -48,9 +66,6 @@ function hydrateComicFromClientCache(comicId) {
 
   const comic = getComic(comicId);
   const cells = getCellsByComicId(comicId);
-
-  console.log('comic', comic)
-  console.log('cells', cells)
 
   return {
     ...comic,
@@ -75,6 +90,14 @@ async function hydrateComic (comicId) {
     // @todo
     // hydrateComicFromApi(comicId);
   }
+}
+
+const getCellsByComicId = (comicId, cells) => {
+  const comicsCells = cells.filter(cell => cell.comicId === comicId);
+  return comicsCells.reduce((acc, cell) => {
+    acc[cell.id] = cell;
+    return acc;
+  }, {});
 }
 
 // STYLED COMPONENTS
@@ -134,6 +157,11 @@ class StudioV2 extends Component {
     if (!hydratedComic) {
       return this.navigateToNewComic();
     } else {
+      // generate images for any unpublished cell
+      const cells = Object.values(hydratedComic.cells || {});
+      const cellsWithUnpublishedImages = cells.filter(cell => cell.hasNewImage);
+      await Promise.all(cellsWithUnpublishedImages.map(generateCellImage));      
+
       this.setState({comic: hydratedComic}, () => {
         // hide spinner and scroll to bottom of comic
         this.props.hideSpinner(() => window.scrollTo(0,document.body.scrollHeight));
@@ -205,17 +233,39 @@ class StudioV2 extends Component {
     }
   }
 
+  getCellsFromState = () => {
+    const comic = this.state.comic;
+
+    const sortedCells = [];
+  
+    if (!comic.initialCellId) {
+      return sortedCells;
+    }
+  
+    const comicsCells = getCellsByComicId(this.props.comicId, Object.values(comic.cells));
+  
+    let nextCellId = comic.initialCellId;
+  
+    while(comicsCells[nextCellId]) {
+      sortedCells.push(comicsCells[nextCellId]);
+      const nextCell = Object.values(comicsCells).find(cell => cell.previousCellId === nextCellId);
+      nextCellId = nextCell && nextCell.id
+    }
+  
+    return sortedCells;
+  }
+
   render () {
-    console.log('this.state', this.state);
     return !this.props.isShowingSpinner && <React.Fragment>
       <OuterContainer>
         {/* CELLS */}
-        {this.props.cells && this.props.cells.sort(sortByOrder).map((cell) => (
+        {this.getCellsFromState().map((cell) => (
           <div key={cell.imageUrl}>
             <StudioCell
               imageUrl={cell.imageUrl}
+              isImageUrlAbsolute={cell.hasNewImage}
               onClick={() => this.setState({activeCell: cell})}
-              schemaVersion={cell.schemaVersion}
+              schemaVersion={cell.schemaVersion || SCHEMA_VERSION}
               title={cell.title}
               width={cellWidth}
             />

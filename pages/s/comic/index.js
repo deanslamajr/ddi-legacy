@@ -19,7 +19,7 @@ import { forwardCookies, getApi, redirect, sortByOrder } from '../../../helpers'
 import theme from '../../../helpers/theme'
 import {generateCellImageFromEmojis} from '../../../helpers/generateCellImageFromEmojis'
 
-import {DRAFT_SUFFIX, SCHEMA_VERSION} from '../../../config/constants.json'
+import {DRAFT_SUFFIX, SCHEMA_VERSION} from '../../../config/constants.json';
 
 const SIDE_BUTTONS_SPACER = 0//.4
 const cellWidth = `${(1 - SIDE_BUTTONS_SPACER) * theme.layout.width}px`;
@@ -185,17 +185,24 @@ class StudioV2 extends Component {
   navigateToAddCellFromNew = () => {
     const { comicId } = this.props
 
+    const {createNewCell} = require('../../../helpers/clientCache');
+    const cellId = createNewCell(comicId);
+
     this.props.showSpinner()
     this.hideAddCellModal();
-    Router.pushRoute(`/studio/${comicId}/new`)
+    Router.pushRoute(`/s/cell/${cellId}`)
   }
 
-  navigateToAddCell = (cellUrlId) => {
+  navigateToAddCell = (studioState) => {
     const { comicId } = this.props
+
+    const {createNewCell} = require('../../../helpers/clientCache');
+
+    const cellId = createNewCell(comicId, studioState);
 
     this.props.showSpinner()
     this.hideAddCellModal();
-    Router.pushRoute(`/studio/${comicId}/${cellUrlId}`)
+    Router.pushRoute(`/s/cell/${cellId}`)
   }
 
   toggleComicActionsModal = (newValue) => {
@@ -256,17 +263,19 @@ class StudioV2 extends Component {
   }
 
   render () {
+    const sortedCells = this.getCellsFromState();
+
     return !this.props.isShowingSpinner && <React.Fragment>
       <OuterContainer>
         {/* CELLS */}
-        {this.getCellsFromState().map((cell) => (
+        {sortedCells.map((cell) => (
           <div key={cell.imageUrl}>
             <StudioCell
               imageUrl={cell.imageUrl}
               isImageUrlAbsolute={cell.hasNewImage}
               onClick={() => this.setState({activeCell: cell})}
               schemaVersion={cell.schemaVersion || SCHEMA_VERSION}
-              title={cell.title}
+              title={cell.studioState.caption}
               width={cellWidth}
             />
           </div>
@@ -278,7 +287,7 @@ class StudioV2 extends Component {
         onCancelClick={this.hideAddCellModal}
         onAddCellFromNewClick={this.navigateToAddCellFromNew}
         onAddCellFromDuplicate={this.navigateToAddCell}
-        cells={this.props.cells}
+        cells={sortedCells}
       />}
 
       {this.state.showComicActionsModal && <ComicActionsModal

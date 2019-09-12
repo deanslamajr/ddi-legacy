@@ -6,7 +6,8 @@ import { MenuButton } from '../../../components/Buttons'
 import Cell from '../../../components/Cell'
 
 import { media } from '../../../helpers/style-utils'
-import { sortByOrder } from '../../../helpers'
+
+import {SCHEMA_VERSION} from '../../../config/constants.json';
 
 const HOME = 'HOME'
 const CELL_LIST = 'CELL_LIST'
@@ -69,7 +70,7 @@ export default class AddCellModal extends React.Component {
       onAddCellFromNewClick,
       onAddCellFromDuplicate,
       onCancelClick
-    } = this.props
+    } = this.props;
 
     return this.state.currentView === HOME
       ? (<HomeModal onCancelClick={onCancelClick}>
@@ -93,13 +94,14 @@ export default class AddCellModal extends React.Component {
           Pick a cell to duplicate:
         </MessageContainer>
         <CellsContainer>
-          {cells.sort(sortByOrder).map(({ imageUrl, image_url, schemaVersion, schema_version, title, urlId, url_id }) => (
-            <CellContainer key={imageUrl || image_url}>
+          {cells.map(({ hasNewImage, imageUrl, schemaVersion = SCHEMA_VERSION, studioState }) => (
+            <CellContainer key={imageUrl}>
               <Cell
-                imageUrl={imageUrl || image_url}
-                onClick={() => onAddCellFromDuplicate(urlId || url_id)}
-                schemaVersion={schemaVersion || schema_version}
-                title={title}
+                imageUrl={imageUrl}
+                isImageUrlAbsolute={hasNewImage}
+                onClick={() => onAddCellFromDuplicate(studioState)}
+                schemaVersion={schemaVersion}
+                title={studioState.caption}
                 width="250px"
               />
             </CellContainer>

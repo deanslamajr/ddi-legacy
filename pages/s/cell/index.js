@@ -86,6 +86,7 @@ class CellStudio extends Component {
     const {getStudioState} = require('../../../helpers/clientCache');
     const cachedStudioState = getStudioState(this.props.cellId);
 
+    console.log('cachedStudioState', cachedStudioState)
     if (cachedStudioState) {
       const showEmojiPicker = Object.keys(cachedStudioState.emojis).length === 0;
       this.setState({

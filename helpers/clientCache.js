@@ -138,6 +138,12 @@ export const getCellsByComicId = (comicId, cache) => {
   }, {});
 }
 
+export const getCellById = (cellId) => {
+  const cache = getCache();
+  const cells = Object.values(cache.cells);
+  return cells[cellId] || null;
+}
+
 export const deleteCell = (cellId) => {
   // get the latest cache
   let cache = getCache();
@@ -256,7 +262,7 @@ export const createNewCell = (comicId, initialStudioState) => {
   cache.cells[cellId] = getInitializedCell({
     comicId,
     id: cellId,
-    initialStudioState,
+    studioState: initialStudioState,
     previousCellId
   });
 
@@ -272,8 +278,12 @@ export const createNewCell = (comicId, initialStudioState) => {
 
 export const getStudioState = (cellId) => {
   const cache = getCache();
-  return cache
+  const cellCache = cache
     ? cache.cells[cellId]
+    : null;
+
+  return cellCache
+    ? cellCache.studioState
     : null;
 }
 

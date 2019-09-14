@@ -7,6 +7,7 @@ import propTypes from 'prop-types'
 import ComicActionsModal from './ComicActionsModal'
 import CellActionsModal from './CellActionsModal'
 import AddCellModal from './AddCellModal'
+import PublishPreviewModal from './PublishPreviewModal'
 
 import Cell from '../../../components/Cell'
 import {
@@ -146,9 +147,10 @@ class StudioV2 extends Component {
   state = {
     activeCell: null,
     comic: {},
+    showAddCellModal: false,
     showComicActionsModal: false,
     showCellActionsModal: false,
-    showAddCellModal: false
+    showPreviewModal: false
   }
 
   async componentDidMount() {
@@ -262,6 +264,15 @@ class StudioV2 extends Component {
     return sortedCells;
   }
 
+  handlePublishPreviewClick = () => {
+    this.togglePreviewModal(true);
+    this.toggleComicActionsModal(false);
+  }
+
+  togglePreviewModal = (shouldShow) => {
+    this.setState({showPreviewModal: shouldShow});
+  }
+
   render () {
     const sortedCells = this.getCellsFromState();
 
@@ -293,11 +304,17 @@ class StudioV2 extends Component {
       {this.state.showComicActionsModal && <ComicActionsModal
         onCancelClick={() => this.toggleComicActionsModal(false)}
         onDeleteClick={() => this.handleDeleteComicClick()}
+        onPublishClick={() => this.handlePublishPreviewClick()}
       />}
 
       {this.state.activeCell && <CellActionsModal
         cell={this.state.activeCell}
         onCancelClick={() => this.setState({activeCell: null})}
+      />}
+
+      {this.state.showPreviewModal && <PublishPreviewModal
+        onCancelClick={() => this.togglePreviewModal(false)}
+        cells={sortedCells}
       />}
 
       <NavButton

@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import Modal, { CenteredButtons, MessageContainer } from '../../../components/Modal'
-import { MenuButton } from '../../../components/Buttons'
+import { MenuButton, PinkMenuButton } from '../../../components/Buttons'
 
 const HomeModal = styled(Modal)`
   width: 315px;
@@ -40,6 +40,11 @@ export default class ComicActionsModal extends React.Component {
         <MenuButton onClick={() => this.setState({currentView: DELETE_WARNING})}>
           DELETE
         </MenuButton>
+      </CenteredButtons>
+      <CenteredButtons>
+        <PinkMenuButton onClick={() => this.props.onPublishClick()}>
+          PUBLISH
+        </PinkMenuButton>
       </CenteredButtons>
     </React.Fragment>);
   }

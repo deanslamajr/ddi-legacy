@@ -45,6 +45,7 @@ export const MessageContainer = styled.div`
 
 const ExitButton = styled(NavButton)`
   font-size: 4rem;
+  opacity: .6;
 `
 
 function Modal ({ children, className, onCancelClick }) {

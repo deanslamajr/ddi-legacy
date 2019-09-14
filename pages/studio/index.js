@@ -10,14 +10,14 @@ import { Router } from '../../routes'
 
 import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../components/navigation'
 
-import EmojiPicker from './EmojiPicker'
-import BuilderMenu from './BuilderMenu'
-import ActionsModal from './ActionsModal'
-import CaptionModal from './CaptionModal'
-import WarningModal from './WarningModal'
-import PreviewModal from './PreviewModal'
+import EmojiPicker from '../s/cell/EmojiPicker'
+import BuilderMenu from '../s/cell/BuilderMenu'
+import ActionsModal from '../s/cell/ActionsModal'
+import CaptionModal from '../s/cell/CaptionModal'
+import WarningModal from '../s/cell/WarningModal'
+import PreviewModal from '../s/cell/PreviewModal'
 import PublishFailModal from './PublishFailModal'
-import EmojiCanvas from './EmojiCanvas';
+import EmojiCanvas from '../s/cell/EmojiCanvas';
 
 import {
   konvaCacheConfig,

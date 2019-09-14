@@ -2,6 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 import getConfig from 'next/config'
 
+import theme from '../helpers/theme';
+
 const { publicRuntimeConfig } = getConfig()
 
 //
@@ -46,10 +48,24 @@ const Spinner = styled.div`
 }
 `
 
-export function LoadSpinner () {
+const PercentageCompleteText = styled.span`
+  position: absolute;
+  top: 20%;
+  z-index: 999;
+  font-size: 4rem;
+  font-weight: bold;
+  color: ${theme.colors.white};
+  opacity: .8;
+  cursor: default;
+  user-select: none;
+`
+
+export function LoadSpinner ({percentCompleted}) {
   return (
     <LoadSpinnerContainer>
-      <Spinner/>
+      <Spinner>
+        {Number.isInteger(percentCompleted) && <PercentageCompleteText>{percentCompleted}&#37;</PercentageCompleteText>}
+      </Spinner>
     </LoadSpinnerContainer>
   )
 }

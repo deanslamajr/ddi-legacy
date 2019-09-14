@@ -55,11 +55,6 @@ const CellsCount = styled.div`
   cursor: pointer;
 `
 
-const LoadingImage = styled.div`
-  width: 100%;
-  max-width: calc(100vw - 7px);
-`;
-
 const Thumb = ({cellsCount, imageUrl}) => {
   return (<>
     {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}

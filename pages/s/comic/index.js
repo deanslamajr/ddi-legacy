@@ -284,12 +284,16 @@ class StudioV2 extends Component {
 
     totalJobsCount += cellsThatRequireUploads.length;
 
+    this.props.showSpinner(0);
+
     // @todo startStatusLoader(totalJobsCount)
     if (cellsThatRequireUploads.length) {
       await this.upload();
+      this.props.showSpinner(50);
     }
 
     await this.finishPublish();
+    this.props.showSpinner(100);
   }
 
   upload = async () => {

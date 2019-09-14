@@ -73,11 +73,17 @@ class MyApp extends App {
   }
 
   hideSpinner = (cb = () => {}) => {
-    this.setState({ showSpinner: false }, cb)
+    this.setState({
+      percentCompleted: null,
+      showSpinner: false
+    }, cb)
   }
 
-  showSpinner = () => {
-    this.setState({ showSpinner: true })
+  showSpinner = (percentCompleted) => {
+    this.setState({
+      percentCompleted,
+      showSpinner: true
+    });
   }
 
   appendLatestComics = async (cb = () => {}) => {
@@ -210,7 +216,7 @@ class MyApp extends App {
         <MobileViewportSettings />
         <GrayBackground />
 
-        {this.state.showSpinner && <LoadSpinner/>}
+        {this.state.showSpinner && <LoadSpinner percentCompleted={this.state.percentCompleted} />}
 
         <ThemeProvider theme={theme}>
           <Component

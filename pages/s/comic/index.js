@@ -93,13 +93,14 @@ async function hydrateComic (comicId) {
   }
 }
 
-const getCellsByComicId = (comicId, cells) => {
-  const comicsCells = cells.filter(cell => cell.comicId === comicId);
-  return comicsCells.reduce((acc, cell) => {
-    acc[cell.id] = cell;
-    return acc;
-  }, {});
-}
+// @todo do we need this anymore?
+// const getCellsByComicId = (comicId, cells) => {
+//   const comicsCells = cells.filter(cell => cell.comicId === comicId);
+//   return comicsCells.reduce((acc, cell) => {
+//     acc[cell.id] = cell;
+//     return acc;
+//   }, {});
+// }
 
 // STYLED COMPONENTS
 
@@ -244,14 +245,13 @@ class StudioV2 extends Component {
 
   getCellsFromState = () => {
     const comic = this.state.comic;
+    const comicsCells = comic.cells;
 
     const sortedCells = [];
   
     if (!comic.initialCellId) {
       return sortedCells;
     }
-  
-    const comicsCells = getCellsByComicId(this.props.comicId, Object.values(comic.cells));
   
     let nextCellId = comic.initialCellId;
   
@@ -271,6 +271,33 @@ class StudioV2 extends Component {
 
   togglePreviewModal = (shouldShow) => {
     this.setState({showPreviewModal: shouldShow});
+  }
+
+  publish = async () => {
+    const sortedCells = this.getCellsFromState();
+
+    // minimum number of "jobs" required to finish a publish
+    // i.e. all jobs excluding uploads
+    let totalJobsCount = 0;
+
+    const cellsThatRequireUploads = sortedCells.filter(({hasNewImage}) => hasNewImage);
+
+    totalJobsCount += cellsThatRequireUploads.length;
+
+    // @todo startStatusLoader(totalJobsCount)
+    if (cellsThatRequireUploads.length) {
+      await this.upload();
+    }
+
+    await this.finishPublish();
+  }
+
+  upload = async () => {
+    console.log('uploading...')
+  }
+
+  finishPublish = async () => {
+    console.log('finishing publish...')
   }
 
   render () {
@@ -314,6 +341,7 @@ class StudioV2 extends Component {
 
       {this.state.showPreviewModal && <PublishPreviewModal
         onCancelClick={() => this.togglePreviewModal(false)}
+        onPublishClick={() => this.publish()}
         cells={sortedCells}
       />}
 

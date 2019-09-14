@@ -56,7 +56,7 @@ export default class PublishPreviewModal extends React.Component {
       </CellsContainer>
               
       <CenteredButtons>
-        <PinkMenuButton>
+        <PinkMenuButton onClick={() => this.props.onPublishClick()}>
           PUBLISH
         </PinkMenuButton>
       </CenteredButtons>

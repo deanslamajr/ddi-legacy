@@ -39,11 +39,11 @@ const OldCellBorder = styled.div`
   background: rgb(255, 250, 249);
   display: grid;
   height: 100%;
-  width: ${props => props.width || (props.removeBorders ? '100%' : '300px')};
+  width: ${props => props.width || (props.removeborders ? '100%' : '300px')};
   max-width: calc(100vw - ${props => props.theme.padding}px);
 
   ${media.desktopMin`
-    grid-template-rows: ${props => props.width || (props.removeBorders ? 'inherit' : '300px')};
+    grid-template-rows: ${props => props.width || (props.removeborders ? 'inherit' : '300px')};
   `}
 `
 
@@ -63,21 +63,20 @@ export default function Cell ({
     className={className}
     clickable={clickable || onClick}
     onClick={onClick}
-    removeBorders={removeBorders}
     schemaVersion={schemaVersion}
   > 
     {schemaVersion === 1
       ? (<CellBorder>
         <CellImage
-          removeBorders={removeBorders}
+          removeborders={removeBorders}
           src={cellUrl}
           loader={<LoadingCell removeBorders />}
           unloader={<ErrorCell removeBorders />}
         />
       </CellBorder>)
-      : (<OldCellBorder removeBorders={removeBorders} width={width}>
+      : (<OldCellBorder removeborders={removeBorders} width={width}>
         <CellImage
-          removeBorders={removeBorders}
+          removeborders={removeBorders}
           src={cellUrl}
           width={width}
           loader={<LoadingCell removeBorders />}

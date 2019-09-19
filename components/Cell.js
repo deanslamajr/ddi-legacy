@@ -48,12 +48,12 @@ const OldCellBorder = styled.div`
 `
 
 const CellImage = styled(Img)`
-  width: ${props => props.width || (props.removeBorders ? '100%' : '300px')};
+  width: ${props => props.width || (props.removeborders ? '100%' : '300px')};
   max-width: calc(100vw - ${props => props.theme.padding}px);
 `
 
 export default function Cell ({
-  className, imageUrl, isImageUrlAbsolute, title, clickable, onClick, removeBorders, schemaVersion, width
+  className, imageUrl, isImageUrlAbsolute, title, clickable, onClick, removeborders, schemaVersion, width
 }) {
   const cellUrl = isImageUrlAbsolute
     ? imageUrl
@@ -68,19 +68,19 @@ export default function Cell ({
     {schemaVersion === 1
       ? (<CellBorder>
         <CellImage
-          removeborders={removeBorders}
+          removeborders={removeborders}
           src={cellUrl}
-          loader={<LoadingCell removeBorders />}
-          unloader={<ErrorCell removeBorders />}
+          loader={<LoadingCell removeborders />}
+          unloader={<ErrorCell removeborders />}
         />
       </CellBorder>)
-      : (<OldCellBorder removeborders={removeBorders} width={width}>
+      : (<OldCellBorder removeborders={removeborders} width={width}>
         <CellImage
-          removeborders={removeBorders}
+          removeborders={removeborders}
           src={cellUrl}
           width={width}
-          loader={<LoadingCell removeBorders />}
-          unloader={<ErrorCell removeBorders/>}
+          loader={<LoadingCell removeborders />}
+          unloader={<ErrorCell removeborders/>}
         />
         {title && title.length && <DynamicTextContainer fontRatio={17}>
           {nl2br(title)}

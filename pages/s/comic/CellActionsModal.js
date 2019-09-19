@@ -31,7 +31,7 @@ export default class CellActionsModal extends React.Component {
         isImageUrlAbsolute={hasNewImage}
         schemaVersion={schemaVersion}
         title={studioState.caption}
-        removeBorders
+        removeborders
       />
       <CenteredButtons>
         <MenuButton>

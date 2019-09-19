@@ -75,12 +75,12 @@ const Image = styled.img`
   max-width: calc(100vw - 7px);
 `;
 
-export const LoadingCell = ({removeBorders}) => <Image
+export const LoadingCell = ({removeborders}) => <Image
     src={`${publicRuntimeConfig.ASSETS_ROOT_URL}/loading.png`}
-    removeborders={removeBorders}
+    removeborders={removeborders}
   />
 
-export const ErrorCell = ({removeBorders}) => <Image
+export const ErrorCell = ({removeborders}) => <Image
     src={`${publicRuntimeConfig.ASSETS_ROOT_URL}/error.png`}
-    removeborders={removeBorders}
+    removeborders={removeborders}
   />

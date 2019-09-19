@@ -1,7 +1,5 @@
 'use strict'
 
-const { Comics } = require('../server/models')
-
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.addColumn('comics', 'is_active', {

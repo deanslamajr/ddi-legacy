@@ -60,16 +60,22 @@ const Thumb = ({cellsCount, imageUrl}) => {
     {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}
     <Thumbnail
       src={imageUrl}
-      loader={<LoadingCell/>}
-      unloader={<ErrorCell/>}
+      loader={<LoadingCell removeborders/>}
+      unloader={<ErrorCell removeborders/>}
     />
   </>)
 }
 
-const OldThumb = ({caption, cellsCount, imageUrl}) => {
+const OldThumb = ({caption, cellsCount, schemaVersion, imageUrl}) => {
   return (<OldThumbNail as='div'>
     {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}
-    <Cell clickable removeBorders imageUrl={imageUrl} title={caption} />
+    <Cell
+      clickable
+      removeborders
+      imageUrl={imageUrl}
+      isImageUrlAbsolute={schemaVersion>1}
+      schemaVersion={schemaVersion}
+      title={caption} />
   </OldThumbNail>);
 }
 
@@ -90,6 +96,7 @@ const CellsThumb = ({cells = []}) => {
       : (<OldThumb
         cellsCount={sortedCells.length}
         imageUrl={getCellUrl(cell.image_url, cell.schema_version)}
+        schemaVersion={cell.schema_version}
         caption={cell.title}
       />)
   }

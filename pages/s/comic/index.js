@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import axios from 'axios'
 import shortid from 'shortid'
 import propTypes from 'prop-types'
+import getConfig from 'next/config'
 
 import ComicActionsModal from './ComicActionsModal'
 import CellActionsModal from './CellActionsModal'
@@ -20,7 +21,11 @@ import { forwardCookies, getApi, redirect, sortByOrder } from '../../../helpers'
 import theme from '../../../helpers/theme'
 import {generateCellImageFromEmojis} from '../../../helpers/generateCellImageFromEmojis'
 
-import {DRAFT_SUFFIX, SCHEMA_VERSION} from '../../../config/constants.json';
+import {
+  CAPTCHA_ACTION_CELL_PUBLISH, DRAFT_SUFFIX, SCHEMA_VERSION
+} from '../../../config/constants.json';
+
+const { publicRuntimeConfig } = getConfig();
 
 const SIDE_BUTTONS_SPACER = 0//.4
 const cellWidth = `${(1 - SIDE_BUTTONS_SPACER) * theme.layout.width}px`;
@@ -273,31 +278,89 @@ class StudioV2 extends Component {
     this.setState({showPreviewModal: shouldShow});
   }
 
-  publish = async () => {
-    const sortedCells = this.getCellsFromState();
+  getCellsWithNewImage = () => {
+    const cells = Object.values(this.state.comic.cells);
+    return cells.filter(({hasNewImage}) => hasNewImage);
+  }
 
+  publish = async () => {
     // minimum number of "jobs" required to finish a publish
     // i.e. all jobs excluding uploads
+    // @todo update this with the amount of jobs involved for `finishPublish`
     let totalJobsCount = 0;
 
-    const cellsThatRequireUploads = sortedCells.filter(({hasNewImage}) => hasNewImage);
+    const cellsThatRequireUploads = this.getCellsWithNewImage();
 
-    totalJobsCount += cellsThatRequireUploads.length;
-
-    this.props.showSpinner(0);
-
-    // @todo startStatusLoader(totalJobsCount)
     if (cellsThatRequireUploads.length) {
+      // if uploading required:
+      // 1 + # of cells that require uploads
+      totalJobsCount += 1 + cellsThatRequireUploads.length;
+
+      this.props.showSpinner(totalJobsCount);
+
       await this.upload();
-      this.props.showSpinner(50);
+    } else {
+      this.props.showSpinner(totalJobsCount);
     }
 
     await this.finishPublish();
-    this.props.showSpinner(100);
   }
 
-  upload = async () => {
+  upload = async (v2CaptchaToken) => {
     console.log('uploading...')
+
+    let token
+    
+    try {
+      if (!v2CaptchaToken && publicRuntimeConfig.CAPTCHA_V3_SITE_KEY) {
+        token = await this.props.recaptcha.execute(CAPTCHA_ACTION_CELL_PUBLISH);
+      }
+        
+      const {
+        comicId, id, signedRequest
+      } = await this.getSignedRequest({
+        v2: v2CaptchaToken,
+        v3: token
+      });
+
+      // this.props.markJobFinished();
+
+      //await uploadImage(this.cellImageFile, signedRequest);
+    }
+    catch (e) {
+      const isCaptchaFail = e && e.response && e.response.status === 400;
+      // @todo log this
+      //this.togglePublishFailModal(true, isCaptchaFail);
+    }
+  }
+
+  getSignedRequest = async (captchaTokens) => {
+    // POST /api/comic/:comicId/sign
+    // {
+    //   "newCells": [
+    //     "draft--someId",
+    //     "draft--anotherId"
+    //   ],
+    //   "v2Token": "someString" || undefined,
+    //   "v3Token": "someOtherString" || undefined
+    // }
+  
+    const signData = {};
+  
+    if (captchaTokens.v2) {
+      signData.v2Token = captchaTokens.v2;
+    }
+    else if (captchaTokens.v3) {
+      signData.v3Token = captchaTokens.v3;
+    }
+  
+    const cellIdsToSign = this.getCellsWithNewImage()
+        .map(({id}) => id);
+
+    signData.newCells = cellIdsToSign;
+  
+    const { data } = await axios.post(`/api/comic/${this.props.comicId}/sign`, signData)
+    return data
   }
 
   finishPublish = async () => {
@@ -366,8 +429,8 @@ class StudioV2 extends Component {
 
 StudioV2.propTypes = {
   comicId: propTypes.string,
-  isShowingSpinner: propTypes.bool
-
+  isShowingSpinner: propTypes.bool,
+  recaptcha: propTypes.func
 
   // cells: propTypes.arrayOf(propTypes.shape({
   //   urlId: propTypes.string,

@@ -1,10 +1,10 @@
 const {post} = require('axios');
 
 const {sign} = require('./');
-const {Cells} = require('../../models');
+const {Cells, Comics} = require('../../models');
 const {clientEnvironment, serverEnvironment} = require('../../env-config');
 const {
-  CAPTCHA_ACTION_CELL_PUBLISH, CAPTCHA_THRESHOLD
+  CAPTCHA_ACTION_CELL_PUBLISH, CAPTCHA_THRESHOLD, DRAFT_SUFFIX
 } = require('../../../config/constants.json')
 
 jest.mock('axios');
@@ -28,6 +28,14 @@ describe('controllers/comic/sign', () => {
     filename, urlId
   };
 
+  const defaultReq = {
+    body,
+    params: {
+      comicId
+    },
+    session: {userId}
+  };
+
   let req;
   let res;
 
@@ -38,16 +46,11 @@ describe('controllers/comic/sign', () => {
     json.mockClear();
     sendStatus.mockClear();
     post.mockClear();
+    Comics.createNewComic.mockClear();
 
     Cells.createNewCell.mockImplementation(() => Promise.resolve(createCellResponse));
 
-    req = {
-      body,
-      params: {
-        comicId
-      },
-      session: {userId}
-    };
+    req = defaultReq;
 
     res = {
       json,
@@ -188,12 +191,32 @@ describe('controllers/comic/sign', () => {
   });
 
   describe('if the comicId passed is a draft id', () => {
-    it('should create a new comic in DB', () => {
-      throw new Error('implement!');
+    beforeEach(() => {
+      req.params =  {
+        comicId: `comicId${DRAFT_SUFFIX}`
+      };
     });
 
-    it('should return the new cellId in the response', () => {
+    it('should create a new comic in DB', async () => {
+      await sign(req, res);
+
+      expect(Comics.createNewComic).toHaveBeenCalled();
+    });
+
+    it.only('should return the new comicId in the response', () => {
       throw new Error('implement!');
+    });
+  });
+
+  describe('if the comicId passed is NOT a draft id', () => {
+    it('should NOT create a new comic in the DB', async () => {
+      req.params =  {
+        comicId
+      };
+
+      await sign(req, res);
+
+      expect(Comics.createNewComic).not.toHaveBeenCalled();
     });
   });
 

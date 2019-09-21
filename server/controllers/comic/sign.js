@@ -7,7 +7,7 @@ const {
   clientEnvironment, serverEnvironment
 } = require('../../env-config')
 const {
-  CAPTCHA_ACTION_CELL_PUBLISH, CAPTCHA_THRESHOLD
+  CAPTCHA_ACTION_CELL_PUBLISH, CAPTCHA_THRESHOLD, DRAFT_SUFFIX
 } = require('../../../config/constants.json')
 
 function verifyCaptchaToken (token, isV2) {
@@ -35,6 +35,10 @@ async function signCell() {
 
 }
 
+function isDraftId(comicId = '') {
+  return comicId.includes(DRAFT_SUFFIX);
+}
+
 async function sign (req, res) {
   let comicId = req.params.comicId
 
@@ -54,8 +58,10 @@ async function sign (req, res) {
       newCells
     } = req.body;
 
+    /**
+     * CAPTCHA
+     */
     const isV2Token = !!v2Token && !v3Token;
-
     if (clientEnvironment.CAPTCHA_V3_SITE_KEY) {
       const { data: captchaVerifyResponse = {} } = await verifyCaptchaToken(v3Token || v2Token, isV2Token);
 
@@ -83,6 +89,9 @@ async function sign (req, res) {
     }
 
     // optionally: create comic in DB
+    if(isDraftId(comicId)) {
+      comicId = await Comics.createNewComic();
+    }
 
     const signedCells = await Promise.all(
       newCells.map(draftId => createCell(draftId, comicId, req.session.userId))

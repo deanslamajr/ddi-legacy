@@ -1,4 +1,4 @@
-const Comics = require('./Comics')
+const {Comics} = require('./Comics')
 const {Cells} = require('./Cells')
 const Users = require('./Users')
 

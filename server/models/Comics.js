@@ -36,6 +36,15 @@ const Comics = sequelize.define('comics',
     freezeTableName: true,
     underscored: true
   }
-)
+);
 
-module.exports = Comics
+async function createNewComic() {
+
+}
+
+Comics.createNewComic = createNewComic;
+
+module.exports = {
+  createNewComic,
+  Comics
+};

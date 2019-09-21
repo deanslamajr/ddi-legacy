@@ -1,4 +1,6 @@
 const newrelic = require('newrelic');
+const axios = require('axios');
+const queryString = require('query-string');
 
 const { Cells, Comics } = require('../../models')
 const {
@@ -29,6 +31,10 @@ async function createCell(draftId, comicId, userId) {
   };
 }
 
+async function signCell() {
+
+}
+
 async function sign (req, res) {
   let comicId = req.params.comicId
 
@@ -48,7 +54,7 @@ async function sign (req, res) {
       newCells
     } = req.body;
 
-    const isV2Token = !!v2Token;
+    const isV2Token = !!v2Token && !v3Token;
 
     if (clientEnvironment.CAPTCHA_V3_SITE_KEY) {
       const { data: captchaVerifyResponse = {} } = await verifyCaptchaToken(v3Token || v2Token, isV2Token);

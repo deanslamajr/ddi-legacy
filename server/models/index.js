@@ -1,5 +1,5 @@
 const Comics = require('./Comics')
-const Cells = require('./Cells')
+const {Cells} = require('./Cells')
 const Users = require('./Users')
 
 Comics.hasMany(Cells)

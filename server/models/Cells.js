@@ -81,7 +81,7 @@ async function generateUniqueUrlId() {
   return urlId;
 }
 
-Cells.createNewCell = async function ({comicId, userId}) {
+async function createNewCell ({comicId, userId}) {
   const [filename, urlId] = await Promise.all([
     generateUniqueFilename(),
     generateUniqueUrlId()
@@ -100,4 +100,9 @@ Cells.createNewCell = async function ({comicId, userId}) {
   }
 }
 
-module.exports = Cells
+Cells.createNewCell
+
+module.exports = {
+  Cells,
+  createNewCell
+}

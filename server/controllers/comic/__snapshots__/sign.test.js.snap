@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`controllers/comic/sign if CAPTCHA_V3_SITE_KEY env var exists if v2Captcha is passed but v3Captcha is NOT passed should make the correct captcha request 1`] = `
+Array [
+  "https://www.google.com/recaptcha/api/siteverify",
+  "response=v2Token&secret=CAPTCHA_V2_SECRET",
+]
+`;
+
+exports[`controllers/comic/sign if CAPTCHA_V3_SITE_KEY env var exists if v3Captcha is passed should make the correct captcha request 1`] = `
+Array [
+  "https://www.google.com/recaptcha/api/siteverify",
+  "response=v3Token&secret=CAPTCHA_V3_SECRET",
+]
+`;

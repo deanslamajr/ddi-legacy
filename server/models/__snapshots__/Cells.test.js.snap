@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`models/Cells createNewCell should create the new Cell with the given comicId, userId 1`] = `
+Object {
+  "comic_id": "comicId",
+  "creator_user_id": "userId",
+  "image_url": "mockGeneratdId.png",
+  "url_id": "mockGeneratdId",
+}
+`;
+
+exports[`models/Cells createNewCell should return the filename and urlId 1`] = `
+Object {
+  "filename": "mockGeneratdId.png",
+  "urlId": "mockGeneratdId",
+}
+`;

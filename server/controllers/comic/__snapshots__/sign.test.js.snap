@@ -13,3 +13,40 @@ Array [
   "response=v3Token&secret=CAPTCHA_V3_SECRET",
 ]
 `;
+
+exports[`controllers/comic/sign should return a signed payload for each passed draft cellId in the response 1`] = `
+Array [
+  Object {
+    "cells": Array [
+      Object {
+        "draftId": "some---draft",
+        "filename": "filename",
+        "id": "urlId",
+        "signData": Object {
+          "signedRequest": "signedRequest",
+          "url": "url",
+        },
+      },
+      Object {
+        "draftId": "new---draft",
+        "filename": "filename",
+        "id": "urlId",
+        "signData": Object {
+          "signedRequest": "signedRequest",
+          "url": "url",
+        },
+      },
+      Object {
+        "draftId": "cells---draft",
+        "filename": "filename",
+        "id": "urlId",
+        "signData": Object {
+          "signedRequest": "signedRequest",
+          "url": "url",
+        },
+      },
+    ],
+    "comicId": "comicUrlId",
+  },
+]
+`;

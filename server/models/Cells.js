@@ -100,7 +100,7 @@ async function createNewCell ({comicId, userId}) {
   }
 }
 
-Cells.createNewCell
+Cells.createNewCell = createNewCell;
 
 module.exports = {
   Cells,

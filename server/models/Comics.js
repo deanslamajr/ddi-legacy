@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize')
+const shortid = require('shortid')
 
 const { sequelize } = require('../adapters/db')
 
@@ -38,8 +39,29 @@ const Comics = sequelize.define('comics',
   }
 );
 
-async function createNewComic() {
+async function doesUrlIdExist(urlId) {
+  const comic = await Comics.findOne({ where: { url_id: urlId }});
+  return !!comic;
+}
 
+async function generateUniqueUrlId() {
+  let urlId;
+
+  do {
+    urlId = `${shortid.generate()}`;
+  } while (await doesUrlIdExist(urlId))
+
+  return urlId;
+}
+
+async function createNewComic({userId}) {
+  const urlId = await generateUniqueUrlId();
+
+  return await Comics.create({
+    creator_user_id: userId,
+    title: '',
+    url_id: urlId
+  })
 }
 
 Comics.createNewComic = createNewComic;

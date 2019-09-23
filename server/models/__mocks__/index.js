@@ -1,12 +1,14 @@
 const createNewCell = jest.fn();
-const createNewComic = jest.fn();
+const newComicId = 'newComicId';
+const createNewComic = jest.fn(() => Promise.resolve({comicId: newComicId}));
 
 const Cells = {
   createNewCell
 }
 
 const Comics = {
-  createNewComic
+  createNewComic,
+  findOne: jest.fn()
 }
 
 const index = {

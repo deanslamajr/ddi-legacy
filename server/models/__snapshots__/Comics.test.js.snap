@@ -8,8 +8,10 @@ Object {
 }
 `;
 
-exports[`models/Comics createNewComic should return the urlId 1`] = `
+exports[`models/Comics createNewComic should return the comic 1`] = `
 Object {
-  "comicId": "mockGeneratdId",
+  "creator_user_id": "userId",
+  "title": "",
+  "url_id": "mockGeneratdId",
 }
 `;

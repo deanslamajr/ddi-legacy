@@ -2,12 +2,14 @@ const newrelic = require('newrelic');
 const axios = require('axios');
 const queryString = require('query-string');
 
+const { sign: signViaS3 } = require('../../adapters/s3')
 const { Cells, Comics } = require('../../models')
 const {
   clientEnvironment, serverEnvironment
-} = require('../../env-config')
+} = require('../../env-config');
+const {isDraftId} = require('../../../shared/isDraftId');
 const {
-  CAPTCHA_ACTION_CELL_PUBLISH, CAPTCHA_THRESHOLD, DRAFT_SUFFIX
+  CAPTCHA_ACTION_CELL_PUBLISH, CAPTCHA_THRESHOLD
 } = require('../../../config/constants.json')
 
 function verifyCaptchaToken (token, isV2) {
@@ -31,12 +33,14 @@ async function createCell(draftId, comicId, userId) {
   };
 }
 
-async function signCell() {
-
-}
-
-function isDraftId(comicId = '') {
-  return comicId.includes(DRAFT_SUFFIX);
+async function signCell({draftId, filename, id}) {
+  const signData = await signViaS3(filename);
+  return {
+    draftId,
+    filename,
+    id,
+    signData
+  }
 }
 
 async function sign (req, res) {
@@ -88,17 +92,23 @@ async function sign (req, res) {
       }
     }
 
+    let comic;
+
     // optionally: create comic in DB
     if(isDraftId(comicId)) {
-      comicId = await Comics.createNewComic();
+      comic = await Comics.createNewComic({userId: req.session.userId});
+    } else {
+      comic = await Comics.findOne({ where: { url_id: comicId }});
     }
 
-    const signedCells = await Promise.all(
-      newCells.map(draftId => createCell(draftId, comicId, req.session.userId))
-      .map(signCell));
+    const newlyCreatedCells = await Promise.all(
+      newCells.map(draftId => createCell(draftId, comic.id, req.session.userId))
+    );
+    
+    const signedCells = await Promise.all(newlyCreatedCells.map(signCell));
 
     res.json({
-      comicId,
+      comicId: comic.url_id,
       cells: signedCells
     });
   }

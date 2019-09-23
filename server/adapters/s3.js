@@ -11,6 +11,9 @@ const s3Config = {
   region: 'us-west-2' // hardcoded bc s3 doesn't have regions
 }
 
+/**
+ * @returns {{signedRequest: string, url: string}}
+ */
 function sign (filename) {
   const s3 = new AWS.S3(s3Config)
 

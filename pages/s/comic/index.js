@@ -359,7 +359,7 @@ class StudioV2 extends Component {
 
     signData.newCells = cellIdsToSign;
   
-    const { data } = await axios.post(`/api/comic/${this.props.comicId}/sign`, signData)
+    const { data } = await axios.post(`/api/comic/${this.props.comicId}/sign`, signData);
     return data
   }
 

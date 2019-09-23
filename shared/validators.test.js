@@ -35,6 +35,9 @@ import {
   MAX_EMOJIS_COUNT
 } from '../config/constants.json'
 
+// hack bc for some reason, without this, the default manual mock is being used for 'shortid', which fails some tests
+jest.mock('shortid', () => require.requireActual('shortid'));
+
 function generateEmoji (newId) {
   return {
     emoji: '🦔',

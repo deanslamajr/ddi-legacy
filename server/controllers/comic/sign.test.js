@@ -1,4 +1,5 @@
 const {post} = require('axios');
+const cloneDeep = require('lodash/cloneDeep');
 
 const {sign} = require('./');
 const {Cells, Comics} = require('../../models');
@@ -11,13 +12,23 @@ jest.mock('axios');
 jest.mock('newrelic');
 jest.mock('../../env-config');
 jest.mock('../../models');
+jest.mock('../../adapters/s3');
+
+Comics.findOne.mockImplementation(() => ({
+  id: 'someExistingComicId',
+  url_id: 'comicUrlId'
+}))
 
 describe('controllers/comic/sign', () => {
   const comicId = 'comicId';
   const userId = 'userId';
   const v3Token = 'v3Token';
   const v2Token = 'v2Token';
-  const newCells = [];
+  const newCells = [
+    `some${DRAFT_SUFFIX}`,
+    `new${DRAFT_SUFFIX}`,
+    `cells${DRAFT_SUFFIX}`
+  ];
   const body = {
     newCells
   };
@@ -47,10 +58,11 @@ describe('controllers/comic/sign', () => {
     sendStatus.mockClear();
     post.mockClear();
     Comics.createNewComic.mockClear();
+    Cells.createNewCell.mockClear();
 
     Cells.createNewCell.mockImplementation(() => Promise.resolve(createCellResponse));
 
-    req = defaultReq;
+    req = cloneDeep(defaultReq);
 
     res = {
       json,
@@ -191,9 +203,11 @@ describe('controllers/comic/sign', () => {
   });
 
   describe('if the comicId passed is a draft id', () => {
+    const draftId = `comicId${DRAFT_SUFFIX}`;
+
     beforeEach(() => {
       req.params =  {
-        comicId: `comicId${DRAFT_SUFFIX}`
+        comicId: draftId
       };
     });
 
@@ -203,8 +217,12 @@ describe('controllers/comic/sign', () => {
       expect(Comics.createNewComic).toHaveBeenCalled();
     });
 
-    it.only('should return the new comicId in the response', () => {
-      throw new Error('implement!');
+    it('should return the new comicId in the response', async () => {
+      await sign(req, res);
+
+      // if a new comic is NOT created, we would expect the response
+      // to include the passed comicId
+      expect(res.json.mock.calls[0][0].comicId).not.toBe(draftId);
     });
   });
 
@@ -226,12 +244,16 @@ describe('controllers/comic/sign', () => {
       ...body,
       newCells: lotsOfNewCells
     }
+
     await sign(req, res);
 
     expect(Cells.createNewCell).toHaveBeenCalledTimes(lotsOfNewCells.length)
   });
 
-  it('should return a signed payload for each passed draft cellId in the response', () => {
-    throw new Error('implement!');
+  it('should return a signed payload for each passed draft cellId in the response', async () => {
+    await sign(req, res);
+
+    expect(json.mock.calls[0]).toMatchSnapshot();
+    expect(json.mock.calls[0][0].cells.length).toBe(req.body.newCells.length);
   })
 });

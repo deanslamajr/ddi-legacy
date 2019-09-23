@@ -36,20 +36,23 @@ function generateDraftUrl() {
   return `/s/comic/${shortid.generate()}${DRAFT_SUFFIX}`
 }
 
-async function generateCellImage(cell) {
+async function generateCellImage(cell, filename) {
   const cellImageElement = document.createElement('div');
   cellImageElement.hidden = true;
   const cellImageElementId = `${CELL_IMAGE_ID}-${cell.id}`;
   cellImageElement.id = cellImageElementId;
   document.body.appendChild(cellImageElement);
   
-  const { url } = await generateCellImageFromEmojis({
+  const { file, url } = await generateCellImageFromEmojis({
     emojis: cell.studioState.emojis,
     backgroundColor: cell.studioState.backgroundColor,
+    filename,
     htmlElementId: cellImageElementId
   })
 
   cell.imageUrl = url;
+
+  return file
 }
 
 function hydrateComicFromApi (comicId) {
@@ -88,14 +91,32 @@ async function hydrateComic (comicId) {
   // if exists in client cache
   if (doesComicIdExist(comicId)) {
     // hydrate the cells and comic from client cache and return formatted data
-    console.log('comic exists in client cache');
     return hydrateComicFromClientCache(comicId);
   } else {
-    console.log('comic DOES NOT exist in client cache');
     return null;
     // @todo
     // hydrateComicFromApi(comicId);
   }
+}
+
+function uploadImage(imageFile, signedRequest) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('PUT', signedRequest)
+    xhr.onreadystatechange = async () => {
+      if(xhr.readyState === 4){
+        if(xhr.status === 200){
+          resolve();
+        }
+        else{
+          // @todo better UX
+          console.error('could not upload file!')
+          reject();
+        }
+      }
+    }
+    xhr.send(imageFile)
+  });
 }
 
 // @todo do we need this anymore?
@@ -298,7 +319,8 @@ class StudioV2 extends Component {
 
       this.props.showSpinner(totalJobsCount);
 
-      await this.upload();
+      const signedCells = await this.upload();
+      console.log('signedCells', signedCells)
     } else {
       this.props.showSpinner(totalJobsCount);
     }
@@ -307,8 +329,6 @@ class StudioV2 extends Component {
   }
 
   upload = async (v2CaptchaToken) => {
-    console.log('uploading...')
-
     let token
     
     try {
@@ -317,21 +337,44 @@ class StudioV2 extends Component {
       }
         
       const {
-        comicId, id, signedRequest
+        cells: signedCells, comicId
       } = await this.getSignedRequest({
         v2: v2CaptchaToken,
         v3: token
       });
+      // cells: {
+      //   draftId: "sIYUqmZHlN---draft"
+      //   filename: "DW8LWLzuDn.png"
+      //   id: "83OCqNixmT"
+      //   signData: {}
+      // }
 
       // this.props.markJobFinished();
 
-      //await uploadImage(this.cellImageFile, signedRequest);
+      await Promise.all(signedCells.map(this.uploadImage));
+
+      return signedCells;
     }
     catch (e) {
+      console.error(e);
       const isCaptchaFail = e && e.response && e.response.status === 400;
       // @todo log this
       //this.togglePublishFailModal(true, isCaptchaFail);
     }
+  }
+
+  uploadImage = async ({draftId, filename, signData}) => {
+    const cell = this.state.comic.cells[draftId];
+
+    if(!cell) {
+      throw new Error(`signed cell ${draftId} not found in state!`)
+    }
+
+    const file = await generateCellImage(cell, filename);  
+
+    await uploadImage(file, signData.signedRequest);
+
+    // this.props.markJobFinished();
   }
 
   getSignedRequest = async (captchaTokens) => {
@@ -430,7 +473,7 @@ class StudioV2 extends Component {
 StudioV2.propTypes = {
   comicId: propTypes.string,
   isShowingSpinner: propTypes.bool,
-  recaptcha: propTypes.func
+  recaptcha: propTypes.object
 
   // cells: propTypes.arrayOf(propTypes.shape({
   //   urlId: propTypes.string,

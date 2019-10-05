@@ -23,7 +23,7 @@ const Cells = sequelize.define('cells',
     studio_state: {
       type: Sequelize.JSON
     },
-    title: {
+    caption: {
       type: Sequelize.STRING
     },
     creator_user_id: {
@@ -31,6 +31,13 @@ const Cells = sequelize.define('cells',
     },
     order: {
       type: Sequelize.INTEGER
+    },
+    previous_cell_id: {
+      type: Sequelize.UUID,
+      references: {
+        model: 'cells',
+        key: 'id'
+      }
     },
     schema_version: {
       type: Sequelize.INTEGER,

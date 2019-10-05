@@ -13,7 +13,8 @@ const {
   inactivate: deleteComic,
   get: getComic,
   getNewerThan,
-  sign: signComic
+  sign: signComic,
+  update: updateComic
 } = require('./comic')
 
 const router = express.Router()
@@ -28,8 +29,9 @@ router.get('/cell/:cellId', getCell)
 router.put('/cell/:cellId', updateCell)
 router.get('/cells', getCells)
 
-router.post('/comic/:comicId/sign', signComic);
+router.post('/comic/:comicUrlId/sign', signComic);
 router.get('/comic/:comicId', getComic);
+router.patch('/comic/:comicUrlId', updateComic);
 router.delete('/comic/:comicId', deleteComic);
 router.get('/comics', getComics)
 router.get('/comics/latest', getNewerThan)

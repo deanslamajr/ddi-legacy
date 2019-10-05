@@ -1,7 +1,6 @@
 import { Component } from 'react'
 import styled from 'styled-components'
 import axios from 'axios'
-import shortid from 'shortid'
 import propTypes from 'prop-types'
 import getConfig from 'next/config'
 
@@ -9,6 +8,8 @@ import ComicActionsModal from './ComicActionsModal'
 import CellActionsModal from './CellActionsModal'
 import AddCellModal from './AddCellModal'
 import PublishPreviewModal from './PublishPreviewModal'
+
+import {createUpdatePayload} from './createUpdatePayload';
 
 import Cell from '../../../components/Cell'
 import {
@@ -31,11 +32,6 @@ const SIDE_BUTTONS_SPACER = 0//.4
 const cellWidth = `${(1 - SIDE_BUTTONS_SPACER) * theme.layout.width}px`;
 const CELL_IMAGE_ID = 'CELL_IMAGE_ID';
 
-function generateDraftUrl() {
-  // @todo verify this id doesn't already exist in localstorage
-  return `/s/comic/${shortid.generate()}${DRAFT_SUFFIX}`
-}
-
 async function generateCellImage(cell, filename) {
   const cellImageElement = document.createElement('div');
   cellImageElement.hidden = true;
@@ -55,7 +51,7 @@ async function generateCellImage(cell, filename) {
   return file
 }
 
-function hydrateComicFromApi (comicId) {
+function hydrateComicFromApi (comicUrlId) {
   // try to fetch from api
   // if doesn't exist in api
     // return null (this will have the effect of redirecting to /s/cell/new)
@@ -68,13 +64,13 @@ function hydrateComicFromApi (comicId) {
       // return formatted data
 }
 
-function hydrateComicFromClientCache(comicId) {
+function hydrateComicFromClientCache(comicUrlId) {
   const {
-    getCellsByComicId, getComic
+    getCellsByComicUrlId, getComic
   } = require('../../../helpers/clientCache');
 
-  const comic = getComic(comicId);
-  const cells = getCellsByComicId(comicId);
+  const comic = getComic(comicUrlId);
+  const cells = getCellsByComicUrlId(comicUrlId);
 
   return {
     ...comic,
@@ -82,20 +78,20 @@ function hydrateComicFromClientCache(comicId) {
   };
 }
 
-async function hydrateComic (comicId) {
+async function hydrateComic (comicUrlId) {
   // try to fetch from client cache
   const {
-    doesComicIdExist
+    doesComicUrlIdExist
   } = require('../../../helpers/clientCache');
 
   // if exists in client cache
-  if (doesComicIdExist(comicId)) {
+  if (doesComicUrlIdExist(comicUrlId)) {
     // hydrate the cells and comic from client cache and return formatted data
-    return hydrateComicFromClientCache(comicId);
+    return hydrateComicFromClientCache(comicUrlId);
   } else {
     return null;
     // @todo
-    // hydrateComicFromApi(comicId);
+    // hydrateComicFromApi(comicUrlId);
   }
 }
 
@@ -119,17 +115,7 @@ function uploadImage(imageFile, signedRequest) {
   });
 }
 
-// @todo do we need this anymore?
-// const getCellsByComicId = (comicId, cells) => {
-//   const comicsCells = cells.filter(cell => cell.comicId === comicId);
-//   return comicsCells.reduce((acc, cell) => {
-//     acc[cell.id] = cell;
-//     return acc;
-//   }, {});
-// }
-
 // STYLED COMPONENTS
-
 const AddCellButton = styled(PinkMenuButton)`
   font-size: 2.5rem;
   width: ${props => props.theme.layout.width}px;
@@ -152,11 +138,11 @@ const StudioCell = styled(Cell)`
 class StudioV2 extends Component {
   static async getInitialProps ({ query, req, res }) {
     // if on an unpublished comic, don't fetch comic data
-    // if(query.comicId.includes(DRAFT_SUFFIX)) {
+    // if(query.comicUrlId.includes(DRAFT_SUFFIX)) {
     //   return {}
     // }
 
-    // const { data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req), forwardCookies(req))
+    // const { data } = await axios.get(getApi(`/api/comic/${query.comicUrlId}`, req), forwardCookies(req))
 
     // // redirect to new comic if user isn't authorized to edit this comic
     // if (!data.userCanEdit || !data.isActive) {
@@ -167,7 +153,7 @@ class StudioV2 extends Component {
 
     return {
       //...data,
-      comicId: query.comicId
+      comicUrlId: query.comicUrlId
     }
   }
 
@@ -181,7 +167,7 @@ class StudioV2 extends Component {
   }
 
   async componentDidMount() {
-    const hydratedComic = await hydrateComic(this.props.comicId);
+    const hydratedComic = await hydrateComic(this.props.comicUrlId);
 
     if (!hydratedComic) {
       return this.navigateToNewComic();
@@ -193,7 +179,7 @@ class StudioV2 extends Component {
 
       this.setState({comic: hydratedComic}, () => {
         // hide spinner and scroll to bottom of comic
-        this.props.hideSpinner(() => window.scrollTo(0,document.body.scrollHeight));
+        this.props.hideSpinner(() => window.scrollTo(0, document.body.scrollHeight));
       });
     }
   }
@@ -212,10 +198,10 @@ class StudioV2 extends Component {
   }
 
   navigateToAddCellFromNew = () => {
-    const { comicId } = this.props
+    const {comicUrlId} = this.props
 
     const {createNewCell} = require('../../../helpers/clientCache');
-    const cellId = createNewCell(comicId);
+    const cellId = createNewCell(comicUrlId);
 
     this.props.showSpinner()
     this.hideAddCellModal();
@@ -223,15 +209,15 @@ class StudioV2 extends Component {
   }
 
   navigateToAddCell = (studioState) => {
-    const { comicId } = this.props
+    const {comicUrlId} = this.props
 
     const {createNewCell} = require('../../../helpers/clientCache');
 
-    const cellId = createNewCell(comicId, studioState);
+    const cellUrlId = createNewCell(comicUrlId, studioState);
 
     this.props.showSpinner()
     this.hideAddCellModal();
-    Router.pushRoute(`/s/cell/${cellId}`)
+    Router.pushRoute(`/s/cell/${cellUrlId}`)
   }
 
   toggleComicActionsModal = (newValue) => {
@@ -244,7 +230,7 @@ class StudioV2 extends Component {
 
   navigateBack = () => {
     this.props.showSpinner()
-    Router.pushRoute(`/comic/${this.props.comicId}`)
+    Router.pushRoute(`/comic/${this.props.comicUrlId}`)
   }
 
   renderAddCellButton = () => {
@@ -257,9 +243,9 @@ class StudioV2 extends Component {
     this.props.showSpinner();
     this.toggleComicActionsModal(false);
     try {
-      await axios.delete(`/api/comic/${this.props.comicId}`);
+      await axios.delete(`/api/comic/${this.props.comicUrlId}`);
       // remove this comic from the gallery cache
-      this.props.deleteComicFromCache(this.props.comicId, () => Router.pushRoute('/gallery'));
+      this.props.deleteComicFromCache(this.props.comicUrlId, () => Router.pushRoute('/gallery'));
     }
     catch(error) {
       this.props.hideSpinner();
@@ -275,16 +261,16 @@ class StudioV2 extends Component {
 
     const sortedCells = [];
   
-    if (!comic.initialCellId) {
+    if (!comic.initialCellUrlId) {
       return sortedCells;
     }
   
-    let nextCellId = comic.initialCellId;
+    let nextCellUrlId = comic.initialCellUrlId;
   
-    while(comicsCells[nextCellId]) {
-      sortedCells.push(comicsCells[nextCellId]);
-      const nextCell = Object.values(comicsCells).find(cell => cell.previousCellId === nextCellId);
-      nextCellId = nextCell && nextCell.id
+    while(comicsCells[nextCellUrlId]) {
+      sortedCells.push(comicsCells[nextCellUrlId]);
+      const nextCell = Object.values(comicsCells).find(({previousCellUrlId}) => previousCellUrlId === nextCellUrlId);
+      nextCellUrlId = nextCell && nextCell.urlId
     }
   
     return sortedCells;
@@ -309,6 +295,8 @@ class StudioV2 extends Component {
     // i.e. all jobs excluding uploads
     // @todo update this with the amount of jobs involved for `finishPublish`
     let totalJobsCount = 0;
+    let signedCells;
+    let newComicUrlId;
 
     const cellsThatRequireUploads = this.getCellsWithNewImage();
 
@@ -319,13 +307,15 @@ class StudioV2 extends Component {
 
       this.props.showSpinner(totalJobsCount);
 
-      const signedCells = await this.upload();
-      console.log('signedCells', signedCells)
+      const uploadResponse = await this.upload();
+
+      signedCells = uploadResponse.signedCells;
+      newComicUrlId = uploadResponse.comicUrlId;
     } else {
       this.props.showSpinner(totalJobsCount);
     }
 
-    await this.finishPublish();
+    await this.publishComicUpdate({signedCells, comicUrlId: newComicUrlId});
   }
 
   upload = async (v2CaptchaToken) => {
@@ -337,7 +327,7 @@ class StudioV2 extends Component {
       }
         
       const {
-        cells: signedCells, comicId
+        signedCells, comicUrlId
       } = await this.getSignedRequest({
         v2: v2CaptchaToken,
         v3: token
@@ -353,7 +343,7 @@ class StudioV2 extends Component {
 
       await Promise.all(signedCells.map(this.uploadImage));
 
-      return signedCells;
+      return {comicUrlId, signedCells};
     }
     catch (e) {
       console.error(e);
@@ -363,11 +353,11 @@ class StudioV2 extends Component {
     }
   }
 
-  uploadImage = async ({draftId, filename, signData}) => {
-    const cell = this.state.comic.cells[draftId];
+  uploadImage = async ({draftUrlId, filename, signData}) => {
+    const cell = this.state.comic.cells[draftUrlId];
 
     if(!cell) {
-      throw new Error(`signed cell ${draftId} not found in state!`)
+      throw new Error(`signed cell ${draftUrlId} not found in state!`)
     }
 
     const file = await generateCellImage(cell, filename);  
@@ -378,7 +368,7 @@ class StudioV2 extends Component {
   }
 
   getSignedRequest = async (captchaTokens) => {
-    // POST /api/comic/:comicId/sign
+    // POST /api/comic/:comicUrlId/sign
     // {
     //   "newCells": [
     //     "draft--someId",
@@ -398,16 +388,31 @@ class StudioV2 extends Component {
     }
   
     const cellIdsToSign = this.getCellsWithNewImage()
-        .map(({id}) => id);
+      .map(({urlId}) => urlId);
 
     signData.newCells = cellIdsToSign;
   
-    const { data } = await axios.post(`/api/comic/${this.props.comicId}/sign`, signData);
-    return data
+    const { data } = await axios.post(`/api/comic/${this.props.comicUrlId}/sign`, signData);
+
+    return {
+      comicUrlId: data.comicUrlId,
+      signedCells: data.cells
+    }
   }
 
-  finishPublish = async () => {
-    console.log('finishing publish...')
+  publishComicUpdate = async ({comicUrlId, signedCells}) => {
+    // if comicUrlId exists, this is a new cell
+    const comicUrlIdToUpdate = comicUrlId || this.props.comicUrlId;
+
+    const updatePayload = createUpdatePayload({
+      comic: this.state.comic,
+      publishedComic: this.props.publishedComic,
+      signedCells
+    });
+
+    console.log('updatePayload', updatePayload);
+    
+    //await axios.patch(`/api/comic/${comicUrlIdToUpdate}`, updatePayload);
   }
 
   render () {
@@ -471,8 +476,9 @@ class StudioV2 extends Component {
 }
 
 StudioV2.propTypes = {
-  comicId: propTypes.string,
+  comicUrlId: propTypes.string,
   isShowingSpinner: propTypes.bool,
+  publishedComic: propTypes.object,
   recaptcha: propTypes.object
 
   // cells: propTypes.arrayOf(propTypes.shape({

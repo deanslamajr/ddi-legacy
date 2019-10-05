@@ -16,6 +16,13 @@ const Comics = sequelize.define('comics',
       primaryKey: true,
       allowNull: false
     },
+    initial_cell_id: {
+      type: Sequelize.UUID,
+      references: {
+        model: 'cells',
+        key: 'id'
+      }
+    },
     is_active: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,

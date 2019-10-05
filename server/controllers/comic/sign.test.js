@@ -20,7 +20,7 @@ Comics.findOne.mockImplementation(() => ({
 }))
 
 describe('controllers/comic/sign', () => {
-  const comicId = 'comicId';
+  const comicUrlId = 'comicUrlId';
   const userId = 'userId';
   const v3Token = 'v3Token';
   const v2Token = 'v2Token';
@@ -42,7 +42,7 @@ describe('controllers/comic/sign', () => {
   const defaultReq = {
     body,
     params: {
-      comicId
+      comicUrlId
     },
     session: {userId}
   };
@@ -202,12 +202,12 @@ describe('controllers/comic/sign', () => {
     });
   });
 
-  describe('if the comicId passed is a draft id', () => {
-    const draftId = `comicId${DRAFT_SUFFIX}`;
+  describe('if the comicUrlId passed is a draft urlId', () => {
+    const draftUrlId = `comicUrlId${DRAFT_SUFFIX}`;
 
     beforeEach(() => {
       req.params =  {
-        comicId: draftId
+        comicUrlId: draftUrlId
       };
     });
 
@@ -217,19 +217,19 @@ describe('controllers/comic/sign', () => {
       expect(Comics.createNewComic).toHaveBeenCalled();
     });
 
-    it('should return the new comicId in the response', async () => {
+    it('should return the new comicUrlId in the response', async () => {
       await sign(req, res);
 
       // if a new comic is NOT created, we would expect the response
-      // to include the passed comicId
-      expect(res.json.mock.calls[0][0].comicId).not.toBe(draftId);
+      // to include the passed comicUrlId
+      expect(res.json.mock.calls[0][0].comicUrlId).not.toBe(draftUrlId);
     });
   });
 
-  describe('if the comicId passed is NOT a draft id', () => {
+  describe('if the comicUrlId passed is NOT a draft id', () => {
     it('should NOT create a new comic in the DB', async () => {
       req.params =  {
-        comicId
+        comicUrlId
       };
 
       await sign(req, res);

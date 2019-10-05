@@ -4,6 +4,7 @@ const queryString = require('query-string');
 
 const { sign: signViaS3 } = require('../../adapters/s3')
 const { Cells, Comics } = require('../../models')
+const { falsePositiveResponse, isUserAuthorized } = require('../utils');
 const {
   clientEnvironment, serverEnvironment
 } = require('../../env-config');
@@ -21,30 +22,30 @@ function verifyCaptchaToken (token, isV2) {
   return axios.post('https://www.google.com/recaptcha/api/siteverify', queryString.stringify(verifyPayload))
 }
 
-async function createCell(draftId, comicId, userId) {
+async function createCell(draftUrlId, comicId, userId) {
   const {
     filename, urlId
   } = await Cells.createNewCell({comicId, userId});
 
   return {
-    draftId,
+    draftUrlId,
     filename,
-    id: urlId
+    urlId
   };
 }
 
-async function signCell({draftId, filename, id}) {
+async function signCell({draftUrlId, filename, urlId}) {
   const signData = await signViaS3(filename);
   return {
-    draftId,
+    draftUrlId,
     filename,
-    id,
-    signData
+    signData,
+    urlId
   }
 }
 
 async function sign (req, res) {
-  let comicId = req.params.comicId
+  let comicUrlId = req.params.comicUrlId
 
   const handleFailedCaptcha = () => {
     // @todo generate better logs around this failed captcha
@@ -95,27 +96,31 @@ async function sign (req, res) {
     let comic;
 
     // optionally: create comic in DB
-    if(isDraftId(comicId)) {
+    if(isDraftId(comicUrlId)) {
       comic = await Comics.createNewComic({userId: req.session.userId});
     } else {
-      comic = await Comics.findOne({ where: { url_id: comicId }});
+      comic = await Comics.findOne({ where: { url_id: comicUrlId }});
+    }
+
+    if (!isUserAuthorized(req.session, comic.creator_user_id)) {
+      return falsePositiveResponse(`comic::sign - User with id:${req.session.userId} is not authorized to delete the comic with id:${comicId}`, res)
     }
 
     const newlyCreatedCells = await Promise.all(
-      newCells.map(draftId => createCell(draftId, comic.id, req.session.userId))
+      newCells.map(draftUrlId => createCell(draftUrlId, comic.id, req.session.userId))
     );
     
     const signedCells = await Promise.all(newlyCreatedCells.map(signCell));
 
     res.json({
-      comicId: comic.url_id,
+      comicUrlId: comic.url_id,
       cells: signedCells
     });
   }
   catch(e) {
     // @todo log
     console.error(e);
-    res.sendStatus(400);
+    res.sendStatus(500);
   }
 }
 

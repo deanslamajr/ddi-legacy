@@ -78,15 +78,14 @@ class CellStudio extends Component {
 
   static async getInitialProps ({ query, req, res }) {
     return {
-      cellId: query.cellId
+      cellUrlId: query.cellUrlId
     };
   }
 
   componentDidMount() {
     const {getStudioState} = require('../../../helpers/clientCache');
-    const cachedStudioState = getStudioState(this.props.cellId);
+    const cachedStudioState = getStudioState(this.props.cellUrlId);
 
-    console.log('cachedStudioState', cachedStudioState)
     if (cachedStudioState) {
       const showEmojiPicker = Object.keys(cachedStudioState.emojis).length === 0;
       this.setState({
@@ -113,29 +112,29 @@ class CellStudio extends Component {
   clearCache = () => {
     const {clearStudioState} = require('../../../helpers/clientCache');
     // @todo if this cell is a duplicate, pass the duplicated cell's studio state as 2nd argument
-    clearStudioState(this.props.cellId);
+    clearStudioState(this.props.cellUrlId);
   }
 
   createNewComicAndCell = (initialStudioState) => {
     // create new cell in cache
     const {createNewCell} = require('../../../helpers/clientCache');
-    const cellId = createNewCell(undefined, initialStudioState);
+    const cellUrlId = createNewCell(undefined, initialStudioState);
 
-    Router.pushRoute(`/s/cell/${cellId}`);
+    Router.pushRoute(`/s/cell/${cellUrlId}`);
   }
 
   // formerly: updateCache
   saveStudioStateToCache = () => {
     const {
-      doesCellIdExist,
+      doesCellUrlIdExist,
       setCellStudioState
     } = require('../../../helpers/clientCache');
 
-    if (!doesCellIdExist(this.props.cellId)) {
+    if (!doesCellUrlIdExist(this.props.cellUrlId)) {
       this.createNewComicAndCell(this.state.studioState);
     }
     else {
-      setCellStudioState(this.props.cellId, this.state.studioState);
+      setCellStudioState(this.props.cellUrlId, this.state.studioState);
     }
   }
 
@@ -502,16 +501,16 @@ class CellStudio extends Component {
 
   deleteDraft = () => {
     const {deleteCell} = require('../../../helpers/clientCache');
-    deleteCell(this.props.cellId);
+    deleteCell(this.props.cellUrlId);
   }
 
   exit = () => {
     this.props.showSpinner();
 
     if (Object.keys(this.state.studioState.emojis).length) {
-      const {getComicIdFromCellId} = require('../../../helpers/clientCache');
-      const comicId = getComicIdFromCellId(this.props.cellId);
-      Router.pushRoute(`/s/comic/${comicId}`);
+      const {getComicUrlIdFromCellUrlId} = require('../../../helpers/clientCache');
+      const comicUrlId = getComicUrlIdFromCellUrlId(this.props.cellUrlId);
+      Router.pushRoute(`/s/comic/${comicUrlId}`);
     }
     else {
       Router.pushRoute('/gallery');
@@ -684,7 +683,7 @@ class CellStudio extends Component {
 }
 
 CellStudio.propTypes = {
-  cellId: PropTypes.string
+  cellUrlId: PropTypes.string
 };
 
 export default CellStudio 

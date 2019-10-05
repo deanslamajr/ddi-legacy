@@ -19,34 +19,34 @@ Array [
   Object {
     "cells": Array [
       Object {
-        "draftId": "some---draft",
+        "draftUrlId": "some---draft",
         "filename": "filename",
-        "id": "urlId",
         "signData": Object {
           "signedRequest": "signedRequest",
           "url": "url",
         },
+        "urlId": "urlId",
       },
       Object {
-        "draftId": "new---draft",
+        "draftUrlId": "new---draft",
         "filename": "filename",
-        "id": "urlId",
         "signData": Object {
           "signedRequest": "signedRequest",
           "url": "url",
         },
+        "urlId": "urlId",
       },
       Object {
-        "draftId": "cells---draft",
+        "draftUrlId": "cells---draft",
         "filename": "filename",
-        "id": "urlId",
         "signData": Object {
           "signedRequest": "signedRequest",
           "url": "url",
         },
+        "urlId": "urlId",
       },
     ],
-    "comicId": "comicUrlId",
+    "comicUrlId": "comicUrlId",
   },
 ]
 `;

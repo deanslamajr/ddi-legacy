@@ -316,6 +316,8 @@ class StudioV2 extends Component {
     }
 
     await this.publishComicUpdate({signedCells, comicUrlId: newComicUrlId});
+
+    Router.pushRoute(`/comic/${newComicUrlId}`)
   }
 
   upload = async (v2CaptchaToken) => {
@@ -412,7 +414,7 @@ class StudioV2 extends Component {
 
     console.log('updatePayload', updatePayload);
     
-    //await axios.patch(`/api/comic/${comicUrlIdToUpdate}`, updatePayload);
+    await axios.patch(`/api/comic/${comicUrlIdToUpdate}`, updatePayload);
   }
 
   render () {

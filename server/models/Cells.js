@@ -88,18 +88,22 @@ async function generateUniqueUrlId() {
   return urlId;
 }
 
-async function createNewCell ({comicId, userId}) {
+async function createNewCell ({comicId, userId, transaction}) {
   const [filename, urlId] = await Promise.all([
     generateUniqueFilename(),
     generateUniqueUrlId()
   ]);
+
+  const config = transaction
+    ? {transaction}
+    : {};
 
   await Cells.create({
     comic_id: comicId,
     creator_user_id: userId,
     image_url: filename,
     url_id: urlId
-  })
+  }, config)
 
   return {
     filename,

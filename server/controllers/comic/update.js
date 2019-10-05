@@ -1,8 +1,14 @@
-const {Cells, Comics} = require('../../models')
+const {Comics} = require('../../models')
 const { falsePositiveResponse, isUserAuthorized } = require('../utils');
+const {sequelize} = require('../../adapters/db')
 
-function updateCell ({studioState, caption, previousCellUrlId}, cells, comicId) {
+function updateCell ({studioState, caption, previousCellUrlId, urlId}, cells, comicId, transaction) {
   let previousCell;
+
+  const cell = cells.find(cell => cell.url_id === urlId);
+  if (!cell) {
+    throw new Error(`The passed cell.url_id:${urlId} does not exist on comicId:${comicId}`);
+  }
   
   if (previousCellUrlId) {
     previousCell = cells.find(({url_id}) => url_id === previousCellUrlId);
@@ -13,9 +19,9 @@ function updateCell ({studioState, caption, previousCellUrlId}, cells, comicId) 
 
   return cell.update({
     caption,
-    previous_cell_id: previousCell.id,
+    previous_cell_id: previousCell && previousCell.id,
     studio_state: studioState
-  });
+  }, {transaction});
 }
 
 async function update (req, res) {
@@ -26,35 +32,35 @@ async function update (req, res) {
     } = req.body;
   
     const comic = await Comics.findOne({ where: { url_id: comicUrlId }})
-  
-    console.log('comic', comic)
     
     if (!comic) {
-      return falsePositiveResponse(`comic::update - There is not a Comic with id:${comicUrlId}`, res)
+      return falsePositiveResponse(`comic::update - There is not a Comic with urlId:${comicUrlId}`, res)
     }
   
     if (!isUserAuthorized(req.session, comic.creator_user_id)) {
-      return falsePositiveResponse(`comic::update - User with id:${req.session.userId} is not authorized to delete the comic with id:${comicId}`, res)
+      return falsePositiveResponse(`comic::update - User with id:${req.session.userId} is not authorized to update the comic with id:${comic.id}`, res)
     }
   
-    const cells = await Cells.findAll({});
-  
-    console.log('initialCellUrlId', initialCellUrlId)
-    if (initialCellUrlId) {
-      const initialCell = cells.find(({url_id}) => url_id === initialCellUrlId);
-  
-      if (!initialCell) {
-        throw new Error(`The passed initialCellUrlId:${initialCellUrlId} does not exist on comicId:${comic.id}`);
+    const cells = await comic.getCells();
+
+    await sequelize.transaction(async transaction => {
+      if (initialCellUrlId) {
+        const initialCell = cells.find(({url_id}) => url_id === initialCellUrlId);
+    
+        if (!initialCell) {
+          throw new Error(`The passed initialCellUrlId:${initialCellUrlId} does not exist on comicId:${comic.id}`);
+        }
+        await comic.update({
+          is_active: true,
+          initial_cell_id: initialCell.id
+        }, {transaction});
       }
-      await comic.update({
-        is_active: true,
-        initial_cell_id: initialCell.id
-      });
-    }
-  
-    await Promise.all(
-      cellsToUpdate.map(cell => updateCell(cell, cells, comic.id))
-    );
+    
+      await Promise.all(
+        cellsToUpdate.map(cell => updateCell(cell, cells, comic.id, transaction))
+      );
+    });
+
   
     res.sendStatus(200);
   } catch (e) {

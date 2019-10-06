@@ -18,7 +18,9 @@ import {
 import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../../components/navigation'
 
 import { Router } from '../../../routes'
-import { forwardCookies, getApi, redirect, sortByOrder } from '../../../helpers'
+
+import { forwardCookies, getApi, redirect } from '../../../helpers'
+import {sortByOrder, sortCellsV4} from '../../../helpers/sorts'
 import theme from '../../../helpers/theme'
 import {generateCellImageFromEmojis} from '../../../helpers/generateCellImageFromEmojis'
 
@@ -259,21 +261,9 @@ class StudioV2 extends Component {
     const comic = this.state.comic;
     const comicsCells = comic.cells;
 
-    const sortedCells = [];
-  
-    if (!comic.initialCellUrlId) {
-      return sortedCells;
-    }
-  
-    let nextCellUrlId = comic.initialCellUrlId;
-  
-    while(comicsCells[nextCellUrlId]) {
-      sortedCells.push(comicsCells[nextCellUrlId]);
-      const nextCell = Object.values(comicsCells).find(({previousCellUrlId}) => previousCellUrlId === nextCellUrlId);
-      nextCellUrlId = nextCell && nextCell.urlId
-    }
-  
-    return sortedCells;
+    return comicsCells
+      ? sortCellsV4(comic.initialCellUrlId, Object.values(comicsCells))
+      : [];
   }
 
   handlePublishPreviewClick = () => {

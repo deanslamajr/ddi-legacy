@@ -11,7 +11,7 @@ import {
 import Cell from '../components/Cell'
 import {ErrorCell, LoadingCell} from '../components/Loading'
 
-import { getCellUrl, sortByOrder } from '../helpers'
+import { getCellUrl } from '../helpers'
 import { media, shadow } from '../helpers/style-utils'
 
 import { Link, Router } from '../routes'
@@ -79,25 +79,18 @@ const OldThumb = ({caption, cellsCount, schemaVersion, imageUrl}) => {
   </OldThumbNail>);
 }
 
-const CellsThumb = ({cells = []}) => {
-  if (!Array.isArray(cells)) {
-    return null
-  }
-
-  const sortedCells = cells.sort(sortByOrder);
-
-  if (sortedCells.length) {
-    const cell = sortedCells[0];
-    return cell.schema_version === 1
+const CellsThumb = ({cell, cellsCount}) => {
+  if (cell) {
+    return cell.schemaVersion === 1
       ? (<Thumb
-        cellsCount={sortedCells.length}
-        imageUrl={cell.image_url}
+        cellsCount={cellsCount}
+        imageUrl={cell.imageUrl}
       />)
       : (<OldThumb
-        cellsCount={sortedCells.length}
-        imageUrl={getCellUrl(cell.image_url, cell.schema_version)}
-        schemaVersion={cell.schema_version}
-        caption={cell.title}
+        cellsCount={cellsCount}
+        imageUrl={getCellUrl(cell.imageUrl, cell.schemaVersion)}
+        schemaVersion={cell.schemaVersion}
+        caption={cell.caption}
       />)
   }
 
@@ -172,16 +165,16 @@ class GalleryRoute extends Component {
     return (
       <div>
         <ComicsContainer>
-          {this.props.comics.map(({ id, cells, url_id }) => (
+          {this.props.comics.map(({cellsCount, initialCell, urlId}) => (
             <Link
-              key={id}
-              route={`/comic/${url_id}`}
+              key={urlId}
+              route={`/comic/${urlId}`}
             >
               <UnstyledLink
-                id={url_id}
-                onClick={() => this.handleComicClick(url_id)}
+                id={urlId}
+                onClick={() => this.handleComicClick(urlId)}
               >
-                <CellsThumb cells={cells} />
+                <CellsThumb cell={initialCell} cellsCount={cellsCount} />
               </UnstyledLink>
             </Link>)
           )}

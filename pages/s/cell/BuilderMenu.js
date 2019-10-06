@@ -14,7 +14,7 @@ import {
 } from '../../../components/Buttons'
 
 import theme from '../../../helpers/theme'
-import { sortByOrder } from '../../../helpers'
+import { sortByOrder } from '../../../helpers/sorts'
 
 import {
   MIN_SIZE,

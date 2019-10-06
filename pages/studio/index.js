@@ -26,7 +26,8 @@ import {
   RGBA
 } from '../../helpers/konvaDrawingUtils'
 
-import { getApi, sortByOrder } from '../../helpers'
+import { getApi } from '../../helpers'
+import { sortByOrder } from '../../helpers/sorts'
 import {generateCellImageFromEmojis} from '../../helpers/generateCellImageFromEmojis'
 import theme from '../../helpers/theme';
 import { CAPTCHA_ACTION_CELL_PUBLISH } from '../../config/constants.json'

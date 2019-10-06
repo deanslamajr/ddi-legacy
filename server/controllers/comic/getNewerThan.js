@@ -1,3 +1,4 @@
+const {transformComicFromDB} = require('./utils');
 const {Cells, Comics} = require('../../models')
 const {PAGE_SIZE} = require('../../../config/constants.json')
 
@@ -15,7 +16,7 @@ async function getNewerThan (req, res) {
     },
     limit: PAGE_SIZE,
     include: [Cells]
-  })
+  }).map(transformComicFromDB);
 
   res.json({
     comics,

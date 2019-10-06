@@ -17,7 +17,7 @@ import {NavButton, BOTTOM_LEFT, BOTTOM_RIGHT} from '../../../components/navigati
 import { Router } from '../../../routes';
 
 import {generateCellImageFromEmojis} from '../../../helpers/generateCellImageFromEmojis'
-import {sortByOrder} from '../../../helpers'
+import {sortByOrder} from '../../../helpers/sorts'
 import theme from '../../../helpers/theme';
 import {
   createNewEmojiComponentState,

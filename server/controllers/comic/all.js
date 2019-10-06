@@ -1,4 +1,5 @@
 const {Comics, Cells} = require('../../models')
+const {transformComicFromDB} = require('./utils');
 const {PAGE_SIZE} = require('../../../config/constants.json')
 
 async function all (req, res) {
@@ -15,7 +16,8 @@ async function all (req, res) {
     offset,
     limit: PAGE_SIZE,
     include: [Cells]
-  })
+  }).map(transformComicFromDB);
+
   const count = await Comics.count()
 
   res.json({

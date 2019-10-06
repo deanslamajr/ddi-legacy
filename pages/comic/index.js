@@ -3,7 +3,7 @@ import { Component } from 'react'
 import styled from 'styled-components'
 import axios from 'axios'
 
-import { sortByOrder } from '../../helpers'
+import { sortByOrder } from '../../helpers/sorts'
 import { media } from '../../helpers/style-utils'
 import Comic from './Comic'
 
@@ -56,6 +56,7 @@ class ComicRoute extends Component {
     return {
       cells: data.cells,
       comicId: query.comicId,
+      initialCellUrlId: data.initialCellUrlId,
       title: data.title,
       userCanEdit: data.userCanEdit
     }
@@ -104,6 +105,7 @@ class ComicRoute extends Component {
   render () {
     const {
       cells,
+      initialCellUrlId,
       title,
       userCanEdit
     } = this.props
@@ -140,6 +142,7 @@ class ComicRoute extends Component {
         <CenteredContainer>
           <Comic
             cells={cells}
+            initialCellUrlId={initialCellUrlId}
             showSpinner={this.props.showSpinner}
             clickable
           />

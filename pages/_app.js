@@ -24,7 +24,7 @@ const { publicRuntimeConfig } = getConfig()
 // }
 
 async function getNewerComics (currentComics) {
-  const latestUpdatedAt = currentComics[0].updated_at
+  const latestUpdatedAt = currentComics[0].updatedAt
   const { data } = await axios.get(`/api/comics/latest?latestUpdatedAt=${latestUpdatedAt}`)
   return data.comics.length
     ? {

@@ -1,7 +1,7 @@
 import Konva from 'konva'
 
 import theme from './theme'
-import {sortByOrder} from '.'
+import {sortByOrder} from './sorts'
 
 /**
  * EXPORTS

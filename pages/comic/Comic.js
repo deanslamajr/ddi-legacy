@@ -5,7 +5,7 @@ import { Router } from '../../routes'
 
 import Cell from '../../components/Cell'
 
-import { sortByOrder } from '../../helpers'
+import {sortByOrder, sortCellsV4} from '../../helpers/sorts'
 import { media } from '../../helpers/style-utils'
 
 const navigateTo = (urlId, showSpinner) => {
@@ -32,13 +32,20 @@ const ComicContainer = styled.div`
 
 const noop = () => {}
 
-function Comic ({ cells, clickable, showSpinner = noop }) {
+function Comic ({ cells, clickable, initialCellUrlId, showSpinner = noop }) {
+  let sortedCells;
+
+  if (cells.length && cells[0].schemaVersion >= 4) {
+    sortedCells = sortCellsV4(initialCellUrlId, cells);
+  } else {
+    sortedCells = cells.sort(sortByOrder);
+  }
   return (<ComicContainer>
     {/* @todo replace having to support both casings for imageUrl and urlId */}
     {/*  This is due to the 2 different ways this is consumed: */}
     {/*  1. /gallery - passes untransformed cells data from DB */}
     {/*  2. /comic/:comicId - passes transformed cells data */}
-    {cells.sort(sortByOrder).map(({
+    {sortedCells.map(({
       imageUrl,
       image_url,
       schemaVersion,

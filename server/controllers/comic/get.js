@@ -29,8 +29,6 @@ async function get (req, res) {
   }))
 
   if (cells.length && cells[0].schemaVersion >= 4) {
-    console.log('taco')
-
     // resolve cells[].previousCellUrlId
     cells = cells.map(cell => {
       const previousCell = cellsData.find(({id}) => cell.previousCellId === id);

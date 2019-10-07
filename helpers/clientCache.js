@@ -74,7 +74,8 @@ const emptyStudioState = {
 };
 
 const emptyComic = {
-  initialCellUrlId: null
+  initialCellUrlId: null,
+  urlId: null
 };
 
 const emptyCell = {
@@ -245,6 +246,7 @@ export const createNewCell = (comicUrlId, initialStudioState) => {
       cache.comics = {};
     }
     cache.comics[comicUrlId] = getInitializedComic();
+    cache.comics[comicUrlId].urlId = comicUrlId;
   }
 
   const lastCell = getLastCell(cache, comicUrlId);
@@ -286,4 +288,14 @@ export const getStudioState = (cellUrlId) => {
 export const clearStudioState = (cellUrlId, initialStudioState) => {
   const newStudioState = initialStudioState || getInitializedStudioState();
   setCellStudioState(cellUrlId, newStudioState);
+}
+
+export const getComics = () => {
+  const cache = getCache();
+
+  if (!cache) {
+    return null;
+  }
+
+  return cache.comics;
 }

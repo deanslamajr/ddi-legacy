@@ -126,9 +126,19 @@ const CreateButton = styled(NavButton)`
 `
 
 class GalleryRoute extends Component {
-  navigateToStudio = () => {
+  navigateToNewOrDrafts = () => {
     this.props.showSpinner()
-    Router.pushRoute('/s/cell/new')
+    
+    const {getComics} = require('../helpers/clientCache');
+    const comics = getComics();
+    
+    if (comics && Object.keys(comics).length) {
+      // if comics exist on client cache, nav to drafts
+      return Router.pushRoute('/me/drafts');
+    } else {
+      // else, nav to /s/cell/new
+      return Router.pushRoute('/s/cell/new');
+    }
   }
 
   showMoreComics = async () => {
@@ -195,7 +205,7 @@ class GalleryRoute extends Component {
         <CreateButton
           value='+'
           accented
-          cb={this.navigateToStudio}
+          cb={this.navigateToNewOrDrafts}
           position={BOTTOM_RIGHT}
         />
       </div>

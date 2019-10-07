@@ -10,7 +10,6 @@ import Comic from './Comic'
 import {
   NavButton,
   BOTTOM_LEFT,
-  BOTTOM_CENTER,
   BOTTOM_RIGHT
 } from '../../components/navigation'
 

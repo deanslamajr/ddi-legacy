@@ -276,7 +276,7 @@ class CellStudio extends Component {
 
       clonedEmojis[activeEmojiId][field] += amount;
       
-      return {studioState: clonedEmojis};
+      return {studioState: clonedStudioState};
     }, cb)
   }
 
@@ -360,6 +360,9 @@ class CellStudio extends Component {
       duplicatedActiveEmoji.order = currentEmojiId;
 
       clonedEmojis[currentEmojiId] = duplicatedActiveEmoji;
+
+      clonedStudioState.activeEmojiId = currentEmojiId;
+      clonedStudioState.currentEmojiId = currentEmojiId + 1;
 
       return {studioState: clonedStudioState};
     }, () => {

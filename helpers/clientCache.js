@@ -293,7 +293,7 @@ export const createNewCell = (comicUrlId, initialStudioState) => {
 
 export const getStudioState = (cellUrlId) => {
   const cache = getCache();
-  const cellCache = cache
+  const cellCache = cache && cache.cells
     ? cache.cells[cellUrlId]
     : null;
 

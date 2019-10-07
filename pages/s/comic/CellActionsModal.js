@@ -30,7 +30,7 @@ export default class CellActionsModal extends React.Component {
         imageUrl={imageUrl}
         isImageUrlAbsolute={hasNewImage}
         schemaVersion={schemaVersion}
-        title={studioState.caption}
+        caption={studioState.caption}
         removeborders
       />
       <CenteredButtons>

@@ -17,7 +17,7 @@ async function get (req, res) {
 
   const cellsData = await comic.getCells()
   let cells = cellsData.map(({
-    url_id, image_url, order, previous_cell_id, schema_version, studio_state, title
+    url_id, image_url, order, previous_cell_id, schema_version, studio_state, caption
   }) => ({
     urlId: url_id,
     imageUrl: image_url,
@@ -25,7 +25,7 @@ async function get (req, res) {
     previousCellId: previous_cell_id,
     schemaVersion: schema_version,
     studioState: studio_state,
-    title
+    caption
   }))
 
   if (cells.length && cells[0].schemaVersion >= 4) {

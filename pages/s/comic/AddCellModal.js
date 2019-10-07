@@ -101,7 +101,7 @@ export default class AddCellModal extends React.Component {
                 isImageUrlAbsolute={hasNewImage}
                 onClick={() => onAddCellFromDuplicate(studioState)}
                 schemaVersion={schemaVersion}
-                title={studioState.caption}
+                caption={studioState.caption}
                 width="250px"
               />
             </CellContainer>

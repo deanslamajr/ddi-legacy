@@ -424,7 +424,7 @@ class StudioV2 extends Component {
               isImageUrlAbsolute={cell.hasNewImage}
               onClick={() => this.setState({activeCell: cell})}
               schemaVersion={cell.schemaVersion || SCHEMA_VERSION}
-              title={cell.studioState.caption}
+              caption={cell.studioState.caption}
               width={cellWidth}
             />
           </div>

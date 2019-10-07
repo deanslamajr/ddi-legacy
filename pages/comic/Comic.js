@@ -50,13 +50,13 @@ function Comic ({ cells, clickable, initialCellUrlId, showSpinner = noop }) {
       image_url,
       schemaVersion,
       schema_version,
-      title,
+      caption,
       urlId,
       url_id
     }) => (<Cell
       onClick={() => clickable ? navigateTo(urlId || url_id, showSpinner) : noop()}
       imageUrl={imageUrl || image_url}
-      title={title}
+      caption={caption}
       key={imageUrl || image_url}
       schemaVersion={schemaVersion || schema_version}
     />))}

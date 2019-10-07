@@ -48,7 +48,7 @@ export default class PublishPreviewModal extends React.Component {
               imageUrl={cell.imageUrl}
               isImageUrlAbsolute={cell.hasNewImage}
               schemaVersion={cell.schemaVersion || SCHEMA_VERSION}
-              title={cell.studioState.caption}
+              caption={cell.studioState.caption}
               width={theme.layout.width}
               />
           </CellContainer>

@@ -24,7 +24,6 @@ router.post('/user/logout', logout);
 
 router.post('/sign', sign)
 
-router.get('/cell/:cellId/parent', getParent)
 router.get('/cell/:cellId', getCell)
 router.put('/cell/:cellId', updateCell)
 router.get('/cells', getCells)

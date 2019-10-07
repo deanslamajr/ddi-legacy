@@ -50,7 +50,7 @@ Router.events.on('routeChangeStart', handleRouteChange)
  */
 class MyApp extends App {
   state = {
-    activeComicId: null,
+    activeComicUrlId: null,
     comics: [],
     hasMoreComics: false,
     newerComics: null,
@@ -103,7 +103,7 @@ class MyApp extends App {
     // if any comics that exist in old list are also in new list, remove from old list
     // e.g. a comic was recently updated
     this.state.newerComics.comics.forEach(newComic => {
-      const duplicateIndex = clonedComics.findIndex(({ id }) => id === newComic.id)
+      const duplicateIndex = clonedComics.findIndex(({ urlId }) => urlId === newComic.urlId)
 
       if (duplicateIndex > -1) {
         clonedComics.splice(duplicateIndex, 1)
@@ -159,24 +159,24 @@ class MyApp extends App {
     }, cb)
   }
 
-  setActiveComicId = (comicId) => {
-    this.setState({ activeComicId: comicId })
+  setActiveComicUrlId = (comicUrlId) => {
+    this.setState({ activeComicUrlId: comicUrlId })
   }
 
-  deleteComicFromCache = (comicId, cb) => {
+  deleteComicFromCache = (comicUrlId, cb) => {
     const clonedComics = Array.from(this.state.comics);
 
-    const indexToDelete = clonedComics.findIndex(comic => comic.url_id === comicId);
+    const indexToDelete = clonedComics.findIndex(comic => comic.urlId === comicUrlId);
 
     if (indexToDelete >= 0) {
       clonedComics.splice(indexToDelete, 1);
 
-      const newActiveComicId = this.state.comics.length > indexToDelete
-        ? this.state.comics[indexToDelete].id
-        : this.state.comics[0].id;
+      const newActiveComicUrlId = this.state.comics.length > indexToDelete
+        ? this.state.comics[indexToDelete].urlId
+        : this.state.comics[0].urlId;
 
       this.setState({
-        activeComicId: newActiveComicId,
+        activeComicUrlId: newActiveComicUrlId,
         comics: clonedComics
       }, cb);
     }
@@ -234,7 +234,7 @@ class MyApp extends App {
 
         <ThemeProvider theme={theme}>
           <Component
-            activeComicId={this.state.activeComicId}
+            activeComicUrlId={this.state.activeComicUrlId}
             comics={this.state.comics}
             deleteComicFromCache={this.deleteComicFromCache}
             fetchComics={this.fetchComics}
@@ -245,7 +245,7 @@ class MyApp extends App {
             isShowingSpinner={this.state.showSpinner}
             newerComicsExist={!!this.state.newerComics}
             recaptcha={this.state.recaptcha}
-            setActiveComicId={this.setActiveComicId}
+            setActiveComicUrlId={this.setActiveComicUrlId}
             showSpinner={this.showSpinner}
             markJobAsFinished={this.markJobAsFinished}
             {...pageProps}

@@ -53,7 +53,7 @@ const CellImage = styled(Img)`
 `
 
 export default function Cell ({
-  className, imageUrl, isImageUrlAbsolute, title, clickable, onClick, removeborders, schemaVersion, width
+  className, imageUrl, isImageUrlAbsolute, caption, clickable, onClick, removeborders, schemaVersion, width
 }) {
   const cellUrl = isImageUrlAbsolute
     ? imageUrl
@@ -82,8 +82,8 @@ export default function Cell ({
           loader={<LoadingCell removeborders />}
           unloader={<ErrorCell removeborders/>}
         />
-        {title && title.length && <DynamicTextContainer fontRatio={17}>
-          {nl2br(title)}
+        {caption && caption.length && <DynamicTextContainer fontRatio={17}>
+          {nl2br(caption)}
         </DynamicTextContainer>}
       </OldCellBorder>)
     }

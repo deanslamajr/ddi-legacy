@@ -33,7 +33,7 @@ function PreviewModal ({
         removeborders
         imageUrl={cellImageUrl}
         schemaVersion={SCHEMA_VERSION}
-        title={caption}
+        caption={caption}
         width="250px"
         isImageUrlAbsolute
       />

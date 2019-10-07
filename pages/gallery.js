@@ -75,7 +75,7 @@ const OldThumb = ({caption, cellsCount, schemaVersion, imageUrl}) => {
       imageUrl={imageUrl}
       isImageUrlAbsolute={schemaVersion>1}
       schemaVersion={schemaVersion}
-      title={caption} />
+      caption={caption} />
   </OldThumbNail>);
 }
 
@@ -148,7 +148,7 @@ class GalleryRoute extends Component {
 
   handleComicClick = (urlId) => {
     this.props.showSpinner()
-    this.props.setActiveComicId(urlId)
+    this.props.setActiveComicUrlId(urlId)
   }
 
   handleRefreshClick = () => {
@@ -162,11 +162,11 @@ class GalleryRoute extends Component {
 
   componentDidMount () {
     this.props.fetchComics(this.props.hideSpinner)
-    if (this.props.activeComicId) {
-      const activeComic = document.getElementById(this.props.activeComicId);
+    if (this.props.activeComicUrlId) {
+      const activeComic = document.getElementById(this.props.activeComicUrlId);
       if (activeComic) {
         activeComic.scrollIntoView()
-        this.props.setActiveComicId(null)
+        this.props.setActiveComicUrlId(null)
       }
     }
   }

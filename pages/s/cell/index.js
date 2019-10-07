@@ -120,7 +120,7 @@ class CellStudio extends Component {
     const {createNewCell} = require('../../../helpers/clientCache');
     const cellUrlId = createNewCell(undefined, initialStudioState);
 
-    Router.pushRoute(`/s/cell/${cellUrlId}`);
+    Router.replaceRoute(`/s/cell/${cellUrlId}`);
   }
 
   // formerly: updateCache

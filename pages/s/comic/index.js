@@ -196,7 +196,7 @@ class StudioV2 extends Component {
 
   navigateToNewComic = () => {
     this.props.showSpinner();
-    Router.pushRoute('/s/cell/new');
+    Router.replaceRoute('/s/cell/new');
   }
 
   navigateToAddCellFromNew = () => {

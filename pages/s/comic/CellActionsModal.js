@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
+import { Router } from '../../../routes'
 import Cell from '../../../components/Cell'
 import Modal, { CenteredButtons } from '../../../components/Modal'
 import { MenuButton } from '../../../components/Buttons'
@@ -17,6 +18,10 @@ const CellPreview = styled(Cell)`
 `
 
 export default class CellActionsModal extends React.Component {
+  navigateToCellStudio = () => {
+    Router.pushRoute(`/s/cell/${this.props.cell.urlId}`);
+  }
+
   render () {
     const {
       hasNewImage,
@@ -34,7 +39,7 @@ export default class CellActionsModal extends React.Component {
         removeborders
       />
       <CenteredButtons>
-        <MenuButton>
+        <MenuButton onClick={this.navigateToCellStudio}>
           EDIT
         </MenuButton>
       </CenteredButtons>

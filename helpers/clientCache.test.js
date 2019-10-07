@@ -3,9 +3,12 @@ import cloneDeep from 'lodash/cloneDeep';
 import {
   createNewCell,
   deleteCell,
+  deleteComic,
   doesCellUrlIdExist,
   doesComicUrlIdExist,
+  getCellsByComicUrlId,
   getComic,
+  getComics,
   getComicUrlIdFromCellUrlId,
   setCellStudioState
 } from './clientCache';
@@ -26,10 +29,12 @@ describe('clientCache', () => {
     initialCellUrlId: mockCellUrlId
   };
 
+  const comics = {
+    [mockComicUrlId]: mockComic
+  };
+
   const mockCache = {
-    comics: {
-      [mockComicUrlId]: mockComic
-    },
+    comics,
     cells: {
       [mockCellUrlId]: mockCell
     }
@@ -269,17 +274,35 @@ describe('clientCache', () => {
 
   describe('getComics', () => {
     it('should return the currently cached comics datastructure', () => {
-      throw new Error('implement test!');
+      const actual = getComics();
+      expect(actual).toStrictEqual(comics);
+    });
+
+    describe('if `comics` field doesnt exist on client cache', () => {
+      it('should return null', () => {
+        store('', {});
+
+        const actual = getComics();
+        expect(actual).toBe(null);
+      });
     });
   });
 
   describe('deleteComic', () => {
     it('should delete the given comic from client cache', () => {
-      throw new Error('implement test!');
+      deleteComic(mockComicUrlId);
+
+      const deletedComic = getComic(mockComicUrlId);
+
+      expect(deletedComic).toBe(null);
     });
 
     it('should delete all of the cells associated with the deleted comic', () => {
-      throw new Error('implement test!');
+      deleteComic(mockComicUrlId);
+
+      const cellsAssociatedWithDeletedComic = getCellsByComicUrlId(mockComicUrlId);
+
+      expect(cellsAssociatedWithDeletedComic).toStrictEqual({});
     });
   });
 });

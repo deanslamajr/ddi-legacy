@@ -307,6 +307,10 @@ class StudioV2 extends Component {
 
     await this.publishComicUpdate({signedCells, comicUrlId: newComicUrlId});
 
+    //delete comic from client cache
+    const {deleteComic} = require('../../../helpers/clientCache');
+    deleteComic(this.props.comicUrlId);
+
     Router.pushRoute(`/comic/${newComicUrlId}`)
   }
 

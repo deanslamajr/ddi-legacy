@@ -15,8 +15,12 @@ const define = () => ({
   findOne
 })
 
+const mockTransaction = 'mockTransaction';
+const transaction = (trnsctn) => trnsctn(mockTransaction)
+
 const sequelize = {
-  define
+  define,
+  transaction
 }
 
 module.exports = {

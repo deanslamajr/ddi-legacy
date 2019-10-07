@@ -2,6 +2,7 @@ const {update} = require('./update');
 const {Comics} = require('../../models')
 
 jest.mock('../../models');
+jest.mock('../../adapters/db');
 
 describe('controllers/comic/update', () => {
   const comicId = 'comicId';
@@ -111,7 +112,7 @@ describe('controllers/comic/update', () => {
     it('should make an update to the passed comic, including setting is_active to true', async () => {
       await update(req, res);
 
-      expect(updateComic).toHaveBeenCalledWith({is_active: true, initial_cell_id: initialCellId});
+      expect(updateComic).toHaveBeenCalledWith({is_active: true, initial_cell_id: initialCellId}, {"transaction": "mockTransaction"});
     });
 
     describe('if the initialCellUrlId does NOT exist on the given comic', () => {

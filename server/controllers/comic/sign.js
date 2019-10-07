@@ -123,7 +123,7 @@ async function sign (req, res) {
   }
   catch(e) {
     // @todo log
-    console.error(e);
+    //console.error(e);
     res.sendStatus(500);
   }
 }

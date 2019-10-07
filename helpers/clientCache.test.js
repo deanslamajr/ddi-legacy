@@ -266,4 +266,20 @@ describe('clientCache', () => {
       });
     });
   });
+
+  describe('getComics', () => {
+    it('should return the currently cached comics datastructure', () => {
+      throw new Error('implement test!');
+    });
+  });
+
+  describe('deleteComic', () => {
+    it('should delete the given comic from client cache', () => {
+      throw new Error('implement test!');
+    });
+
+    it('should delete all of the cells associated with the deleted comic', () => {
+      throw new Error('implement test!');
+    });
+  });
 });

@@ -13,6 +13,7 @@ jest.mock('newrelic');
 jest.mock('../../env-config');
 jest.mock('../../models');
 jest.mock('../../adapters/s3');
+jest.mock('../../adapters/db');
 
 const userId = 'userId';
 

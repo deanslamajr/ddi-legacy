@@ -64,7 +64,8 @@ async function update (req, res) {
   
     res.sendStatus(200);
   } catch (e) {
-    console.error(e);
+    //@TODO log
+    //console.error(e);
     res.sendStatus(500);
   }
 }

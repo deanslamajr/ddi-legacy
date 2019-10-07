@@ -284,14 +284,14 @@ class StudioV2 extends Component {
     // minimum number of "jobs" required to finish a publish
     // i.e. all jobs excluding uploads
     // @todo update this with the amount of jobs involved for `finishPublish`
-    let totalJobsCount = 0;
+    let totalJobsCount = 1;
     let signedCells;
     let newComicUrlId;
 
     const cellsThatRequireUploads = this.getCellsWithNewImage();
 
     if (cellsThatRequireUploads.length) {
-      // if uploading required:
+      // if image uploading is required:
       // 1 + # of cells that require uploads
       totalJobsCount += 1 + cellsThatRequireUploads.length;
 
@@ -306,6 +306,8 @@ class StudioV2 extends Component {
     }
 
     await this.publishComicUpdate({signedCells, comicUrlId: newComicUrlId});
+
+    this.props.markJobAsFinished();
 
     //delete comic from client cache
     const {deleteComic} = require('../../../helpers/clientCache');
@@ -335,7 +337,7 @@ class StudioV2 extends Component {
       //   signData: {}
       // }
 
-      // this.props.markJobFinished();
+      this.props.markJobAsFinished();
 
       await Promise.all(signedCells.map(this.uploadImage));
 
@@ -360,7 +362,7 @@ class StudioV2 extends Component {
 
     await uploadImage(file, signData.signedRequest);
 
-    // this.props.markJobFinished();
+    this.props.markJobAsFinished();
   }
 
   getSignedRequest = async (captchaTokens) => {
@@ -405,8 +407,6 @@ class StudioV2 extends Component {
       publishedComic: this.props.publishedComic,
       signedCells
     });
-
-    console.log('updatePayload', updatePayload);
     
     await axios.patch(`/api/comic/${comicUrlIdToUpdate}`, updatePayload);
   }

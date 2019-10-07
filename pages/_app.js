@@ -55,7 +55,9 @@ class MyApp extends App {
     hasMoreComics: false,
     newerComics: null,
     recaptcha: undefined,
-    showSpinner: true
+    showSpinner: true,
+    totalNumberOfJobs: null,
+    finishedJobsCount: null
   }
 
   static async getInitialProps({ Component, ctx }) {
@@ -74,15 +76,24 @@ class MyApp extends App {
 
   hideSpinner = (cb = () => {}) => {
     this.setState({
-      percentCompleted: null,
+      totalNumberOfJobs: null,
+      finishedJobsCount: null,
       showSpinner: false
     }, cb)
   }
 
-  showSpinner = (percentCompleted) => {
+  showSpinner = (totalNumberOfJobs) => {
     this.setState({
-      percentCompleted,
+      totalNumberOfJobs,
+      finishedJobsCount: totalNumberOfJobs ? 0 : null,
       showSpinner: true
+    });
+  }
+
+  markJobAsFinished = (numberOfNewlyFinishedJobs = 1) => {
+    this.setState(({finishedJobsCount}) => {
+      const newFinishedJobsCount = finishedJobsCount + numberOfNewlyFinishedJobs;
+      return {finishedJobsCount: newFinishedJobsCount}
     });
   }
 
@@ -198,6 +209,9 @@ class MyApp extends App {
   render () {
     const { Component, pageProps } = this.props
 
+    const percentCompleted = this.state.totalNumberOfJobs
+      && Math.round((this.state.finishedJobsCount / this.state.totalNumberOfJobs) * 100);
+
     return (
       <Container>
         <Head>
@@ -216,7 +230,7 @@ class MyApp extends App {
         <MobileViewportSettings />
         <GrayBackground />
 
-        {this.state.showSpinner && <LoadSpinner percentCompleted={this.state.percentCompleted} />}
+        {this.state.showSpinner && <LoadSpinner percentCompleted={percentCompleted} />}
 
         <ThemeProvider theme={theme}>
           <Component
@@ -233,6 +247,7 @@ class MyApp extends App {
             recaptcha={this.state.recaptcha}
             setActiveComicId={this.setActiveComicId}
             showSpinner={this.showSpinner}
+            markJobAsFinished={this.markJobAsFinished}
             {...pageProps}
           />
         </ThemeProvider>

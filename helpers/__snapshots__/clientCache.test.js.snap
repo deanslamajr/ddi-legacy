@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`clientCache createComicFromPublishedComic if the passed comic is entirely of cells of schemaVersion >= 4 should add a new cell to the client cache for each cell included in the passed api comic datastructure 1`] = `
+Object {
+  "comicUrlId": "mockComicUrlId",
+  "studioState": Object {},
+  "urlId": "mockCellUrlId",
+}
+`;
+
+exports[`clientCache createComicFromPublishedComic if the passed comic is entirely of cells of schemaVersion >= 4 should add a new cell to the client cache for each cell included in the passed api comic datastructure 2`] = `
+Object {
+  "comicUrlId": "yetAnotherComicUrlId",
+  "hasNewImage": false,
+  "imageUrl": "someImageUrl.png",
+  "previousCellUrlId": undefined,
+  "studioState": Object {},
+  "urlId": "someInitialCellUrlId",
+}
+`;
+
+exports[`clientCache createComicFromPublishedComic if the passed comic is entirely of cells of schemaVersion >= 4 should add a new cell to the client cache for each cell included in the passed api comic datastructure 3`] = `
+Object {
+  "comicUrlId": "yetAnotherComicUrlId",
+  "hasNewImage": false,
+  "imageUrl": "someOtherImageUrl.png",
+  "previousCellUrlId": "someInitialCellUrlId",
+  "studioState": Object {},
+  "urlId": "someOtherUrlId",
+}
+`;
+
+exports[`clientCache createComicFromPublishedComic if the passed comic is entirely of cells of schemaVersion >= 4 should add a new comic to the client cache with the data from the passed api comic datastructure 1`] = `
+Object {
+  "initialCellUrlId": "someInitialCellUrlId",
+  "urlId": "yetAnotherComicUrlId",
+}
+`;

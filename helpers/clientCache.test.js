@@ -1,6 +1,9 @@
 import store from 'store2';
 import cloneDeep from 'lodash/cloneDeep';
+import {__setIds} from 'shortid';
+
 import {
+  createComicFromPublishedComic,
   createNewCell,
   deleteCell,
   deleteComic,
@@ -14,6 +17,7 @@ import {
 } from './clientCache';
 
 jest.mock('store2');
+jest.mock('shortid');
 
 describe('clientCache', () => {
   const mockComicUrlId = 'mockComicUrlId';
@@ -303,6 +307,117 @@ describe('clientCache', () => {
       const cellsAssociatedWithDeletedComic = getCellsByComicUrlId(mockComicUrlId);
 
       expect(cellsAssociatedWithDeletedComic).toStrictEqual({});
+    });
+  });
+
+  describe('createComicFromPublishedComic', () => {
+    const yetAnotherComicUrlId = 'yetAnotherComicUrlId';
+    const someInitialCellUrlId = 'someInitialCellUrlId';
+
+    const comicFromApiV4 = {
+      cells: [
+        {
+          urlId: someInitialCellUrlId,
+          imageUrl: 'someImageUrl.png',
+          caption: 'some caption',
+          order: null,
+          schemaVersion: 4,
+          studioState: {}
+        },
+        {
+          urlId: 'someOtherUrlId',
+          imageUrl: 'someOtherImageUrl.png',
+          caption: 'some other caption',
+          order: null,
+          previousCellUrlId: someInitialCellUrlId,
+          schemaVersion: 4,
+          studioState: {}
+        }
+      ],
+      initialCellUrlId: someInitialCellUrlId,
+      isActive: true,
+      title: "",
+      urlId: yetAnotherComicUrlId,
+      userCanEdit: true
+    };
+
+    afterEach(() => {
+      __setIds();
+    });
+
+    describe('if client cache doesnt exist', () => {
+      it('should create a new client cache', () => {
+        store('', null);
+
+        createComicFromPublishedComic(comicFromApiV4);
+        const cache = store('');
+
+        expect(cache).not.toBe(null);
+      });
+    });
+
+    describe('if clientCache.cells does not exist', () => {
+      it('should initialize clientCache.cells', () => {
+        store('', {});
+
+        createComicFromPublishedComic(comicFromApiV4);
+        const cache = store('');
+
+        expect(cache).toHaveProperty('cells');
+      });
+    });
+
+    describe('if clientCache.comics does not exist', () => {
+      it('should initialize clientCache.comics', () => {
+        store('', {});
+
+        createComicFromPublishedComic(comicFromApiV4);
+        const cache = store('');
+
+        expect(cache).toHaveProperty('comics');
+      });
+    });
+
+    describe('if the passed comic is entirely of cells of schemaVersion >= 4', () => {
+      it('should add a new comic to the client cache with the data from the passed api comic datastructure', () => {
+        createComicFromPublishedComic(comicFromApiV4);
+        const cache = store('');
+  
+        expect(cache.comics).toHaveProperty(yetAnotherComicUrlId);
+        expect(cache.comics[yetAnotherComicUrlId]).toMatchSnapshot();
+      });
+      
+      it('should add a new cell to the client cache for each cell included in the passed api comic datastructure', () => {
+        const draftIds = ['abcde', 'fghij'];
+        __setIds(draftIds);
+        
+        createComicFromPublishedComic(comicFromApiV4);
+        const cache = store('');
+
+        const cellIds = Object.keys(cache.cells);
+
+        cellIds.forEach(cellId => {
+          expect(cache.cells).toHaveProperty(cellId);
+          expect(cache.cells[cellId]).toMatchSnapshot();
+        });
+      });
+    });
+
+    describe('if the passed comic is entirely of cells of schemaVersion < 4', () => {
+      it('should add a new comic to the client cache with the data from the passed api comic datastructure', () => {
+        throw new Error('implement test!');
+        
+        createComicFromPublishedComic(comicFromApi);
+        const cache = store('');
+  
+        console.log('cache.comics', cache.comics)
+  
+        expect(cache.comics).toHaveProperty(yetAnotherComicUrlId);
+      });
+      
+      it('should add a new cell to the client cache for each cell included in the passed api comic datastructure', () => {
+        throw new Error('implement test!');
+      });
     });
   });
 });

@@ -53,17 +53,33 @@ async function generateCellImage(cell, filename) {
   return file
 }
 
-function hydrateComicFromApi (comicUrlId) {
+async function hydrateComicFromApi (comicUrlId) {
+  let comicFromApi;
+
   // try to fetch from api
-  // if doesn't exist in api
-    // return null (this will have the effect of redirecting to /s/cell/new)
-  // if does exist in api
-    // check if user has ability to edit comic
-    // if not
-      // duplicate comic workflow
-    // if so
-      // hydrate client cache from api response
-      // return formatted data
+  try {
+    const response = await axios.get(`/api/comic/${comicUrlId}`);
+  
+    comicFromApi = response.data;
+
+    if (!comicFromApi.userCanEdit) {
+      //@TODO copy comic workflow
+      throw new Error(`User is not authorized to edit comic with urlId:${comicUrlId}.`);
+    } else if (!comicFromApi.isActive) {
+      throw new Error(`Comic with urlId:${comicUrlId} cannot be edited as it is not active.`);
+    }
+  }
+  catch (e) {
+    //@TODO log
+    console.error(e);
+    return null
+  }
+
+  const {createComicFromPublishedComic} = require('../../../helpers/clientCache');
+
+  console.log('comicFromApi', comicFromApi)
+  
+  return createComicFromPublishedComic(comicFromApi);
 }
 
 function hydrateComicFromClientCache(comicUrlId) {
@@ -91,9 +107,7 @@ async function hydrateComic (comicUrlId) {
     // hydrate the cells and comic from client cache and return formatted data
     return hydrateComicFromClientCache(comicUrlId);
   } else {
-    return null;
-    // @todo
-    // hydrateComicFromApi(comicUrlId);
+    return hydrateComicFromApi(comicUrlId);
   }
 }
 
@@ -139,22 +153,7 @@ const StudioCell = styled(Cell)`
 // Comic Studio
 class StudioV2 extends Component {
   static async getInitialProps ({ query, req, res }) {
-    // if on an unpublished comic, don't fetch comic data
-    // if(query.comicUrlId.includes(DRAFT_SUFFIX)) {
-    //   return {}
-    // }
-
-    // const { data } = await axios.get(getApi(`/api/comic/${query.comicUrlId}`, req), forwardCookies(req))
-
-    // // redirect to new comic if user isn't authorized to edit this comic
-    // if (!data.userCanEdit || !data.isActive) {
-    //   // @todo log this case
-    //   redirect(generateDraftUrl(), res);
-    //   return {}
-    // }
-
     return {
-      //...data,
       comicUrlId: query.comicUrlId
     }
   }
@@ -170,6 +169,8 @@ class StudioV2 extends Component {
 
   async componentDidMount() {
     const hydratedComic = await hydrateComic(this.props.comicUrlId);
+
+    console.log('hydratedComic', hydratedComic)
 
     if (!hydratedComic) {
       return this.navigateToNewComic();
@@ -413,6 +414,8 @@ class StudioV2 extends Component {
 
   render () {
     const sortedCells = this.getCellsFromState();
+
+    console.log('sortedCells', sortedCells)
 
     return !this.props.isShowingSpinner && <React.Fragment>
       <OuterContainer>

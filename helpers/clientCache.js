@@ -2,6 +2,7 @@ import store from 'store2';
 import shortid from 'shortid';
 import cloneDeep from 'lodash/cloneDeep';
 
+import {sortByOrder} from '../helpers/sorts'
 import theme from '../helpers/theme'
 
 import {
@@ -78,15 +79,6 @@ const emptyComic = {
   urlId: null
 };
 
-const emptyCell = {
-  hasNewImage: true,
-  urlId: null,
-  imageUrl: null,
-  comicUrlId: null,
-  previousCellUrlId: null,
-  studioState: null
-}
-
 const getInitializedCache = () => {
   return cloneDeep(emptyCache);
 }
@@ -100,16 +92,22 @@ const getInitializedComic = () => {
 }
 
 const getInitializedCell = ({
-  comicUrlId, urlId, previousCellUrlId, studioState = getInitializedStudioState()
+  comicUrlId = null,
+  hasNewImage = false,
+  imageUrl = null,
+  previousCellUrlId,
+  studioState = getInitializedStudioState(),
+  urlId = null
 }) => {
-  const cell = cloneDeep(emptyCell);
-
-  cell.urlId = urlId;
-  cell.comicUrlId = comicUrlId;
-  cell.previousCellUrlId = previousCellUrlId;
-  cell.studioState = studioState;
-  return cell;
-}
+  return {
+    comicUrlId,
+    hasNewImage,
+    imageUrl,
+    previousCellUrlId,
+    studioState,
+    urlId
+  };
+};
 
 const getComicsSortedCells = (cache, comicUrlId) => {
   const sortedCells = [];
@@ -276,6 +274,7 @@ export const createNewCell = (comicUrlId, initialStudioState) => {
   }
   cache.cells[cellUrlId] = getInitializedCell({
     comicUrlId,
+    hasNewImage: true,
     urlId: cellUrlId,
     studioState: initialStudioState,
     previousCellUrlId
@@ -315,4 +314,69 @@ export const getComics = () => {
   }
 
   return cache.comics;
+}
+
+// comicFromApi (v4) = {
+//   cells: [
+//     {
+//       urlId: "Q4stQsMvHu",
+//       imageUrl: "Z7OV_dklyB.png",
+//       caption: "",
+//       order: null,
+//       previousCellUrlId: null
+//       schemaVersion: 4,
+//       studioState: {}
+//     }
+//   ],
+//   initialCellUrlId: "Q4stQsMvHu",
+//   isActive: true,
+//   title: "",
+//   urlId: "knwg8fySZ",
+//   userCanEdit: true
+// }
+export const createComicFromPublishedComic = ({
+  cells: cellsToCopy, initialCellUrlId, title, urlId: comicUrlId
+}) => {
+  let cache = getCache();
+
+  if (!cache) {
+    cache = getInitializedCache();
+  }
+  if (!cache.cells) {
+    cache.cells = {};
+  }
+  if (!cache.comics) {
+    cache.comics = {};
+  }
+
+  if (cellsToCopy[0].schemaVersion >= 4) {
+    // create cells
+    cellsToCopy.forEach(cell => {
+      cache.cells[cell.urlId] = getInitializedCell({
+        comicUrlId,
+        urlId: cell.urlId,
+        studioState: cell.studioState,
+        previousCellUrlId: cell.previousCellUrlId,
+        imageUrl: cell.imageUrl
+      });
+    })
+
+    const comic = getInitializedComic();
+    comic.urlId = comicUrlId;
+    comic.initialCellUrlId = initialCellUrlId;
+    cache.comics[comicUrlId] = comic;
+  } else {
+    console.log('cellsToCopy', cellsToCopy);
+    const sortedCells = sortByOrder(cellsToCopy);
+  }
+
+  setCache(cache);
+
+  const comic = getComic(comicUrlId);
+  const cells = getCellsByComicUrlId(comicUrlId);
+
+  return {
+    ...comic,
+    cells
+  };
 }

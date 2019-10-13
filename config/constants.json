@@ -1,5 +1,5 @@
 {
-  "CAPTCHA_THRESHOLD": 0.7,
+  "CAPTCHA_THRESHOLD": 0.3,
   "CAPTCHA_ACTION_CELL_PUBLISH": "cell_publish",
   "DRAFT_SUFFIX": "---draft",
   "SCHEMA_VERSION": 3,

@@ -367,7 +367,45 @@ export const createComicFromPublishedComic = ({
     cache.comics[comicUrlId] = comic;
   } else {
     console.log('cellsToCopy', cellsToCopy);
-    const sortedCells = sortByOrder(cellsToCopy);
+    const sortedCells = cellsToCopy.sort(sortByOrder);
+    // cell (v3): {
+    //   caption: ""
+    //   imageUrl: "iSe-T7oDa.png"
+    //   order: 2
+    //   previousCellId: null
+    //   schemaVersion: 3
+    //   studioState: {activeEmojiId: 3, backgroundColor: "#19194d", currentEmojiId: 6, showEmojiPicker: false, title: "", …}
+    //   urlId: "4vR8TtVLb"
+    // }
+    console.log('sortedCells', sortedCells)
+
+    function transformStudioStateToV4 (studioStatePreV4) {
+      return {
+        ...studioStatePreV4,
+        caption: studioStatePreV4.title
+      }
+    }
+
+    // create cells
+    for (let cur = 0; cur < sortedCells.length; cur++) {
+      const currentCell = sortedCells[cur];
+      const previousCell = cur > 0
+        ? sortedCells[cur -1]
+        : null;
+      
+      cache.cells[currentCell.urlId] = getInitializedCell({
+        comicUrlId,
+        urlId: currentCell.urlId,
+        studioState: transformStudioStateToV4(currentCell.studioState),
+        previousCellUrlId: previousCell ? previousCell.urlId : undefined,
+        imageUrl: currentCell.imageUrl
+      });
+    }
+
+    const comic = getInitializedComic();
+    comic.urlId = comicUrlId;
+    comic.initialCellUrlId = sortedCells[0].urlId;
+    cache.comics[comicUrlId] = comic;
   }
 
   setCache(cache);

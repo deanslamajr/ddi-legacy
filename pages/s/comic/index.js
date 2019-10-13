@@ -149,6 +149,25 @@ const StudioCell = styled(Cell)`
   width: ${cellWidth};
 `
 
+const PinkLabel = styled.div`
+  z-index: 999;
+  position: absolute;
+  font-size: .9rem;
+  opacity: .35;
+  padding: .1rem .2rem;
+  background-color: ${props => props.theme.colors.pink};
+  color: ${props => props.theme.colors.white};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  cursor: pointer;
+`
+
+const PendingChangesLabel = () => (
+  <PinkLabel>Pending Changes</PinkLabel>
+);
+
 //
 // Comic Studio
 class StudioV2 extends Component {
@@ -422,6 +441,7 @@ class StudioV2 extends Component {
         {/* CELLS */}
         {sortedCells.map((cell) => (
           <div key={cell.imageUrl}>
+            {cell.isDirty && <PendingChangesLabel />}
             <StudioCell
               imageUrl={cell.imageUrl}
               isImageUrlAbsolute={cell.hasNewImage}

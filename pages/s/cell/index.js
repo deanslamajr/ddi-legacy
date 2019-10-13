@@ -124,7 +124,7 @@ class CellStudio extends Component {
   }
 
   // formerly: updateCache
-  saveStudioStateToCache = () => {
+  saveStudioStateToCache = ({setHasNewImage = true} = {}) => {
     const {
       doesCellUrlIdExist,
       setCellStudioState
@@ -134,7 +134,7 @@ class CellStudio extends Component {
       this.createNewComicAndCell(this.state.studioState);
     }
     else {
-      setCellStudioState(this.props.cellUrlId, this.state.studioState);
+      setCellStudioState(this.props.cellUrlId, this.state.studioState, {setHasNewImage});
     }
   }
 
@@ -287,7 +287,7 @@ class CellStudio extends Component {
 
       return {studioState: clonedStudioState};
     }, () => {
-      this.saveStudioStateToCache();
+      this.saveStudioStateToCache(({setHasNewImage: false}));
       this.toggleCaptionModal(false);
     })
   }

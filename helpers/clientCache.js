@@ -95,6 +95,7 @@ const getInitializedCell = ({
   comicUrlId = null,
   hasNewImage = false,
   imageUrl = null,
+  isDirty = false,
   previousCellUrlId,
   studioState = getInitializedStudioState(),
   urlId = null
@@ -103,6 +104,7 @@ const getInitializedCell = ({
     comicUrlId,
     hasNewImage,
     imageUrl,
+    isDirty,
     previousCellUrlId,
     studioState,
     urlId
@@ -239,10 +241,17 @@ export const getComic = (comicUrlId) => {
   return cache.comics[comicUrlId];
 }
 
-export const setCellStudioState = (cellUrlId, newStudioState) => {
+export const setCellStudioState = (cellUrlId, newStudioState, {setHasNewImage = true}) => {
   const cache = getCache();
 
-  cache.cells[cellUrlId].studioState = newStudioState;
+  const cellToUpdate = cache.cells[cellUrlId];
+
+  cellToUpdate.studioState = newStudioState;
+  cellToUpdate.isDirty = true;
+
+  if(setHasNewImage) {
+    cellToUpdate.hasNewImage = true;
+  }
 
   setCache(cache);
 }
@@ -275,6 +284,7 @@ export const createNewCell = (comicUrlId, initialStudioState) => {
   cache.cells[cellUrlId] = getInitializedCell({
     comicUrlId,
     hasNewImage: true,
+    isDirty: true,
     urlId: cellUrlId,
     studioState: initialStudioState,
     previousCellUrlId

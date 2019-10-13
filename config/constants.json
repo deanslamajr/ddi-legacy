@@ -1,6 +1,6 @@
 {
   "APP_TITLE": "ddi",
-  "CAPTCHA_THRESHOLD": 0.75,
+  "CAPTCHA_THRESHOLD": 0.3,
   "CAPTCHA_ACTION_CELL_PUBLISH": "cell_publish",
   "DRAFT_SUFFIX": "---draft",
   "SCHEMA_VERSION": 4,

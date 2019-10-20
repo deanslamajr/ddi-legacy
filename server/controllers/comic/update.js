@@ -4,24 +4,33 @@ const {sequelize} = require('../../adapters/db')
 
 function updateCell ({studioState, caption, previousCellUrlId, urlId}, cells, comicId, transaction) {
   let previousCell;
+  const updatePayload = {};
 
   const cell = cells.find(cell => cell.url_id === urlId);
   if (!cell) {
     throw new Error(`The passed cell.url_id:${urlId} does not exist on comicId:${comicId}`);
   }
   
+  // UPDATES
   if (previousCellUrlId) {
     previousCell = cells.find(({url_id}) => url_id === previousCellUrlId);
     if (!previousCell) {
       throw new Error(`The passed cell.previousCellUrlId:${previousCellUrlId} does not exist on comicId:${comicId}`);
     }
+
+    updatePayload.previous_cell_id = previousCell.id;
+  }
+  if (typeof caption === 'string') {
+    updatePayload.caption = caption;
+  }
+  if (studioState) {
+    updatePayload.studio_state = studioState;
+  }
+  if (hasNewImage) {
+    updatePayload.image_url = cell.draft_image_url;
   }
 
-  return cell.update({
-    caption,
-    previous_cell_id: previousCell && previousCell.id,
-    studio_state: studioState
-  }, {transaction});
+  return cell.update(updatePayload, {transaction});
 }
 
 async function update (req, res) {
@@ -44,6 +53,7 @@ async function update (req, res) {
     const cells = await comic.getCells();
 
     await sequelize.transaction(async transaction => {
+      // has side effect of activating comic
       if (initialCellUrlId) {
         const initialCell = cells.find(({url_id}) => url_id === initialCellUrlId);
     
@@ -51,7 +61,7 @@ async function update (req, res) {
           throw new Error(`The passed initialCellUrlId:${initialCellUrlId} does not exist on comicId:${comic.id}`);
         }
         await comic.update({
-          is_active: true,
+          is_active: true, // activates comic
           initial_cell_id: initialCell.id
         }, {transaction});
       }

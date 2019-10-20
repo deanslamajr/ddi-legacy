@@ -1,4 +1,8 @@
-// oldCell = {
+import axios from 'axios';
+
+import { isDraftId } from '../../../shared/isDraftId';
+
+// cellFromState = {
 //   comicUrlId: "CL1fWeSIe---draft",
 //   hasNewImage: true,
 //   urlId: "Va_uPpdZB---draft",
@@ -13,17 +17,67 @@
 //   urlId: "ffHbrqSDXx",
 //   signData: {}
 // }]
-function transformCell (oldCell, signedCells) {
-  const signedCell = getSignedCell(oldCell.urlId, signedCells);
-  const previousCellUrlId = oldCell.previousCellUrlId
-    && getSignedCell(oldCell.previousCellUrlId, signedCells).urlId;
+function transformCell (cellFromState, signedCells, publishedComic) {
+  const transformedCell = {};
 
-  return {
-    caption: oldCell.studioState.caption,
-    urlId: signedCell.urlId,
-    previousCellUrlId,
-    studioState: oldCell.studioState
+  const caption = getCaption(cellFromState);
+  if (typeof caption === 'string') {
+    transformedCell.caption = caption;
   }
+
+  const urlId = getUrlId(cellFromState, signedCells);
+  if (urlId) {
+    transformedCell.urlId = urlId;
+  }
+
+  const previousCellUrlId = getPreviousCellUrlId(cellFromState, signedCells, publishedComic);
+  if (previousCellUrlId === null || previousCellUrlId) {
+    transformedCell.previousCellUrlId = previousCellUrlId;
+  }
+
+  const studioState = getStudioState(cellFromState);
+  if (studioState) {
+    transformedCell.studioState = studioState;
+  }
+
+  return transformedCell
+}
+
+function getStudioState (cellFromState) {
+  return cellFromState.studioState;
+}
+
+function getPreviousCellUrlId (cellFromState, signedCells, publishedComic) {
+  if (!cellFromState.previousCellUrlId) {
+    return null;
+  }
+
+  let previousCellUrlId;
+
+  if (isDraftId(cellFromState.previousCellUrlId)) {
+    previousCellUrlId = getSignedCell(cellFromState.previousCellUrlId, signedCells).urlId;
+  } else {
+    previousCellUrlId = getPublishedCell(cellFromState.previousCellUrlId, publishedComic.cells).urlId;
+  }
+
+  return previousCellUrlId;
+}
+
+function getCaption (cellFromState, publishedComic) {
+  return cellFromState.studioState.caption;
+}
+
+function getUrlId (cellFromState, signedCells) {
+  const signedCell = getSignedCell(cellFromState.urlId, signedCells);
+  return signedCell.urlId;
+}
+
+function getPublishedCell (cellUrlId, publishedCells) {
+  const publishedCell = publishedCells.find(({urlId}) => cellUrlId === urlId);
+  if (!publishedCell) {
+    throw new Error(`Published cell does not exist for cellUrlId ${cellUrlId}`);
+  }
+  return publishedCell;
 }
 
 function getSignedCell (cellUrlId, signedCells) {
@@ -34,13 +88,13 @@ function getSignedCell (cellUrlId, signedCells) {
   return signedCell;
 }
 
-export function createUpdatePayload({comic, publishedComic, signedCells}) {
+export async function createUpdatePayload({comic, comicUrlIdToUpdate, isPublishedComic, signedCells}) {
   const updatePayload = {
     cells: [],
     initialCellUrlId: null
   };
 
-  if (!publishedComic) {
+  if (!isPublishedComic) {
     const initialCell = getSignedCell(comic.initialCellUrlId, signedCells);
     updatePayload.initialCellUrlId = initialCell.urlId;
 
@@ -50,7 +104,16 @@ export function createUpdatePayload({comic, publishedComic, signedCells}) {
 
     updatePayload.cells = transformedCells;
   } else {
-    //TODO compare published comic to comic
+    // @todo fetch published comic to compare against local state and only publish changes
+    const {data: publishedComic} = await axios.get(`/api/comic/${comicUrlIdToUpdate}`);
+
+    const transformedCells = Object.values(comic.cells)
+      .filter(({isDirty}) => isDirty)
+      .map(cell => (
+        transformCell(cell, signedCells, publishedComic)
+      ));
+
+    updatePayload.cells = transformedCells;
   }
 
   return updatePayload;

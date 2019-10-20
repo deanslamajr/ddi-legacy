@@ -24,9 +24,17 @@ function verifyCaptchaToken (token, isV2) {
 }
 
 async function createCell(draftUrlId, comicId, userId, transaction) {
-  const {
-    filename, urlId
-  } = await Cells.createNewCell({comicId, transaction, userId});
+  let filename;
+  let urlId;
+
+  if (isDraftId(draftUrlId)) {
+    const response = await Cells.createNewCell({comicId, transaction, userId});
+    filename = response.filename;
+    urlId = response.urlId;
+  } else {
+    filename = await Cells.createNewDraftFilename({cellUrlId: draftUrlId, transaction});
+    urlId = draftUrlId;
+  }
 
   return {
     draftUrlId,

@@ -1,53 +1,58 @@
+const axios = require('axios');
+
 const {createUpdatePayload} = require('./createUpdatePayload');
 
 const {isDraftId} = require('../../../shared/isDraftId');
 
+jest.mock('axios');
+
 describe('createUpdatePayload', () => {
+  axios.get = jest.fn(() => Promise.resolve({data: {}}));
+
   const draftUrlId = 'Va_uPpdZB---draft';
   const anotherDraftUrlId = 'ldxd0itn8---draft';
-  const comic = {
-    initialCellUrlId: draftUrlId,
-    cells: {
-      [draftUrlId]: {
-        comicUrlId: "CL1fWeSIe---draft",
-        hasNewImage: true,
-        urlId: draftUrlId,
-        imageUrl: "blob:http://localhost:3000/f0065615-a3e5-4816-acb1-b85226f2ee7c",
-        previousCellUrlId: null,
-        studioState: {
-          caption: 'some caption!!!'
-        }
-      },
-      [anotherDraftUrlId]: {
-        comicUrlId: "CL1fWeSIe---draft",
-        hasNewImage: true,
-        urlId: anotherDraftUrlId,
-        imageUrl: "blob:http://localhost:3000/f0065615-a3e5-4816-acb1-b85226f2ee7c",
-        previousCellUrlId: draftUrlId,
-        studioState: {
-          caption: 'some caption!!!'
+
+  describe('unpublished comic', () => {
+    const comic = {
+      initialCellUrlId: draftUrlId,
+      cells: {
+        [draftUrlId]: {
+          comicUrlId: "CL1fWeSIe---draft",
+          hasNewImage: true,
+          urlId: draftUrlId,
+          imageUrl: "blob:http://localhost:3000/f0065615-a3e5-4816-acb1-b85226f2ee7c",
+          previousCellUrlId: null,
+          studioState: {
+            caption: 'some caption!!!'
+          }
+        },
+        [anotherDraftUrlId]: {
+          comicUrlId: "CL1fWeSIe---draft",
+          hasNewImage: true,
+          urlId: anotherDraftUrlId,
+          imageUrl: "blob:http://localhost:3000/f0065615-a3e5-4816-acb1-b85226f2ee7c",
+          previousCellUrlId: draftUrlId,
+          studioState: {
+            caption: 'some caption!!!'
+          }
         }
       }
-    }
-  }
-
-  const signedCells = [
-    {
-      draftUrlId,
-      filename: "k_A5aAD8qK.png",
-      urlId: "ffHbrqSDXx",
-      signData: {}
-    },
-    {
-      draftUrlId: anotherDraftUrlId,
-      filename: "AD8qKk_A5a.png",
-      urlId: "abCDefGHi",
-      signData: {}
-    }
-  ];
-
-  describe('if publishedComic does not exist i.e. initial publish of this comic', () => {
-    const publishedComic = undefined;
+    };
+  
+    const signedCells = [
+      {
+        draftUrlId,
+        filename: "k_A5aAD8qK.png",
+        urlId: "ffHbrqSDXx",
+        signData: {}
+      },
+      {
+        draftUrlId: anotherDraftUrlId,
+        filename: "AD8qKk_A5a.png",
+        urlId: "abCDefGHi",
+        signData: {}
+      }
+    ];
 
     describe('if a signed cell does not exist for a given cell', () => {
       const incompleteSignedCells = [
@@ -59,27 +64,125 @@ describe('createUpdatePayload', () => {
         }
       ];
 
-      it('should throw', () => {
-        expect(() => {
-          createUpdatePayload({comic, publishedComic, signedCells: incompleteSignedCells});
-        }).toThrow();
+      it('should throw', async () => {
+        await expect(createUpdatePayload({comic, signedCells: incompleteSignedCells})).rejects.toThrow()
       });
     });
 
-    it('should add all cells from the passed comic to the payload', () => {
-      const actual = createUpdatePayload({comic, publishedComic, signedCells});
+    it('should add all cells from the passed comic to the payload', async () => {
+      const actual = await createUpdatePayload({comic, signedCells});
       expect(actual.cells).toMatchSnapshot();
     });
 
-    it('should set `initialCellId` to the first cell in the passed comic', () => {
-      const actual = createUpdatePayload({comic, publishedComic, signedCells});
+    it('should set `initialCellId` to the first cell in the passed comic', async () => {
+      const actual = await createUpdatePayload({comic, signedCells});
       expect(actual.initialCellUrlId).toMatchSnapshot();
     });
 
-    it('should replace all cell draft ids with the associated is from the passed signedCells', () => {
-      const actual = createUpdatePayload({comic, publishedComic, signedCells});
+    it('should replace all cell draft ids with the associated is from the passed signedCells', async () => {
+      const actual = await createUpdatePayload({comic, signedCells});
 
       actual.cells.forEach(({id}) => expect(isDraftId(id)).toBe(false));
+    });
+  });
+
+  describe('published comic', () => {
+    const publishedComicUrlId = 'publishedComicUrlId';
+    const publishedCellUrlId = 'publishedCellUrlId';
+
+    const publishedCell = {
+      urlId: publishedCellUrlId,
+      imageUrl: 'someImageUrl.png',
+      order: undefined,
+      previousCellId: undefined,
+      schemaVersion: 4,
+      studioState: {
+        caption: 'some caption!!!'
+      },
+      caption: 'some caption!!!'
+    };
+
+    const publishedComicGetResponse = {
+      cells: [publishedCell],
+      isActive: true,
+      initialCellUrlId: draftUrlId,
+      title: '',
+      urlId: publishedComicUrlId,
+      userCanEdit: true
+    };
+
+    const localComicState = {
+      initialCellUrlId: publishedCellUrlId,
+      cells: {
+        [publishedCellUrlId]: {
+          comicUrlId: publishedComicUrlId,
+          hasNewImage: false,
+          isDirty: false,
+          urlId: publishedCellUrlId,
+          imageUrl: 'someImageUrl.png',
+          previousCellUrlId: null,
+          studioState: {
+            caption: 'some caption!!!'
+          }
+        },
+        [anotherDraftUrlId]: {
+          comicUrlId: publishedComicUrlId,
+          hasNewImage: true,
+          isDirty: true,
+          urlId: anotherDraftUrlId,
+          imageUrl: "blob:http://localhost:3000/f0065615-a3e5-4816-acb1-b85226f2ee7c",
+          previousCellUrlId: publishedCellUrlId,
+          studioState: {
+            caption: 'another caption!!!'
+          }
+        }
+      }
+    };
+
+    const signedCells = [
+      {
+        draftUrlId: anotherDraftUrlId,
+        filename: "AD8qKk_A5a.png",
+        urlId: "abCDefGHi",
+        signData: {}
+      }
+    ];
+
+    beforeEach(() => {
+      axios.get.mockImplementationOnce(() => Promise.resolve({data: publishedComicGetResponse}));
+    });
+
+    describe('adding new cells', () => {
+      it('should include an item in payload.cells that represents the new cell', async () => {
+        const actual = await createUpdatePayload({isPublishedComic: true, comic: localComicState, signedCells});
+        expect(actual.cells).toMatchSnapshot();
+      });
+    });
+
+    describe('update existing cell with new image', () => {
+      it('should include an item in payload.cells that represents the new cell that includes a `hasNewImage=true`', async () => {
+        throw new Error('implement test')
+      });
+    });
+
+    describe('update existing cell without new image', () => {
+      it('should include an item in payload.cells that represents the new cell', async () => {
+        throw new Error('implement test')
+      });
+    });
+
+    describe('if published comic`s cells are all from schemaVersion <4', () => {
+      it('should convert all cells to the latest schemaVersion', () => {
+        throw new Error('implement test!')
+      });
+    });
+
+    it('should only include `initialCellUrlId` if it has changed', () => {
+      throw new Error('implement test')
+    });
+
+    it('should only include changes in the payload', () => {
+      throw new Error('implement test')
     });
   });
 });

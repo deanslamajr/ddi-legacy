@@ -20,6 +20,9 @@ const Cells = sequelize.define('cells',
       type: Sequelize.STRING,
       allowNull: false
     },
+    draft_image_url: {
+      type: Sequelize.STRING
+    },
     studio_state: {
       type: Sequelize.JSON
     },
@@ -59,7 +62,15 @@ const Cells = sequelize.define('cells',
 );
 
 async function doesCellFilenameExist(filename) {
-  const cell = await Cells.findOne({ where: { image_url: filename }});
+  const cell = await Cells.findOne({
+    where: {
+      // find cells that have this filename as either image_url OR draft_image_url
+      [Sequelize.Op.or]: [
+        {image_url: filename},
+        {draft_image_url: filename}
+      ]
+    }
+  });
   return !!cell;
 }
 
@@ -111,7 +122,21 @@ async function createNewCell ({comicId, userId, transaction}) {
   }
 }
 
+async function createNewDraftFilename ({cellUrlId, transaction}) {
+  const filename = await generateUniqueFilename();
+
+  const config = transaction
+    ? {transaction}
+    : {};
+
+    const cell = await Cells.findOne({ where: { url_id: cellUrlId }});
+    await cell.update({draft_image_url: filename}, config)
+  
+    return filename
+}
+
 Cells.createNewCell = createNewCell;
+Cells.createNewDraftFilename = createNewDraftFilename;
 
 module.exports = {
   Cells,

@@ -9,7 +9,7 @@ import CellActionsModal from './CellActionsModal'
 import AddCellModal from './AddCellModal'
 import PublishPreviewModal from './PublishPreviewModal'
 
-import {createUpdatePayload} from './createUpdatePayload';
+import { createUpdatePayload } from './createUpdatePayload';
 
 import Cell from '../../../components/Cell'
 import {
@@ -20,9 +20,10 @@ import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../../components/naviga
 import { Router } from '../../../routes'
 
 import { forwardCookies, getApi, redirect } from '../../../helpers'
-import {sortByOrder, sortCellsV4} from '../../../helpers/sorts'
+import { sortByOrder, sortCellsV4 } from '../../../helpers/sorts'
 import theme from '../../../helpers/theme'
-import {generateCellImageFromEmojis} from '../../../helpers/generateCellImageFromEmojis'
+import { generateCellImageFromEmojis } from '../../../helpers/generateCellImageFromEmojis'
+import { isDraftId } from '../../../shared/isDraftId';
 
 import {
   CAPTCHA_ACTION_CELL_PUBLISH, DRAFT_SUFFIX, SCHEMA_VERSION
@@ -40,7 +41,7 @@ async function generateCellImage(cell, filename) {
   const cellImageElementId = `${CELL_IMAGE_ID}-${cell.id}`;
   cellImageElement.id = cellImageElementId;
   document.body.appendChild(cellImageElement);
-  
+
   const { file, url } = await generateCellImageFromEmojis({
     emojis: cell.studioState.emojis,
     backgroundColor: cell.studioState.backgroundColor,
@@ -53,13 +54,13 @@ async function generateCellImage(cell, filename) {
   return file
 }
 
-async function hydrateComicFromApi (comicUrlId) {
+async function hydrateComicFromApi(comicUrlId) {
   let comicFromApi;
 
   // try to fetch from api
   try {
     const response = await axios.get(`/api/comic/${comicUrlId}`);
-  
+
     comicFromApi = response.data;
 
     if (!comicFromApi.userCanEdit) {
@@ -75,10 +76,8 @@ async function hydrateComicFromApi (comicUrlId) {
     return null
   }
 
-  const {createComicFromPublishedComic} = require('../../../helpers/clientCache');
+  const { createComicFromPublishedComic } = require('../../../helpers/clientCache');
 
-  console.log('comicFromApi', comicFromApi)
-  
   return createComicFromPublishedComic(comicFromApi);
 }
 
@@ -96,7 +95,7 @@ function hydrateComicFromClientCache(comicUrlId) {
   };
 }
 
-async function hydrateComic (comicUrlId) {
+async function hydrateComic(comicUrlId) {
   // try to fetch from client cache
   const {
     doesComicUrlIdExist
@@ -116,11 +115,11 @@ function uploadImage(imageFile, signedRequest) {
     const xhr = new XMLHttpRequest()
     xhr.open('PUT', signedRequest)
     xhr.onreadystatechange = async () => {
-      if(xhr.readyState === 4){
-        if(xhr.status === 200){
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
           resolve();
         }
-        else{
+        else {
           // @todo better UX
           console.error('could not upload file!')
           reject();
@@ -171,9 +170,11 @@ const PendingChangesLabel = () => (
 //
 // Comic Studio
 class StudioV2 extends Component {
-  static async getInitialProps ({ query, req, res }) {
+  static async getInitialProps({ query, req, res }) {
+    const comicUrlId = query.comicUrlId;
+
     return {
-      comicUrlId: query.comicUrlId
+      comicUrlId
     }
   }
 
@@ -189,17 +190,15 @@ class StudioV2 extends Component {
   async componentDidMount() {
     const hydratedComic = await hydrateComic(this.props.comicUrlId);
 
-    console.log('hydratedComic', hydratedComic)
-
     if (!hydratedComic) {
       return this.navigateToNewComic();
     } else {
       // generate images for any unpublished cell
       const cells = Object.values(hydratedComic.cells || {});
       const cellsWithUnpublishedImages = cells.filter(cell => cell.hasNewImage);
-      await Promise.all(cellsWithUnpublishedImages.map(generateCellImage));      
+      await Promise.all(cellsWithUnpublishedImages.map(generateCellImage));
 
-      this.setState({comic: hydratedComic}, () => {
+      this.setState({ comic: hydratedComic }, () => {
         // hide spinner and scroll to bottom of comic
         this.props.hideSpinner(() => window.scrollTo(0, document.body.scrollHeight));
       });
@@ -220,9 +219,9 @@ class StudioV2 extends Component {
   }
 
   navigateToAddCellFromNew = () => {
-    const {comicUrlId} = this.props
+    const { comicUrlId } = this.props
 
-    const {createNewCell} = require('../../../helpers/clientCache');
+    const { createNewCell } = require('../../../helpers/clientCache');
     const cellId = createNewCell(comicUrlId);
 
     this.props.showSpinner()
@@ -231,9 +230,9 @@ class StudioV2 extends Component {
   }
 
   navigateToAddCell = (studioState) => {
-    const {comicUrlId} = this.props
+    const { comicUrlId } = this.props
 
-    const {createNewCell} = require('../../../helpers/clientCache');
+    const { createNewCell } = require('../../../helpers/clientCache');
 
     const cellUrlId = createNewCell(comicUrlId, studioState);
 
@@ -269,7 +268,7 @@ class StudioV2 extends Component {
       // remove this comic from the gallery cache
       this.props.deleteComicFromCache(this.props.comicUrlId, () => Router.pushRoute('/gallery'));
     }
-    catch(error) {
+    catch (error) {
       this.props.hideSpinner();
       // @todo log error
       console.error(error);
@@ -292,12 +291,12 @@ class StudioV2 extends Component {
   }
 
   togglePreviewModal = (shouldShow) => {
-    this.setState({showPreviewModal: shouldShow});
+    this.setState({ showPreviewModal: shouldShow });
   }
 
   getCellsWithNewImage = () => {
     const cells = Object.values(this.state.comic.cells);
-    return cells.filter(({hasNewImage}) => hasNewImage);
+    return cells.filter(({ hasNewImage }) => hasNewImage);
   }
 
   publish = async () => {
@@ -306,7 +305,7 @@ class StudioV2 extends Component {
     // @todo update this with the amount of jobs involved for `finishPublish`
     let totalJobsCount = 1;
     let signedCells;
-    let newComicUrlId;
+    let comicUrlId;
 
     const cellsThatRequireUploads = this.getCellsWithNewImage();
 
@@ -320,48 +319,46 @@ class StudioV2 extends Component {
       const uploadResponse = await this.upload();
 
       signedCells = uploadResponse.signedCells;
-      newComicUrlId = uploadResponse.comicUrlId;
+      comicUrlId = uploadResponse.comicUrlId;
     } else {
       this.props.showSpinner(totalJobsCount);
+      comicUrlId = this.props.comicUrlId;
     }
 
-    await this.publishComicUpdate({signedCells, comicUrlId: newComicUrlId});
+    await this.publishComicUpdate({
+      comicUrlIdToUpdate: comicUrlId,
+      signedCells
+    });
 
-    this.props.markJobAsFinished();
+    // this.props.markJobAsFinished();
 
-    //delete comic from client cache
-    const {deleteComic} = require('../../../helpers/clientCache');
-    deleteComic(this.props.comicUrlId);
+    // //delete comic from client cache
+    // const {deleteComic} = require('../../../helpers/clientCache');
+    // deleteComic(this.props.comicUrlId);
 
-    Router.pushRoute(`/comic/${newComicUrlId}`)
+    // Router.pushRoute(`/comic/${comicUrl}`)
   }
 
   upload = async (v2CaptchaToken) => {
     let token
-    
+
     try {
       if (!v2CaptchaToken && publicRuntimeConfig.CAPTCHA_V3_SITE_KEY) {
         token = await this.props.recaptcha.execute(CAPTCHA_ACTION_CELL_PUBLISH);
       }
-        
+
       const {
         signedCells, comicUrlId
       } = await this.getSignedRequest({
         v2: v2CaptchaToken,
         v3: token
       });
-      // cells: {
-      //   draftId: "sIYUqmZHlN---draft"
-      //   filename: "DW8LWLzuDn.png"
-      //   id: "83OCqNixmT"
-      //   signData: {}
-      // }
 
       this.props.markJobAsFinished();
 
       await Promise.all(signedCells.map(this.uploadImage));
 
-      return {comicUrlId, signedCells};
+      return { comicUrlId, signedCells };
     }
     catch (e) {
       console.error(e);
@@ -371,14 +368,14 @@ class StudioV2 extends Component {
     }
   }
 
-  uploadImage = async ({draftUrlId, filename, signData}) => {
+  uploadImage = async ({ draftUrlId, filename, signData }) => {
     const cell = this.state.comic.cells[draftUrlId];
 
-    if(!cell) {
+    if (!cell) {
       throw new Error(`signed cell ${draftUrlId} not found in state!`)
     }
 
-    const file = await generateCellImage(cell, filename);  
+    const file = await generateCellImage(cell, filename);
 
     await uploadImage(file, signData.signedRequest);
 
@@ -395,21 +392,21 @@ class StudioV2 extends Component {
     //   "v2Token": "someString" || undefined,
     //   "v3Token": "someOtherString" || undefined
     // }
-  
+
     const signData = {};
-  
+
     if (captchaTokens.v2) {
       signData.v2Token = captchaTokens.v2;
     }
     else if (captchaTokens.v3) {
       signData.v3Token = captchaTokens.v3;
     }
-  
+
     const cellIdsToSign = this.getCellsWithNewImage()
-      .map(({urlId}) => urlId);
+      .map(({ urlId }) => urlId);
 
     signData.newCells = cellIdsToSign;
-  
+
     const { data } = await axios.post(`/api/comic/${this.props.comicUrlId}/sign`, signData);
 
     return {
@@ -418,34 +415,33 @@ class StudioV2 extends Component {
     }
   }
 
-  publishComicUpdate = async ({comicUrlId, signedCells}) => {
-    // if comicUrlId exists, this is a new cell
-    const comicUrlIdToUpdate = comicUrlId || this.props.comicUrlId;
-
-    const updatePayload = createUpdatePayload({
+  publishComicUpdate = async ({
+    comicUrlIdToUpdate, signedCells
+  }) => {
+    console.log('this.state.comic', this.state.comic)
+    const updatePayload = await createUpdatePayload({
       comic: this.state.comic,
-      publishedComic: this.props.publishedComic,
+      comicUrlIdToUpdate,
+      isPublishedComic: !isDraftId(this.props.comicUrlId),
       signedCells
     });
-    
-    await axios.patch(`/api/comic/${comicUrlIdToUpdate}`, updatePayload);
+
+    //await axios.patch(`/api/comic/${comicUrlIdToUpdate}`, updatePayload);
   }
 
-  render () {
+  render() {
     const sortedCells = this.getCellsFromState();
-
-    console.log('sortedCells', sortedCells)
 
     return !this.props.isShowingSpinner && <React.Fragment>
       <OuterContainer>
         {/* CELLS */}
         {sortedCells.map((cell) => (
-          <div key={cell.imageUrl}>
+          <div key={cell.imageUrl} onClick={() => this.setState({ activeCell: cell })}>
             {cell.isDirty && <PendingChangesLabel />}
             <StudioCell
+              clickable
               imageUrl={cell.imageUrl}
               isImageUrlAbsolute={cell.hasNewImage}
-              onClick={() => this.setState({activeCell: cell})}
               schemaVersion={cell.schemaVersion || SCHEMA_VERSION}
               caption={cell.studioState.caption}
               width={cellWidth}
@@ -470,7 +466,7 @@ class StudioV2 extends Component {
 
       {this.state.activeCell && <CellActionsModal
         cell={this.state.activeCell}
-        onCancelClick={() => this.setState({activeCell: null})}
+        onCancelClick={() => this.setState({ activeCell: null })}
       />}
 
       {this.state.showPreviewModal && <PublishPreviewModal

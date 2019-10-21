@@ -426,6 +426,8 @@ class StudioV2 extends Component {
       signedCells
     });
 
+    console.log('updatePayload', updatePayload);
+
     //await axios.patch(`/api/comic/${comicUrlIdToUpdate}`, updatePayload);
   }
 

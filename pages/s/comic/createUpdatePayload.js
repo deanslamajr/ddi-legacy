@@ -40,6 +40,11 @@ function transformCell (cellFromState, signedCells, publishedComic) {
     transformedCell.studioState = studioState;
   }
 
+  // update the image of a published cell
+  if (cellFromState.hasNewImage && !isDraftId(cellFromState.urlId)) {
+    transformedCell.updateImageUrl = true;
+  }
+
   return transformedCell
 }
 

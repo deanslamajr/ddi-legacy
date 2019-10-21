@@ -148,20 +148,94 @@ describe('createUpdatePayload', () => {
       }
     ];
 
-    beforeEach(() => {
-      axios.get.mockImplementationOnce(() => Promise.resolve({data: publishedComicGetResponse}));
-    });
-
     describe('adding new cells', () => {
       it('should include an item in payload.cells that represents the new cell', async () => {
+        axios.get.mockImplementationOnce(() => Promise.resolve({data: publishedComicGetResponse}));
+
         const actual = await createUpdatePayload({isPublishedComic: true, comic: localComicState, signedCells});
         expect(actual.cells).toMatchSnapshot();
       });
     });
 
     describe('update existing cell with new image', () => {
-      it('should include an item in payload.cells that represents the new cell that includes a `hasNewImage=true`', async () => {
-        throw new Error('implement test')
+      it('should include an item in payload.cells that represents the new cell that includes a `updateImageUrl=true`', async () => {
+        const somePublishedCellUrlId = 'somePublishedCellUrlId';
+        const anotherPublishedCellUrlId = 'anotherPublishedCellUrlId';
+
+        const comicStateWithUpdateToPublishedCell = {
+          initialCellUrlId: publishedCellUrlId,
+          cells: {
+            [publishedCellUrlId]: {
+              comicUrlId: publishedComicUrlId,
+              hasNewImage: false,
+              isDirty: false,
+              urlId: publishedCellUrlId,
+              imageUrl: 'someImageUrl.png',
+              previousCellUrlId: null,
+              studioState: {
+                caption: 'some caption!!!'
+              }
+            },
+            [anotherPublishedCellUrlId]: {
+              comicUrlId: publishedComicUrlId,
+              hasNewImage: false,
+              isDirty: false,
+              urlId: anotherPublishedCellUrlId,
+              imageUrl: "anotherImageUrl.png",
+              previousCellUrlId: publishedCellUrlId,
+              studioState: {
+                caption: 'another caption!!!'
+              }
+            },
+            [somePublishedCellUrlId]: {
+              comicUrlId: publishedComicUrlId,
+              hasNewImage: true,
+              isDirty: true,
+              urlId: somePublishedCellUrlId,
+              imageUrl: 'somePublishedImageUrl.png',
+              previousCellUrlId: anotherPublishedCellUrlId,
+              studioState: {
+                caption: 'blah blah blah'
+              }
+            }
+          }
+        }
+
+        const signedCells = [
+          {
+            draftUrlId: somePublishedCellUrlId,
+            filename: "AD8qKk_A5a.png",
+            urlId: somePublishedCellUrlId,
+            signData: {}
+          }
+        ];
+
+        const publishedCells = [{
+          urlId: anotherPublishedCellUrlId,
+          imageUrl: 'someImageUrl.png',
+          order: undefined,
+          previousCellId: undefined,
+          schemaVersion: 4,
+          studioState: {
+            caption: 'some caption!!!'
+          },
+          caption: 'some caption!!!'
+        }];
+    
+        const publishedComicGetResponse = {
+          cells: publishedCells,
+          isActive: true,
+          initialCellUrlId: publishedCellUrlId,
+          title: '',
+          urlId: publishedComicUrlId,
+          userCanEdit: true
+        };
+
+        axios.get.mockImplementationOnce(() => Promise.resolve({data: publishedComicGetResponse}));
+        
+        const actual = await createUpdatePayload({isPublishedComic: true, comic: comicStateWithUpdateToPublishedCell, signedCells});
+        const publishedCellToUpdate = actual.cells.find(({urlId}) => urlId === somePublishedCellUrlId);
+        expect(publishedCellToUpdate).toHaveProperty('updateImageUrl', true);
       });
     });
 

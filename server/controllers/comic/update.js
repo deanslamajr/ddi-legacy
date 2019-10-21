@@ -26,7 +26,7 @@ function updateCell ({studioState, caption, previousCellUrlId, urlId}, cells, co
   if (studioState) {
     updatePayload.studio_state = studioState;
   }
-  if (hasNewImage) {
+  if (updateImageUrl) {
     updatePayload.image_url = cell.draft_image_url;
   }
 

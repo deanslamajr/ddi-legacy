@@ -13,19 +13,6 @@ Array [
 ]
 `;
 
-exports[`createUpdatePayload published comic update existing cell with new image should include an item in payload.cells that represents the new cell that includes a \`hasNewImage=true\` 1`] = `
-Array [
-  Object {
-    "caption": "another caption!!!",
-    "previousCellUrlId": "publishedCellUrlId",
-    "studioState": Object {
-      "caption": "another caption!!!",
-    },
-    "urlId": "abCDefGHi",
-  },
-]
-`;
-
 exports[`createUpdatePayload published comic update existing cell without new image should include an item in payload.cells that represents the new cell 1`] = `Array []`;
 
 exports[`createUpdatePayload unpublished comic should add all cells from the passed comic to the payload 1`] = `

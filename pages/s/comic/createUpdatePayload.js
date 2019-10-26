@@ -102,8 +102,7 @@ function getSignedCell (cellUrlId, signedCells) {
 
 export async function createUpdatePayload({comic, comicUrlIdToUpdate, isPublishedComic, signedCells}) {
   const updatePayload = {
-    cells: [],
-    initialCellUrlId: null
+    cells: []
   };
 
   if (!isPublishedComic) {
@@ -126,6 +125,10 @@ export async function createUpdatePayload({comic, comicUrlIdToUpdate, isPublishe
       ));
 
     updatePayload.cells = transformedCells;
+
+    if (comic.initialCellUrlId !== publishedComic.initialCellUrlId) {
+      updatePayload.initialCellUrlId = comic.initialCellUrlId;
+    }
   }
 
   return updatePayload;

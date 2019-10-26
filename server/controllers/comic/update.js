@@ -58,6 +58,7 @@ async function update (req, res) {
         const initialCell = cells.find(({url_id}) => url_id === initialCellUrlId);
     
         if (!initialCell) {
+          // @todo this should probably respond with a 4xx status code that represents bad payload
           throw new Error(`The passed initialCellUrlId:${initialCellUrlId} does not exist on comicId:${comic.id}`);
         }
         await comic.update({

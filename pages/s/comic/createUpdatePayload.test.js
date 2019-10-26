@@ -123,7 +123,7 @@ describe('createUpdatePayload', () => {
     const publishedComicGetResponse = {
       cells: [publishedCell],
       isActive: true,
-      initialCellUrlId: draftUrlId,
+      initialCellUrlId: publishedCellUrlId,
       title: '',
       urlId: publishedComicUrlId,
       userCanEdit: true
@@ -203,16 +203,93 @@ describe('createUpdatePayload', () => {
 
     describe('if published comic`s cells are all from schemaVersion <4', () => {
       it('should convert all cells to the latest schemaVersion', () => {
+        // schemaVersion and order need to be updated
         throw new Error('implement test!')
       });
     });
 
-    it('should only include `initialCellUrlId` if it has changed', () => {
-      throw new Error('implement test')
+    describe('if `initialCellUrlId` has not changed', () => {
+      it('payload should not include `initialCellUrlId`', async () => {
+        axios.get.mockImplementationOnce(() => Promise.resolve({data: publishedComicGetResponse}));
+  
+        const comicFromComponentState = cloneDeep(localComicState);
+        comicFromComponentState.cells[publishedCellUrlId].isDirty = true;
+  
+        const signedCells = [];
+        
+        const actual = await createUpdatePayload({isPublishedComic: true, comic: comicFromComponentState, signedCells});
+        
+        expect(actual).not.toHaveProperty('initialCellUrlId');
+      });
     });
 
-    it('should only include changes in the payload', () => {
-      throw new Error('implement test')
+    describe('if `initialCellUrlId` has changed', () => {
+      it('payload should include `initialCellUrlId`', async () => {
+        const publishedCellThatIsNowInitialCellUrlId = 'publishedCellThatIsNowInitialCellUrlId';
+        const publishedCellThatIsNowInitialCellImageUrl = 'publishedCellThatIsNowInitialCellUrlId.png';
+        const caption = 'hahah caption.';
+
+        const publishedComics = cloneDeep(publishedComicGetResponse);
+        publishedComics.cells.push(
+          {
+            urlId: publishedCellThatIsNowInitialCellUrlId,
+            imageUrl: publishedCellThatIsNowInitialCellImageUrl,
+            previousCellId: publishedCellUrlId,
+            schemaVersion: 4,
+            studioState: {
+              caption
+            },
+            caption
+          }
+        )
+        axios.get.mockImplementationOnce(() => Promise.resolve({data: publishedComics}));
+
+        const publishedCellThatIsNowInitialCell = {
+          comicUrlId: publishedComicUrlId,
+          hasNewImage: false,
+          isDirty: false,
+          urlId: publishedCellThatIsNowInitialCellUrlId,
+          imageUrl: publishedCellThatIsNowInitialCellImageUrl,
+          previousCellUrlId: null,
+          studioState: {
+            caption
+          }
+        }
+  
+        const comicFromComponentState = cloneDeep(localComicState);
+        comicFromComponentState.cells[publishedCellUrlId].isDirty = true;
+        comicFromComponentState.cells[publishedCellUrlId].previousCellUrlId = publishedCellThatIsNowInitialCellUrlId;
+
+        comicFromComponentState.cells[publishedCellThatIsNowInitialCellUrlId] = publishedCellThatIsNowInitialCell;
+
+        comicFromComponentState.initialCellUrlId = publishedCellThatIsNowInitialCellUrlId;
+  
+        const signedCells = [];
+        
+        const actual = await createUpdatePayload({isPublishedComic: true, comic: comicFromComponentState, signedCells});
+        
+        expect(actual).toHaveProperty('initialCellUrlId', publishedCellThatIsNowInitialCellUrlId);
+      });
+    });
+
+    describe('should only include changes to a cell in the payload', () => {
+      describe('if `previousCellUrlId` hasnt changed', () => {
+        it('shouldnt include `previousCellUrlId` in the payload', () => {
+          throw new Error('implement test!');
+        });
+      });
+
+      describe('if `caption` hasnt changed', () => {
+        it('shouldnt include `caption` in the payload', () => {
+          throw new Error('implement test!');
+        });
+      });
+
+      describe('if `studioState` hasnt changed', () => {
+        it('shouldnt include `studioState` in the payload', () => {
+          throw new Error('implement test!');
+        });
+      });
     });
   });
 });

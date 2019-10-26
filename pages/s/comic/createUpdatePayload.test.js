@@ -1,4 +1,5 @@
 const axios = require('axios');
+const cloneDeep = require('lodash/cloneDeep');
 
 const {createUpdatePayload} = require('./createUpdatePayload');
 
@@ -90,6 +91,23 @@ describe('createUpdatePayload', () => {
     const publishedComicUrlId = 'publishedComicUrlId';
     const publishedCellUrlId = 'publishedCellUrlId';
 
+    const localComicState = {
+      initialCellUrlId: publishedCellUrlId,
+      cells: {
+        [publishedCellUrlId]: {
+          comicUrlId: publishedComicUrlId,
+          hasNewImage: false,
+          isDirty: false,
+          urlId: publishedCellUrlId,
+          imageUrl: 'someImageUrl.png',
+          previousCellUrlId: null,
+          studioState: {
+            caption: 'some caption!!!'
+          }
+        }
+      }
+    };
+
     const publishedCell = {
       urlId: publishedCellUrlId,
       imageUrl: 'someImageUrl.png',
@@ -111,21 +129,12 @@ describe('createUpdatePayload', () => {
       userCanEdit: true
     };
 
-    const localComicState = {
-      initialCellUrlId: publishedCellUrlId,
-      cells: {
-        [publishedCellUrlId]: {
-          comicUrlId: publishedComicUrlId,
-          hasNewImage: false,
-          isDirty: false,
-          urlId: publishedCellUrlId,
-          imageUrl: 'someImageUrl.png',
-          previousCellUrlId: null,
-          studioState: {
-            caption: 'some caption!!!'
-          }
-        },
-        [anotherDraftUrlId]: {
+    describe('adding new cells', () => {
+      it('should include an item in payload.cells that represents the new cell', async () => {
+        axios.get.mockImplementationOnce(() => Promise.resolve({data: publishedComicGetResponse}));
+
+        const comicFromComponentState = cloneDeep(localComicState);
+        comicFromComponentState.cells[anotherDraftUrlId] = {
           comicUrlId: publishedComicUrlId,
           hasNewImage: true,
           isDirty: true,
@@ -135,136 +144,58 @@ describe('createUpdatePayload', () => {
           studioState: {
             caption: 'another caption!!!'
           }
-        }
-      }
-    };
+        };
 
-    const signedCells = [
-      {
-        draftUrlId: anotherDraftUrlId,
-        filename: "AD8qKk_A5a.png",
-        urlId: "abCDefGHi",
-        signData: {}
-      }
-    ];
+        const signedUrlId = 'abCDefGHi';
+        const signedCells = [
+          {
+            draftUrlId: anotherDraftUrlId,
+            filename: "AD8qKk_A5a.png",
+            urlId: signedUrlId,
+            signData: {}
+          }
+        ];
 
-    describe('adding new cells', () => {
-      it('should include an item in payload.cells that represents the new cell', async () => {
-        axios.get.mockImplementationOnce(() => Promise.resolve({data: publishedComicGetResponse}));
-
-        const actual = await createUpdatePayload({isPublishedComic: true, comic: localComicState, signedCells});
-        expect(actual.cells).toMatchSnapshot();
+        const actual = await createUpdatePayload({isPublishedComic: true, comic: comicFromComponentState, signedCells});
+        const newCellFromPayload = actual.cells.find(({urlId}) => urlId === signedUrlId)
+        expect(newCellFromPayload).toMatchSnapshot();
       });
     });
 
     describe('update existing cell with new image', () => {
       it('should include an item in payload.cells that represents the new cell that includes a `updateImageUrl=true`', async () => {
-        const somePublishedCellUrlId = 'somePublishedCellUrlId';
+        axios.get.mockImplementationOnce(() => Promise.resolve({data: publishedComicGetResponse}));
 
-        const comicStateWithUpdateToPublishedCell = {
-          initialCellUrlId: publishedCellUrlId,
-          cells: {
-            [somePublishedCellUrlId]: {
-              comicUrlId: publishedComicUrlId,
-              hasNewImage: true,
-              isDirty: true,
-              urlId: somePublishedCellUrlId,
-              imageUrl: 'somePublishedImageUrl.png',
-              previousCellUrlId: null,
-              studioState: {
-                caption: 'blah blah blah'
-              }
-            }
-          }
-        }
+        const comicFromComponentState = cloneDeep(localComicState);
+        comicFromComponentState.cells[publishedCellUrlId].hasNewImage = true;
+        comicFromComponentState.cells[publishedCellUrlId].isDirty = true;
 
         const signedCells = [
           {
-            draftUrlId: somePublishedCellUrlId,
+            draftUrlId: publishedCellUrlId,
             filename: "AD8qKk_A5a.png",
-            urlId: somePublishedCellUrlId,
+            urlId: publishedCellUrlId,
             signData: {}
           }
         ];
-
-        const publishedCells = [{
-          urlId: somePublishedCellUrlId,
-          imageUrl: 'someImageUrl.png',
-          order: undefined,
-          previousCellId: undefined,
-          schemaVersion: 4,
-          studioState: {
-            caption: 'some caption!!!'
-          },
-          caption: 'some caption!!!'
-        }];
-    
-        const publishedComicGetResponse = {
-          cells: publishedCells,
-          isActive: true,
-          initialCellUrlId: publishedCellUrlId,
-          title: '',
-          urlId: publishedComicUrlId,
-          userCanEdit: true
-        };
-
-        axios.get.mockImplementationOnce(() => Promise.resolve({data: publishedComicGetResponse}));
         
-        const actual = await createUpdatePayload({isPublishedComic: true, comic: comicStateWithUpdateToPublishedCell, signedCells});
-        const publishedCellToUpdate = actual.cells.find(({urlId}) => urlId === somePublishedCellUrlId);
+        const actual = await createUpdatePayload({isPublishedComic: true, comic: comicFromComponentState, signedCells});
+        const publishedCellToUpdate = actual.cells.find(({urlId}) => urlId === publishedCellUrlId);
         expect(publishedCellToUpdate).toHaveProperty('updateImageUrl', true);
       });
     });
 
     describe('update existing cell without new image', () => {
       it('should include an item in payload.cells that represents the new cell', async () => {
-        const somePublishedCellUrlId = 'somePublishedCellUrlId';
-        const publishedImageUrl = 'someImageUrl.png';
+        axios.get.mockImplementationOnce(() => Promise.resolve({data: publishedComicGetResponse}));
 
-        const comicStateWithUpdateToPublishedCell = {
-          initialCellUrlId: somePublishedCellUrlId,
-          cells: {
-            [somePublishedCellUrlId]: {
-              comicUrlId: publishedComicUrlId,
-              hasNewImage: false,
-              isDirty: true,
-              urlId: somePublishedCellUrlId,
-              imageUrl: publishedImageUrl,
-              previousCellUrlId: null,
-              studioState: {
-                caption: 'blah blah blah'
-              }
-            }
-          }
-        }
+        const comicFromComponentState = cloneDeep(localComicState);
+        comicFromComponentState.cells[publishedCellUrlId].isDirty = true;
 
         const signedCells = [];
-
-        const publishedCells = [{
-          urlId: somePublishedCellUrlId,
-          imageUrl: publishedImageUrl,
-          order: undefined,
-          previousCellId: undefined,
-          schemaVersion: 4,
-          studioState: {
-            caption: 'some caption!!!'
-          },
-          caption: 'some caption!!!'
-        }];
-    
-        const publishedComicGetResponse = {
-          cells: publishedCells,
-          isActive: true,
-          initialCellUrlId: somePublishedCellUrlId,
-          title: '',
-          urlId: publishedComicUrlId,
-          userCanEdit: true
-        };
-
-        axios.get.mockImplementationOnce(() => Promise.resolve({data: publishedComicGetResponse}));
         
-        const actual = await createUpdatePayload({isPublishedComic: true, comic: comicStateWithUpdateToPublishedCell, signedCells});
-        const publishedCellToUpdate = actual.cells.find(({urlId}) => urlId === somePublishedCellUrlId);
+        const actual = await createUpdatePayload({isPublishedComic: true, comic: comicFromComponentState, signedCells});
+        const publishedCellToUpdate = actual.cells.find(({urlId}) => urlId === publishedCellUrlId);
         expect(publishedCellToUpdate).toMatchSnapshot();
         expect(publishedCellToUpdate).not.toHaveProperty('updateImageUrl');
       });

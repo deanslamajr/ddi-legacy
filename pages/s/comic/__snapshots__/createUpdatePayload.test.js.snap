@@ -1,26 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`createUpdatePayload published comic adding new cells should include an item in payload.cells that represents the new cell 1`] = `
-Array [
-  Object {
+Object {
+  "caption": "another caption!!!",
+  "previousCellUrlId": "publishedCellUrlId",
+  "studioState": Object {
     "caption": "another caption!!!",
-    "previousCellUrlId": "publishedCellUrlId",
-    "studioState": Object {
-      "caption": "another caption!!!",
-    },
-    "urlId": "abCDefGHi",
   },
-]
+  "urlId": "abCDefGHi",
+}
 `;
 
 exports[`createUpdatePayload published comic update existing cell without new image should include an item in payload.cells that represents the new cell 1`] = `
 Object {
-  "caption": "blah blah blah",
+  "caption": "some caption!!!",
   "previousCellUrlId": null,
   "studioState": Object {
-    "caption": "blah blah blah",
+    "caption": "some caption!!!",
   },
-  "urlId": "somePublishedCellUrlId",
+  "urlId": "publishedCellUrlId",
 }
 `;
 

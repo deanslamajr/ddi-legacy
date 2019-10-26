@@ -13,7 +13,16 @@ Array [
 ]
 `;
 
-exports[`createUpdatePayload published comic update existing cell without new image should include an item in payload.cells that represents the new cell 1`] = `Array []`;
+exports[`createUpdatePayload published comic update existing cell without new image should include an item in payload.cells that represents the new cell 1`] = `
+Object {
+  "caption": "blah blah blah",
+  "previousCellUrlId": null,
+  "studioState": Object {
+    "caption": "blah blah blah",
+  },
+  "urlId": "somePublishedCellUrlId",
+}
+`;
 
 exports[`createUpdatePayload unpublished comic should add all cells from the passed comic to the payload 1`] = `
 Array [

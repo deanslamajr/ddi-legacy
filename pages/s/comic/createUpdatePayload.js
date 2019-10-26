@@ -68,13 +68,20 @@ function getPreviousCellUrlId (cellFromState, signedCells, publishedComic) {
   return previousCellUrlId;
 }
 
-function getCaption (cellFromState, publishedComic) {
+function getCaption (cellFromState) {
   return cellFromState.studioState.caption;
 }
 
 function getUrlId (cellFromState, signedCells) {
-  const signedCell = getSignedCell(cellFromState.urlId, signedCells);
-  return signedCell.urlId;
+  let cellUrlId;
+
+  if (isDraftId(cellFromState.urlId)) {
+    cellUrlId = getSignedCell(cellFromState.urlId, signedCells).urlId;
+  } else {
+    cellUrlId = cellFromState.urlId;
+  }
+
+  return cellUrlId;
 }
 
 function getPublishedCell (cellUrlId, publishedCells) {

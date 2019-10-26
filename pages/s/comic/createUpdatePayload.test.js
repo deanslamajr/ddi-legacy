@@ -160,40 +160,17 @@ describe('createUpdatePayload', () => {
     describe('update existing cell with new image', () => {
       it('should include an item in payload.cells that represents the new cell that includes a `updateImageUrl=true`', async () => {
         const somePublishedCellUrlId = 'somePublishedCellUrlId';
-        const anotherPublishedCellUrlId = 'anotherPublishedCellUrlId';
 
         const comicStateWithUpdateToPublishedCell = {
           initialCellUrlId: publishedCellUrlId,
           cells: {
-            [publishedCellUrlId]: {
-              comicUrlId: publishedComicUrlId,
-              hasNewImage: false,
-              isDirty: false,
-              urlId: publishedCellUrlId,
-              imageUrl: 'someImageUrl.png',
-              previousCellUrlId: null,
-              studioState: {
-                caption: 'some caption!!!'
-              }
-            },
-            [anotherPublishedCellUrlId]: {
-              comicUrlId: publishedComicUrlId,
-              hasNewImage: false,
-              isDirty: false,
-              urlId: anotherPublishedCellUrlId,
-              imageUrl: "anotherImageUrl.png",
-              previousCellUrlId: publishedCellUrlId,
-              studioState: {
-                caption: 'another caption!!!'
-              }
-            },
             [somePublishedCellUrlId]: {
               comicUrlId: publishedComicUrlId,
               hasNewImage: true,
               isDirty: true,
               urlId: somePublishedCellUrlId,
               imageUrl: 'somePublishedImageUrl.png',
-              previousCellUrlId: anotherPublishedCellUrlId,
+              previousCellUrlId: null,
               studioState: {
                 caption: 'blah blah blah'
               }
@@ -211,7 +188,7 @@ describe('createUpdatePayload', () => {
         ];
 
         const publishedCells = [{
-          urlId: anotherPublishedCellUrlId,
+          urlId: somePublishedCellUrlId,
           imageUrl: 'someImageUrl.png',
           order: undefined,
           previousCellId: undefined,
@@ -241,7 +218,55 @@ describe('createUpdatePayload', () => {
 
     describe('update existing cell without new image', () => {
       it('should include an item in payload.cells that represents the new cell', async () => {
-        throw new Error('implement test')
+        const somePublishedCellUrlId = 'somePublishedCellUrlId';
+        const publishedImageUrl = 'someImageUrl.png';
+
+        const comicStateWithUpdateToPublishedCell = {
+          initialCellUrlId: somePublishedCellUrlId,
+          cells: {
+            [somePublishedCellUrlId]: {
+              comicUrlId: publishedComicUrlId,
+              hasNewImage: false,
+              isDirty: true,
+              urlId: somePublishedCellUrlId,
+              imageUrl: publishedImageUrl,
+              previousCellUrlId: null,
+              studioState: {
+                caption: 'blah blah blah'
+              }
+            }
+          }
+        }
+
+        const signedCells = [];
+
+        const publishedCells = [{
+          urlId: somePublishedCellUrlId,
+          imageUrl: publishedImageUrl,
+          order: undefined,
+          previousCellId: undefined,
+          schemaVersion: 4,
+          studioState: {
+            caption: 'some caption!!!'
+          },
+          caption: 'some caption!!!'
+        }];
+    
+        const publishedComicGetResponse = {
+          cells: publishedCells,
+          isActive: true,
+          initialCellUrlId: somePublishedCellUrlId,
+          title: '',
+          urlId: publishedComicUrlId,
+          userCanEdit: true
+        };
+
+        axios.get.mockImplementationOnce(() => Promise.resolve({data: publishedComicGetResponse}));
+        
+        const actual = await createUpdatePayload({isPublishedComic: true, comic: comicStateWithUpdateToPublishedCell, signedCells});
+        const publishedCellToUpdate = actual.cells.find(({urlId}) => urlId === somePublishedCellUrlId);
+        expect(publishedCellToUpdate).toMatchSnapshot();
+        expect(publishedCellToUpdate).not.toHaveProperty('updateImageUrl');
       });
     });
 

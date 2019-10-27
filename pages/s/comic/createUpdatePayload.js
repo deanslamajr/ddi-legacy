@@ -20,7 +20,7 @@ import { isDraftId } from '../../../shared/isDraftId';
 function transformCell (cellFromState, signedCells, publishedComic) {
   const transformedCell = {};
 
-  const caption = getCaption(cellFromState);
+  const caption = getCaption(cellFromState, publishedComic);
   if (typeof caption === 'string') {
     transformedCell.caption = caption;
   }
@@ -35,7 +35,7 @@ function transformCell (cellFromState, signedCells, publishedComic) {
     transformedCell.previousCellUrlId = previousCellUrlId;
   }
 
-  const studioState = getStudioState(cellFromState);
+  const studioState = getStudioState(cellFromState, publishedComic);
   if (studioState) {
     transformedCell.studioState = studioState;
   }
@@ -48,28 +48,58 @@ function transformCell (cellFromState, signedCells, publishedComic) {
   return transformedCell
 }
 
-function getStudioState (cellFromState) {
-  return cellFromState.studioState;
+function getStudioState (cellFromState, publishedComic) {
+  const studioState = cellFromState.studioState;
+
+  if (isDraftId(cellFromState.urlId)) {
+    return studioState;
+  }
+
+  const publishedStudioState = getPublishedCell(cellFromState.urlId, publishedComic.cells).studioState;
+
+  if (JSON.stringify(studioState) === JSON.stringify(publishedStudioState)) {
+    return;
+  }
+
+  return studioState;
 }
 
 function getPreviousCellUrlId (cellFromState, signedCells, publishedComic) {
-  if (!cellFromState.previousCellUrlId) {
+  if (isDraftId(cellFromState.urlId) && cellFromState.previousCellUrlId === null) {
     return null;
-  }
-
-  let previousCellUrlId;
-
-  if (isDraftId(cellFromState.previousCellUrlId)) {
-    previousCellUrlId = getSignedCell(cellFromState.previousCellUrlId, signedCells).urlId;
+  } else if (isDraftId(cellFromState.previousCellUrlId)) {
+    return getSignedCell(cellFromState.previousCellUrlId, signedCells).urlId;
   } else {
-    previousCellUrlId = getPublishedCell(cellFromState.previousCellUrlId, publishedComic.cells).urlId;
-  }
+    const previousCellUrlId = cellFromState.previousCellUrlId;
 
-  return previousCellUrlId;
+    // for published cell updates
+    // don't include this field if update value is same as published value
+    if (!isDraftId(cellFromState.urlId)) {
+      const publishedPreviousCellUrlId = getPublishedCell(cellFromState.urlId, publishedComic.cells).previousCellUrlId;
+  
+      if (previousCellUrlId === publishedPreviousCellUrlId) {
+        return;
+      }
+    }
+
+    return previousCellUrlId;
+  }
 }
 
-function getCaption (cellFromState) {
-  return cellFromState.studioState.caption;
+function getCaption (cellFromState, publishedComic) {
+  const caption = cellFromState.studioState.caption;
+
+  if (isDraftId(cellFromState.urlId)) {
+    return caption;
+  }
+
+  const publishedCaption = getPublishedCell(cellFromState.urlId, publishedComic.cells).studioState.caption;
+
+  if (caption === publishedCaption) {
+    return;
+  }
+
+  return caption;
 }
 
 function getUrlId (cellFromState, signedCells) {

@@ -12,7 +12,9 @@ function updateCell ({studioState, caption, previousCellUrlId, urlId}, cells, co
   }
   
   // UPDATES
-  if (previousCellUrlId) {
+  if (previousCellUrlId === null) {
+    updatePayload.previous_cell_id = null;
+  } else if (previousCellUrlId) {
     previousCell = cells.find(({url_id}) => url_id === previousCellUrlId);
     if (!previousCell) {
       throw new Error(`The passed cell.previousCellUrlId:${previousCellUrlId} does not exist on comicId:${comicId}`);

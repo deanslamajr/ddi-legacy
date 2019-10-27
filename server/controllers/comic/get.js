@@ -15,7 +15,8 @@ async function get (req, res) {
     userCanEdit = true
   }
 
-  const cellsData = await comic.getCells()
+  const cellsData = await comic.getCells();
+  console.log('cellsData', cellsData)
   let cells = cellsData.map(({
     url_id, image_url, order, previous_cell_id, schema_version, studio_state, caption
   }) => ({
@@ -35,7 +36,7 @@ async function get (req, res) {
       return {
         ...cell,
         previousCellId: undefined,
-        previousCellUrlId: previousCell && previousCell.url_id
+        previousCellUrlId: previousCell ? previousCell.url_id : null
       }
     });
 

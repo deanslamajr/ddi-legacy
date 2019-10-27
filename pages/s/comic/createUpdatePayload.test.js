@@ -90,6 +90,10 @@ describe('createUpdatePayload', () => {
   describe('published comic', () => {
     const publishedComicUrlId = 'publishedComicUrlId';
     const publishedCellUrlId = 'publishedCellUrlId';
+    const publishedImageUrl = 'someImageUrl.png';
+    const publishedStudioState = {
+      caption: 'some caption!!!'
+    };
 
     const localComicState = {
       initialCellUrlId: publishedCellUrlId,
@@ -99,24 +103,20 @@ describe('createUpdatePayload', () => {
           hasNewImage: false,
           isDirty: false,
           urlId: publishedCellUrlId,
-          imageUrl: 'someImageUrl.png',
+          imageUrl: publishedImageUrl,
           previousCellUrlId: null,
-          studioState: {
-            caption: 'some caption!!!'
-          }
+          studioState: publishedStudioState
         }
       }
     };
 
     const publishedCell = {
       urlId: publishedCellUrlId,
-      imageUrl: 'someImageUrl.png',
-      order: undefined,
-      previousCellId: undefined,
+      imageUrl: publishedImageUrl,
+      order: null,
+      previousCellUrlId: null,
       schemaVersion: 4,
-      studioState: {
-        caption: 'some caption!!!'
-      },
+      studioState: publishedStudioState,
       caption: 'some caption!!!'
     };
 
@@ -191,6 +191,9 @@ describe('createUpdatePayload', () => {
 
         const comicFromComponentState = cloneDeep(localComicState);
         comicFromComponentState.cells[publishedCellUrlId].isDirty = true;
+        comicFromComponentState.cells[publishedCellUrlId].studioState = {
+          caption: 'this caption has been updated!'
+        };
 
         const signedCells = [];
         
@@ -234,7 +237,7 @@ describe('createUpdatePayload', () => {
           {
             urlId: publishedCellThatIsNowInitialCellUrlId,
             imageUrl: publishedCellThatIsNowInitialCellImageUrl,
-            previousCellId: publishedCellUrlId,
+            previousCellUrlId: publishedCellUrlId,
             schemaVersion: 4,
             studioState: {
               caption
@@ -272,24 +275,19 @@ describe('createUpdatePayload', () => {
       });
     });
 
-    describe('should only include changes to a cell in the payload', () => {
-      describe('if `previousCellUrlId` hasnt changed', () => {
-        it('shouldnt include `previousCellUrlId` in the payload', () => {
-          throw new Error('implement test!');
-        });
-      });
+    it('should only include changes to a cell in the payload', async () => {
+      axios.get.mockImplementationOnce(() => Promise.resolve({data: publishedComicGetResponse}));
 
-      describe('if `caption` hasnt changed', () => {
-        it('shouldnt include `caption` in the payload', () => {
-          throw new Error('implement test!');
-        });
-      });
+      const comicFromComponentState = cloneDeep(localComicState);
+      comicFromComponentState.cells[publishedCellUrlId].isDirty = true;
 
-      describe('if `studioState` hasnt changed', () => {
-        it('shouldnt include `studioState` in the payload', () => {
-          throw new Error('implement test!');
-        });
-      });
+      const actual = await createUpdatePayload({isPublishedComic: true, comic: comicFromComponentState, signedCells: []});
+
+      const publishedCellToUpdate = actual.cells.find(({urlId}) => urlId === publishedCellUrlId);
+      
+      expect(publishedCellToUpdate).not.toHaveProperty('previousCellUrlId');
+      expect(publishedCellToUpdate).not.toHaveProperty('caption');
+      expect(publishedCellToUpdate).not.toHaveProperty('studioState');
     });
   });
 });

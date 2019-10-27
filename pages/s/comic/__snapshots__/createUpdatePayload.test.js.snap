@@ -13,10 +13,9 @@ Object {
 
 exports[`createUpdatePayload published comic update existing cell without new image should include an item in payload.cells that represents the new cell 1`] = `
 Object {
-  "caption": "some caption!!!",
-  "previousCellUrlId": null,
+  "caption": "this caption has been updated!",
   "studioState": Object {
-    "caption": "some caption!!!",
+    "caption": "this caption has been updated!",
   },
   "urlId": "publishedCellUrlId",
 }

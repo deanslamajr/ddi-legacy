@@ -330,13 +330,13 @@ class StudioV2 extends Component {
       signedCells
     });
 
-    // this.props.markJobAsFinished();
+    this.props.markJobAsFinished();
 
-    // //delete comic from client cache
-    // const {deleteComic} = require('../../../helpers/clientCache');
-    // deleteComic(this.props.comicUrlId);
+    //delete comic from client cache
+    const {deleteComic} = require('../../../helpers/clientCache');
+    deleteComic(this.props.comicUrlId);
 
-    // Router.pushRoute(`/comic/${comicUrl}`)
+    Router.pushRoute(`/comic/${comicUrlId}`)
   }
 
   upload = async (v2CaptchaToken) => {
@@ -428,7 +428,7 @@ class StudioV2 extends Component {
 
     console.log('updatePayload', updatePayload);
 
-    //await axios.patch(`/api/comic/${comicUrlIdToUpdate}`, updatePayload);
+    await axios.patch(`/api/comic/${comicUrlIdToUpdate}`, updatePayload);
   }
 
   render() {

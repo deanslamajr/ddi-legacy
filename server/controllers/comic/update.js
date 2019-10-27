@@ -2,7 +2,7 @@ const {Comics} = require('../../models')
 const { falsePositiveResponse, isUserAuthorized } = require('../utils');
 const {sequelize} = require('../../adapters/db')
 
-function updateCell ({studioState, caption, previousCellUrlId, urlId}, cells, comicId, transaction) {
+function updateCell ({studioState, caption, previousCellUrlId, updateImageUrl, urlId}, cells, comicId, transaction) {
   let previousCell;
   const updatePayload = {};
 
@@ -78,7 +78,7 @@ async function update (req, res) {
     res.sendStatus(200);
   } catch (e) {
     //@TODO log
-    //console.error(e);
+    console.error(e);
     res.sendStatus(500);
   }
 }

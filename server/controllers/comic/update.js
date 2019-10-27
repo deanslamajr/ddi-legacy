@@ -46,6 +46,27 @@ function updateCell (
   return cell.update(updatePayload, {transaction});
 }
 
+function updateComic (comic, cells, initialCellUrlId, transaction) {
+  if (initialCellUrlId) {
+    const initialCell = cells.find(({url_id}) => url_id === initialCellUrlId);
+
+    if (!initialCell) {
+      // @todo this should probably respond with a 4xx status code that represents bad payload
+      throw new Error(`The passed initialCellUrlId:${initialCellUrlId} does not exist on comicId:${comic.id}`);
+    }
+    
+    return comic.update({
+      initial_cell_id: initialCell.id,
+      // activates comic, only useful for first publish
+      is_active: true
+    }, {transaction});
+  } else {
+    // bump the comic's updated_at value
+    comic.changed('updated_at', true)
+    return comic.save({transaction});
+  }
+}
+
 async function update (req, res) {
   try {
     const comicUrlId = req.params.comicUrlId
@@ -66,23 +87,13 @@ async function update (req, res) {
     const cells = await comic.getCells();
 
     await sequelize.transaction(async transaction => {
-      // has side effect of activating comic
-      if (initialCellUrlId) {
-        const initialCell = cells.find(({url_id}) => url_id === initialCellUrlId);
-    
-        if (!initialCell) {
-          // @todo this should probably respond with a 4xx status code that represents bad payload
-          throw new Error(`The passed initialCellUrlId:${initialCellUrlId} does not exist on comicId:${comic.id}`);
-        }
-        await comic.update({
-          is_active: true, // activates comic
-          initial_cell_id: initialCell.id
-        }, {transaction});
-      }
-    
-      await Promise.all(
-        cellsToUpdate.map(cell => updateCell(cell, cells, comic.id, transaction))
+      const comicUpdateAsyncTasks = cellsToUpdate.map(cell => updateCell(cell, cells, comic.id, transaction));
+
+      comicUpdateAsyncTasks.push(
+        updateComic(comic, cells, initialCellUrlId, transaction)
       );
+
+      await Promise.all(comicUpdateAsyncTasks);
     });
 
   

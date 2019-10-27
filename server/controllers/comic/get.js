@@ -16,7 +16,7 @@ async function get (req, res) {
   }
 
   const cellsData = await comic.getCells();
-  console.log('cellsData', cellsData)
+
   let cells = cellsData.map(({
     url_id, image_url, order, previous_cell_id, schema_version, studio_state, caption
   }) => ({

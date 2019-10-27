@@ -62,6 +62,7 @@ describe('controllers/comic/sign', () => {
     post.mockClear();
     Comics.createNewComic.mockClear();
     Cells.createNewCell.mockClear();
+    Cells.createNewDraftFilename.mockClear();
 
     Cells.createNewCell.mockImplementation(() => Promise.resolve(createCellResponse));
 
@@ -242,7 +243,15 @@ describe('controllers/comic/sign', () => {
   });
 
   it('should create a new cell in DB for each passed draft cellId', async () => {
-    const lotsOfNewCells = [1,2,3,4,5,6]
+    const lotsOfNewCells = [
+      `1${DRAFT_SUFFIX}`,
+      `2${DRAFT_SUFFIX}`,
+      `3${DRAFT_SUFFIX}`,
+      `4${DRAFT_SUFFIX}`,
+      `5${DRAFT_SUFFIX}`,
+      `6${DRAFT_SUFFIX}`
+    ];
+
     req.body = {
       ...body,
       newCells: lotsOfNewCells
@@ -251,6 +260,19 @@ describe('controllers/comic/sign', () => {
     await sign(req, res);
 
     expect(Cells.createNewCell).toHaveBeenCalledTimes(lotsOfNewCells.length)
+  });
+
+  it('should create a new filename for each passed NON-draft cellId', async () => {
+    const lotsOfNewCells = ['1', '2', '3', '4', '5', '6'];
+    
+    req.body = {
+      ...body,
+      newCells: lotsOfNewCells
+    };
+
+    await sign(req, res);
+
+    expect(Cells.createNewDraftFilename).toHaveBeenCalledTimes(lotsOfNewCells.length);
   });
 
   it('should return a signed payload for each passed draft cellId in the response', async () => {

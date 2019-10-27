@@ -120,7 +120,7 @@ describe('clientCache', () => {
     };
 
     it('should set the given cell`s studio state with the given studio state', () => {
-      setCellStudioState(mockCellUrlId, newStudioState);
+      setCellStudioState(mockCellUrlId, newStudioState, {});
 
       const updatedCache = store('');
 

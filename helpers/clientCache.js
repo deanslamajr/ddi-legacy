@@ -4,7 +4,6 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import {sortByOrder} from '../helpers/sorts'
 import theme from '../helpers/theme'
-import {getCellImageFilename} from '../helpers'
 
 import {
   DRAFT_SUFFIX,

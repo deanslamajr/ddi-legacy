@@ -1,9 +1,11 @@
 const createNewCell = jest.fn();
 const newComicId = 'newComicId';
 const createNewComic = jest.fn(() => Promise.resolve({comicId: newComicId}));
+const createNewDraftFilename = jest.fn(() => Promise.resolve('someFilename'));
 
 const Cells = {
-  createNewCell
+  createNewCell,
+  createNewDraftFilename
 }
 
 const Comics = {

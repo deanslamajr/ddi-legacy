@@ -12,47 +12,24 @@ import PublishPreviewModal from './PublishPreviewModal'
 import { createUpdatePayload } from './createUpdatePayload';
 
 import Cell from '../../../components/Cell'
-import {
-  PinkMenuButton
-} from '../../../components/Buttons'
+import {PinkMenuButton} from '../../../components/Buttons'
 import { NavButton, BOTTOM_LEFT, BOTTOM_RIGHT } from '../../../components/navigation'
 
 import { Router } from '../../../routes'
 
-import { forwardCookies, getApi, redirect } from '../../../helpers'
-import { sortByOrder, sortCellsV4 } from '../../../helpers/sorts'
+import { sortCellsV4 } from '../../../helpers/sorts'
 import theme from '../../../helpers/theme'
-import { generateCellImageFromEmojis } from '../../../helpers/generateCellImageFromEmojis'
+import { generateCellImage } from '../../../helpers/generateCellImageFromEmojis'
 import { isDraftId } from '../../../shared/isDraftId';
 
 import {
-  CAPTCHA_ACTION_CELL_PUBLISH, DRAFT_SUFFIX, SCHEMA_VERSION
+  CAPTCHA_ACTION_CELL_PUBLISH, SCHEMA_VERSION
 } from '../../../config/constants.json';
 
 const { publicRuntimeConfig } = getConfig();
 
 const SIDE_BUTTONS_SPACER = 0//.4
 const cellWidth = `${(1 - SIDE_BUTTONS_SPACER) * theme.layout.width}px`;
-const CELL_IMAGE_ID = 'CELL_IMAGE_ID';
-
-async function generateCellImage(cell, filename) {
-  const cellImageElement = document.createElement('div');
-  cellImageElement.hidden = true;
-  const cellImageElementId = `${CELL_IMAGE_ID}-${cell.id}`;
-  cellImageElement.id = cellImageElementId;
-  document.body.appendChild(cellImageElement);
-
-  const { file, url } = await generateCellImageFromEmojis({
-    emojis: cell.studioState.emojis,
-    backgroundColor: cell.studioState.backgroundColor,
-    filename,
-    htmlElementId: cellImageElementId
-  })
-
-  cell.imageUrl = url;
-
-  return file
-}
 
 async function hydrateComicFromApi(comicUrlId) {
   let comicFromApi;
@@ -81,24 +58,10 @@ async function hydrateComicFromApi(comicUrlId) {
   return createComicFromPublishedComic(comicFromApi);
 }
 
-function hydrateComicFromClientCache(comicUrlId) {
-  const {
-    getCellsByComicUrlId, getComic
-  } = require('../../../helpers/clientCache');
-
-  const comic = getComic(comicUrlId);
-  const cells = getCellsByComicUrlId(comicUrlId);
-
-  return {
-    ...comic,
-    cells
-  };
-}
-
 async function hydrateComic(comicUrlId) {
   // try to fetch from client cache
   const {
-    doesComicUrlIdExist
+    doesComicUrlIdExist, hydrateComicFromClientCache
   } = require('../../../helpers/clientCache');
 
   // if exists in client cache

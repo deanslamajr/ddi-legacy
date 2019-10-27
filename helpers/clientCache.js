@@ -433,3 +433,13 @@ export const createComicFromPublishedComic = ({
     cells
   };
 }
+
+export const hydrateComicFromClientCache = (comicUrlId) => {
+  const comic = getComic(comicUrlId);
+  const cells = getCellsByComicUrlId(comicUrlId);
+
+  return {
+    ...comic,
+    cells
+  };
+}

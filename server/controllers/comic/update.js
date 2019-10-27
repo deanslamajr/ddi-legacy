@@ -2,7 +2,12 @@ const {Comics} = require('../../models')
 const { falsePositiveResponse, isUserAuthorized } = require('../utils');
 const {sequelize} = require('../../adapters/db')
 
-function updateCell ({studioState, caption, previousCellUrlId, updateImageUrl, urlId}, cells, comicId, transaction) {
+function updateCell (
+  {studioState, caption, order, previousCellUrlId, schemaVersion, updateImageUrl, urlId},
+  cells,
+  comicId,
+  transaction
+) {
   let previousCell;
   const updatePayload = {};
 
@@ -30,6 +35,12 @@ function updateCell ({studioState, caption, previousCellUrlId, updateImageUrl, u
   }
   if (updateImageUrl) {
     updatePayload.image_url = cell.draft_image_url;
+  }
+  if (order === null) {
+    updatePayload.order = null;
+  }
+  if (schemaVersion) {
+    updatePayload.schema_version = schemaVersion;
   }
 
   return cell.update(updatePayload, {transaction});

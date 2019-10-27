@@ -4,6 +4,7 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import {sortByOrder} from '../helpers/sorts'
 import theme from '../helpers/theme'
+import {getCellImageFilename} from '../helpers'
 
 import {
   DRAFT_SUFFIX,
@@ -376,7 +377,6 @@ export const createComicFromPublishedComic = ({
     comic.initialCellUrlId = initialCellUrlId;
     cache.comics[comicUrlId] = comic;
   } else {
-    console.log('cellsToCopy', cellsToCopy);
     const sortedCells = cellsToCopy.sort(sortByOrder);
     // cell (v3): {
     //   caption: ""
@@ -387,7 +387,6 @@ export const createComicFromPublishedComic = ({
     //   studioState: {activeEmojiId: 3, backgroundColor: "#19194d", currentEmojiId: 6, showEmojiPicker: false, title: "", …}
     //   urlId: "4vR8TtVLb"
     // }
-    console.log('sortedCells', sortedCells)
 
     function transformStudioStateToV4 (studioStatePreV4) {
       return {
@@ -407,8 +406,15 @@ export const createComicFromPublishedComic = ({
         comicUrlId,
         urlId: currentCell.urlId,
         studioState: transformStudioStateToV4(currentCell.studioState),
-        previousCellUrlId: previousCell ? previousCell.urlId : undefined,
-        imageUrl: currentCell.imageUrl
+        previousCellUrlId: previousCell ? previousCell.urlId : null,
+        imageUrl: currentCell.imageUrl,
+        // need to create a new image to get the imageUrl to correspond to 
+        // the latest schemaVersion pattern
+        // e.g. schemaVersion < 3 is in a different s3 bucket and if an update bumps
+        // schemaVersion to the latest, components won't know to treat imageUrl as
+        // an absolute URL
+        hasNewImage: true,
+        isDirty: true // set as dirty so that the next publish action will update the schema
       });
     }
 

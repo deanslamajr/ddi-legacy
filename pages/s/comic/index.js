@@ -163,8 +163,8 @@ const PinkLabel = styled.div`
   cursor: pointer;
 `
 
-const PendingChangesLabel = () => (
-  <PinkLabel>Pending Changes</PinkLabel>
+const UnpublishedChangesLabel = () => (
+  <PinkLabel>Unpublished Changes</PinkLabel>
 );
 
 //
@@ -418,15 +418,12 @@ class StudioV2 extends Component {
   publishComicUpdate = async ({
     comicUrlIdToUpdate, signedCells
   }) => {
-    console.log('this.state.comic', this.state.comic)
     const updatePayload = await createUpdatePayload({
       comic: this.state.comic,
       comicUrlIdToUpdate,
       isPublishedComic: !isDraftId(this.props.comicUrlId),
       signedCells
     });
-
-    console.log('updatePayload', updatePayload);
 
     await axios.patch(`/api/comic/${comicUrlIdToUpdate}`, updatePayload);
   }
@@ -439,7 +436,7 @@ class StudioV2 extends Component {
         {/* CELLS */}
         {sortedCells.map((cell) => (
           <div key={cell.imageUrl} onClick={() => this.setState({ activeCell: cell })}>
-            {cell.isDirty && <PendingChangesLabel />}
+            {cell.isDirty && <UnpublishedChangesLabel />}
             <StudioCell
               clickable
               imageUrl={cell.imageUrl}

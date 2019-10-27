@@ -2,6 +2,8 @@ import axios from 'axios';
 
 import { isDraftId } from '../../../shared/isDraftId';
 
+import {SCHEMA_VERSION} from '../../../config/constants.json';
+
 // cellFromState = {
 //   comicUrlId: "CL1fWeSIe---draft",
 //   hasNewImage: true,
@@ -28,6 +30,21 @@ function transformCell (cellFromState, signedCells, publishedComic) {
   const urlId = getUrlId(cellFromState, signedCells);
   if (urlId) {
     transformedCell.urlId = urlId;
+  }
+
+  if (!isDraftId(cellFromState.urlId)) {
+    const publishedCell = getPublishedCell(cellFromState.urlId, publishedComic.cells)
+
+    // for schemaVersion < 4
+    // set order to null
+    if (publishedCell.schemaVersion < 4) {
+      transformedCell.order = null;
+    }
+
+    // set schemaVersion to current schemaVersion
+    if (publishedCell.schemaVersion !== SCHEMA_VERSION) {
+      transformedCell.schemaVersion = SCHEMA_VERSION;
+    }
   }
 
   const previousCellUrlId = getPreviousCellUrlId(cellFromState, signedCells, publishedComic);

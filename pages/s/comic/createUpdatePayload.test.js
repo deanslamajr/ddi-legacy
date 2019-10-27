@@ -5,6 +5,8 @@ const {createUpdatePayload} = require('./createUpdatePayload');
 
 const {isDraftId} = require('../../../shared/isDraftId');
 
+const {SCHEMA_VERSION} = require('../../../config/constants.json');
+
 jest.mock('axios');
 
 describe('createUpdatePayload', () => {
@@ -205,9 +207,74 @@ describe('createUpdatePayload', () => {
     });
 
     describe('if published comic`s cells are all from schemaVersion <4', () => {
-      it('should convert all cells to the latest schemaVersion', () => {
-        // schemaVersion and order need to be updated
-        throw new Error('implement test!')
+      it('should convert all cells to the latest schemaVersion', async () => {
+        const v3PublishedCell1UrlId = 'YfJvT9sCj';
+        const v3PublishedCell2UrlId = '4vR8TtVLb';
+        const v3PublishedComicUrlId = 'LxJqxnWz0d';
+        const v3PublishedCell1ImageUrl = '3YChhLTi6.png';
+        const v3PublishedCell2ImageUrl = 'iSe-T7oDa.png';
+        const v3PublishedComicGetResponse = cloneDeep(publishedComicGetResponse);
+        delete v3PublishedComicGetResponse.initialCellUrlId;
+        v3PublishedComicGetResponse.cells = [
+          {
+            caption: 'a caption',
+            imageUrl: v3PublishedCell1ImageUrl,
+            order: 0,
+            previousCellId: null,
+            schemaVersion: 3,
+            studioState: {caption: 'a caption'},
+            urlId: v3PublishedCell1UrlId
+          },
+          {
+            caption: 'another caption!',
+            imageUrl: v3PublishedCell2ImageUrl,
+            order: 2,
+            previousCellId: null,
+            schemaVersion: 3,
+            studioState: {caption: 'another caption!'},
+            urlId: v3PublishedCell2UrlId
+          }
+        ];
+        axios.get.mockImplementationOnce(() => Promise.resolve({data: v3PublishedComicGetResponse}));
+  
+        const comicFromComponentState = {
+          initialCellUrlId: v3PublishedCell1UrlId,
+          urlId: v3PublishedComicUrlId,
+          cells: {
+            [v3PublishedCell1UrlId]: {
+              comicUrlId: v3PublishedComicUrlId,
+              hasNewImage: false,
+              isDirty: true,
+              urlId: v3PublishedCell1UrlId,
+              imageUrl: v3PublishedCell1ImageUrl,
+              previousCellUrlId: null,
+              studioState: {caption: 'a caption'}
+            },
+            [v3PublishedCell2UrlId]: {
+              comicUrlId: v3PublishedComicUrlId,
+              hasNewImage: false,
+              isDirty: true,
+              urlId: v3PublishedCell2UrlId,
+              imageUrl: v3PublishedCell2ImageUrl,
+              previousCellUrlId: v3PublishedCell1UrlId,
+              studioState: {caption: 'another caption!'}
+            }
+          }
+        };
+  
+        const signedCells = [];
+        
+        const actual = await createUpdatePayload({isPublishedComic: true, comic: comicFromComponentState, signedCells});
+
+        const firstCell = actual.cells.find(({urlId}) => urlId === v3PublishedCell1UrlId);
+        const secondCell = actual.cells.find(({urlId}) => urlId === v3PublishedCell2UrlId);
+
+        expect(firstCell).toHaveProperty('order', null);
+        expect(firstCell).toHaveProperty('previousCellUrlId', null);
+        expect(firstCell).toHaveProperty('schemaVersion', SCHEMA_VERSION);
+        expect(secondCell).toHaveProperty('order', null);
+        expect(secondCell).toHaveProperty('previousCellUrlId', v3PublishedCell1UrlId);
+        expect(firstCell).toHaveProperty('schemaVersion', SCHEMA_VERSION);
       });
     });
 

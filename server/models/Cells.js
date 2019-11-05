@@ -4,6 +4,8 @@ const shortid = require('shortid')
 const { sequelize } = require('../adapters/db')
 const {SCHEMA_VERSION} = require('../../config/constants.json')
 
+const { ERROR_TYPES } = require('./constants');
+
 const Cells = sequelize.define('cells',
   {
     id: {
@@ -14,11 +16,13 @@ const Cells = sequelize.define('cells',
     },
     url_id: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     image_url: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     draft_image_url: {
       type: Sequelize.STRING
@@ -84,55 +88,66 @@ async function generateUniqueFilename() {
   return filename;
 }
 
-async function doesUrlIdExist(urlId) {
-  const cell = await Cells.findOne({ where: { url_id: urlId }});
-  return !!cell;
-}
-
-async function generateUniqueUrlId() {
-  let urlId;
-
-  do {
-    urlId = `${shortid.generate()}`;
-  } while (await doesUrlIdExist(urlId))
-
-  return urlId;
-}
-
-async function createNewCell ({comicId, userId, transaction}) {
-  const [filename, urlId] = await Promise.all([
-    generateUniqueFilename(),
-    generateUniqueUrlId()
-  ]);
+async function createNewCell({comicId, userId, transaction}) {
+  const filename = `${shortid.generate()}.png`;
+  const urlId = shortid.generate();
 
   const config = transaction
     ? {transaction}
     : {};
 
-  await Cells.create({
-    comic_id: comicId,
-    creator_user_id: userId,
-    image_url: filename,
-    url_id: urlId
-  }, config)
+  try {
+    await Cells.create({
+      comic_id: comicId,
+      creator_user_id: userId,
+      image_url: filename,
+      url_id: urlId
+    }, config);
 
-  return {
-    filename,
-    urlId
+    return {
+      filename,
+      urlId
+    };
+  }
+  catch(error) {
+    if (error.errors) {
+      for(let i = 0; i < error.errors.length; i++) {
+        const sqlError = error.errors[i];
+        if (sqlError.type === ERROR_TYPES.UNIQUE_VIOLATION) {
+          return createNewCell({comicId, userId, transaction});
+        }
+      }
+    }
+
+    throw error;
   }
 }
 
 async function createNewDraftFilename ({cellUrlId, transaction}) {
-  const filename = await generateUniqueFilename();
+  const filename = `${shortid.generate()}.png`;
 
   const config = transaction
     ? {transaction}
     : {};
 
+  try {
     const cell = await Cells.findOne({ where: { url_id: cellUrlId }});
-    await cell.update({draft_image_url: filename}, config)
-  
-    return filename
+    await cell.update({draft_image_url: filename}, config);
+
+    return filename;
+  }
+  catch(error) {
+    if (error.errors) {
+      for(let i = 0; i < error.errors.length; i++) {
+        const sqlError = error.errors[i];
+        if (sqlError.type === ERROR_TYPES.UNIQUE_VIOLATION) {
+          return createNewDraftFilename({cellUrlId, transaction});
+        }
+      }
+    }
+
+    throw error;
+  }
 }
 
 Cells.createNewCell = createNewCell;
@@ -140,5 +155,6 @@ Cells.createNewDraftFilename = createNewDraftFilename;
 
 module.exports = {
   Cells,
-  createNewCell
+  createNewCell,
+  createNewDraftFilename
 }

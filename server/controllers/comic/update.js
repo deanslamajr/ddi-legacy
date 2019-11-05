@@ -93,7 +93,7 @@ async function update (req, res) {
         updateComic(comic, cells, initialCellUrlId, transaction)
       );
 
-      await Promise.all(comicUpdateAsyncTasks);
+      return Promise.all(comicUpdateAsyncTasks);
     });
 
   

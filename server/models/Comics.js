@@ -3,6 +3,8 @@ const shortid = require('shortid')
 
 const { sequelize } = require('../adapters/db')
 
+const { ERROR_TYPES } = require('./constants');
+
 const Comics = sequelize.define('comics',
   {
     updated_at: {
@@ -29,7 +31,8 @@ const Comics = sequelize.define('comics',
     },
     url_id: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     title: {
       type: Sequelize.STRING,
@@ -46,29 +49,32 @@ const Comics = sequelize.define('comics',
   }
 );
 
-async function doesUrlIdExist(urlId) {
-  const comic = await Comics.findOne({ where: { url_id: urlId }});
-  return !!comic;
-}
+async function createNewComic({userId, transaction}) {
+  const urlId = shortid.generate();
 
-async function generateUniqueUrlId() {
-  let urlId;
+  const config = transaction
+    ? {transaction}
+    : {};
 
-  do {
-    urlId = `${shortid.generate()}`;
-  } while (await doesUrlIdExist(urlId))
+  try {
+    return await Comics.create({
+      creator_user_id: userId,
+      title: '',
+      url_id: urlId
+    }, config);
+  }
+  catch(error) {
+    if (error.errors) {
+      for(let i = 0; i < error.errors.length; i++) {
+        const sqlError = error.errors[i];
+        if (sqlError.type === ERROR_TYPES.UNIQUE_VIOLATION) {
+          return createNewComic({userId, transaction});
+        }
+      }
+    }
 
-  return urlId;
-}
-
-async function createNewComic({userId}) {
-  const urlId = await generateUniqueUrlId();
-
-  return await Comics.create({
-    creator_user_id: userId,
-    title: '',
-    url_id: urlId
-  })
+    throw error;
+  }
 }
 
 Comics.createNewComic = createNewComic;

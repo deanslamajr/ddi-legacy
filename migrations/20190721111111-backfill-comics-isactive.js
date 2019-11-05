@@ -5,7 +5,7 @@ const { Comics } = require('../server/models')
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(async t => {
-      const comics = await Comics.findAll();
+      const comics = await Comics.findAll({attributes: ['id']});
 
       return Promise.all(comics.map(comic => comic.update({
         'is_active': true

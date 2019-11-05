@@ -6,7 +6,10 @@ module.exports = {
   up: async (queryInterface) => {
     return queryInterface.sequelize.transaction(async t => {
       // sorted by updated_at so that comic creation resembles this order
-      const cells = await Cells.findAll({ order: [['updated_at', 'DESC']] }, { transaction: t })
+      const cells = await Cells.findAll({
+        attributes: ['id', 'comic_id'],
+        order: [['updated_at', 'DESC']] }
+      );
       const cellsWithoutAssociatedComic = cells.filter(cell => !cell.comic_id)
       
       // For some reason, cells is always in chronological order, regardless of the order directive above

@@ -1,5 +1,6 @@
 const {createNewComic} = require('./Comics');
-const {sequelize, __setFindOne} = require('../adapters/db');
+const {sequelize} = require('../adapters/db');
+const { ERROR_TYPES } = require('./constants');
 
 const {create, findOne} = sequelize.define();
 
@@ -16,20 +17,18 @@ describe('models/Comics', () => {
 
   describe('createNewComic', () => {
     it('should create a new Comic with a unique url_id', async () => {
-      const mockedExistingComics = [
-        'some', 'existing', 'cells'
-      ];
-
-      // set Comics.create mock
-      mockedExistingComics.forEach(mockComic => __setFindOne(mockComic));
+      const urlIdAlreadyExistsError = {
+        errors: [
+          {type: ERROR_TYPES.UNIQUE_VIOLATION}
+        ]
+      };
+      create.mockImplementationOnce(() => Promise.reject(urlIdAlreadyExistsError));
+      create.mockImplementationOnce(() => Promise.reject(urlIdAlreadyExistsError));
+      create.mockImplementationOnce(() => Promise.resolve({}));
 
       await createNewComic({});
 
-      // 3 calls against existing cells, either
-      //   * Comics.findOne({ where: { url_id: urlId }})
-      // 1 call against non existing cells
-      // = 4 calls total
-      expect(findOne).toHaveBeenCalledTimes(mockedExistingComics.length + 1);
+      expect(create).toHaveBeenCalledTimes(3);
     });
 
     it('should create the new Comic with the given userId', async () => {

@@ -27,7 +27,7 @@ module.exports = {
 
   down: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(t => {
-      return queryInterface.renameColumn('cells', 'title', 'caption', { transaction: t })
+      return queryInterface.renameColumn('cells', 'caption', 'title', { transaction: t })
         .then(() => queryInterface.removeColumn('cells', 'previous_cell_id', { transaction: t }))
         .then(() => queryInterface.removeColumn('comics', 'initial_cell_id', { transaction: t }));
     })

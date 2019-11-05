@@ -10,9 +10,12 @@ const __setFindOne = (newValue) => {
 
 const create = jest.fn((comic) => Promise.resolve(comic));
 
+const update = jest.fn(() => Promise.resolve());
+
 const define = () => ({
   create,
-  findOne
+  findOne,
+  update
 })
 
 const mockTransaction = 'mockTransaction';

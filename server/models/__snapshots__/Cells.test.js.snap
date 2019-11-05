@@ -15,3 +15,5 @@ Object {
   "urlId": "mockGeneratdId",
 }
 `;
+
+exports[`models/Cells createNewDraftFilename should return the new draft_filename 1`] = `"mockGeneratdId.png"`;

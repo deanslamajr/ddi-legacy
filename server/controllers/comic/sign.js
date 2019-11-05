@@ -54,6 +54,7 @@ async function signCell({draftUrlId, filename, urlId}) {
 }
 
 async function sign (req, res) {
+  let transaction;
   let comicUrlId = req.params.comicUrlId
 
   try {
@@ -106,23 +107,28 @@ async function sign (req, res) {
     let comic;
     let newlyCreatedCells;
 
-    await sequelize.transaction(async transaction => {
-      // optionally: create comic in DB
-      if(isDraftId(comicUrlId)) {
-        comic = await Comics.createNewComic({userId: req.session.userId}, {transaction});
-      } else {
-        comic = await Comics.findOne({ where: { url_id: comicUrlId }});
-        if (!isUserAuthorized(req.session, comic.creator_user_id)) {
-          return falsePositiveResponse(`comic::sign - User with id:${req.session.userId} is not authorized to sign cells on the comic with id:${comicUrlId}`, res)
-        }
-      }
+    transaction = await sequelize.transaction();
 
-      newlyCreatedCells = await Promise.all(
-        newCells.map(draftUrlId => createCell(draftUrlId, comic.id, req.session.userId, transaction))
-      );
-    })
+    // optionally: create comic in DB
+    if(isDraftId(comicUrlId)) {
+      comic = await Comics.createNewComic({userId: req.session.userId, transaction});
+    } else {
+      comic = await Comics.findOne({ where: { url_id: comicUrlId }});
+      if (!comic) {
+        return res.sendStatus(404);
+      }
+      if (!isUserAuthorized(req.session, comic.creator_user_id)) {
+        return falsePositiveResponse(`comic::sign - User with id:${req.session.userId} is not authorized to sign cells on the comic with id:${comicUrlId}`, res)
+      }
+    }
+
+    newlyCreatedCells = await Promise.all(
+      newCells.map(draftUrlId => createCell(draftUrlId, comic.id, req.session.userId, transaction))
+    );
     
     const signedCells = await Promise.all(newlyCreatedCells.map(signCell));
+
+    transaction.commit();
 
     res.json({
       comicUrlId: comic.url_id,
@@ -130,6 +136,9 @@ async function sign (req, res) {
     });
   }
   catch(e) {
+    if (transaction) {
+      transaction.rollback();
+    };
     // @todo log
     //console.error(e);
     res.sendStatus(500);

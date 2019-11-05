@@ -11,9 +11,9 @@ const sequelize = new Sequelize(serverEnvironment.PGDB_DBNAME, serverEnvironment
     min: 0,
     idle: 10000
   },
-  logging: false
+  logging: false,
   // logging: (query) => {
-  //   logger.info(query)
+  //   console.log(query);
   // }
 })
 

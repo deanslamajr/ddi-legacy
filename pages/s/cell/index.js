@@ -123,7 +123,6 @@ class CellStudio extends Component {
     Router.replaceRoute(`/s/cell/${cellUrlId}`);
   }
 
-  // formerly: updateCache
   saveStudioStateToCache = ({setHasNewImage = true} = {}) => {
     const {
       doesCellUrlIdExist,
@@ -143,13 +142,11 @@ class CellStudio extends Component {
    ***** 
    **** 
    **/
-  // formerly: updateEmojiAndSessionCache
   updateAllKonvaCachesAndForceComponentUpdate = () => {
     this.updateAllKonvaCaches();
     this.forceUpdate();
   }
 
-  // formerly: updateAllEmojisCache
   updateAllKonvaCaches = () => {
     // emojis canvas cache updates
     Object.keys(this.state.studioState.emojis).forEach(emoji => this.updateKonvaCache(emoji));
@@ -157,7 +154,6 @@ class CellStudio extends Component {
     this.updateMaskKonvaCache();
   }
 
-  // formerly: updateEmojiCache
   updateKonvaCache = (emojiId = this.state.studioState.activeEmojiId, useOutline) => {
     const emojiRefToUpdate = this.emojiRefs[emojiId]
 
@@ -170,7 +166,6 @@ class CellStudio extends Component {
     }
   }
 
-  // formerly: updateMaskCache
   updateMaskKonvaCache = () => {
     this.updateKonvaCache(EMOJI_MASK_REF_ID);
     this.updateKonvaCache(EMOJI_MASK_OUTLINE_REF_ID, true);
@@ -387,8 +382,6 @@ class CellStudio extends Component {
         studioState: clonedStudioState
       };
     }, () => {
-      // if bugs with refactor, try replacing 'updateAllKonvaCachesAndForceComponentUpdate' with 'updateAllKonvaCaches'
-      // (this was the original implementation)
       this.updateAllKonvaCachesAndForceComponentUpdate();
       this.saveStudioStateToCache();
     })
@@ -411,8 +404,6 @@ class CellStudio extends Component {
         showEmojiPicker: false
       }
     }, () => {
-      // if bugs with refactor, try replacing 'updateAllKonvaCachesAndForceComponentUpdate' with 'updateAllKonvaCaches'
-      // (this was the original implementation)
       this.updateAllKonvaCachesAndForceComponentUpdate();
       this.saveStudioStateToCache();
     })

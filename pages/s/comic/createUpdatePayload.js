@@ -162,7 +162,6 @@ export async function createUpdatePayload({comic, comicUrlIdToUpdate, isPublishe
 
     updatePayload.cells = transformedCells;
   } else {
-    // @todo fetch published comic to compare against local state and only publish changes
     const {data: publishedComic} = await axios.get(`/api/comic/${comicUrlIdToUpdate}`);
 
     const transformedCells = Object.values(comic.cells)

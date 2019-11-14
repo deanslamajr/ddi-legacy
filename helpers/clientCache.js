@@ -326,6 +326,13 @@ export const getComics = () => {
   return cache.comics;
 }
 
+function transformStudioStateToV4 (studioStatePreV4) {
+  return {
+    ...studioStatePreV4,
+    caption: studioStatePreV4.title
+  }
+}
+
 // comicFromApi (v4) = {
 //   cells: [
 //     {
@@ -386,13 +393,6 @@ export const createComicFromPublishedComic = ({
     //   studioState: {activeEmojiId: 3, backgroundColor: "#19194d", currentEmojiId: 6, showEmojiPicker: false, title: "", …}
     //   urlId: "4vR8TtVLb"
     // }
-
-    function transformStudioStateToV4 (studioStatePreV4) {
-      return {
-        ...studioStatePreV4,
-        caption: studioStatePreV4.title
-      }
-    }
 
     // create cells
     for (let cur = 0; cur < sortedCells.length; cur++) {

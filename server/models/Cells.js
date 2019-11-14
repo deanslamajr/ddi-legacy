@@ -65,29 +65,6 @@ const Cells = sequelize.define('cells',
   }
 );
 
-async function doesCellFilenameExist(filename) {
-  const cell = await Cells.findOne({
-    where: {
-      // find cells that have this filename as either image_url OR draft_image_url
-      [Sequelize.Op.or]: [
-        {image_url: filename},
-        {draft_image_url: filename}
-      ]
-    }
-  });
-  return !!cell;
-}
-
-async function generateUniqueFilename() {
-  let filename;
-
-  do {
-    filename = `${shortid.generate()}.png`;
-  } while (await doesCellFilenameExist(filename))
-
-  return filename;
-}
-
 async function createNewCell({comicId, userId, transaction}) {
   const filename = `${shortid.generate()}.png`;
   const urlId = shortid.generate();
@@ -123,6 +100,9 @@ async function createNewCell({comicId, userId, transaction}) {
   }
 }
 
+// @TODO there is a chance that there could be a collision between
+// a draftfilename and a filename
+// Need to find a way to prevent this
 async function createNewDraftFilename ({cellUrlId, transaction}) {
   const filename = `${shortid.generate()}.png`;
 

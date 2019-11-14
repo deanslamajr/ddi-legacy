@@ -263,12 +263,11 @@ class StudioV2 extends Component {
   }
 
   publish = async () => {
-    // minimum number of "jobs" required to finish a publish
-    // i.e. all jobs excluding uploads
-    // @todo update this with the amount of jobs involved for `finishPublish`
-    let totalJobsCount = 1;
     let signedCells;
     let comicUrlId;
+    // minimum number of "jobs" required to finish a publish
+    // i.e. all jobs excluding uploads
+    let totalJobsCount = 1;
 
     const cellsThatRequireUploads = this.getCellsWithNewImage();
 
@@ -457,18 +456,6 @@ StudioV2.propTypes = {
   isShowingSpinner: propTypes.bool,
   publishedComic: propTypes.object,
   recaptcha: propTypes.object
-
-  // cells: propTypes.arrayOf(propTypes.shape({
-  //   urlId: propTypes.string,
-  //   imageUrl: propTypes.string,
-  //   order: propTypes.number,
-  //   schemaVersion: propTypes.number,
-  //   studioState: propTypes.object,
-  //   title: propTypes.string
-  // })),
-  // urlId: propTypes.string,
-  // title: propTypes.string,
-  // userCanEdit: propTypes.bool
 };
 
 export default StudioV2 

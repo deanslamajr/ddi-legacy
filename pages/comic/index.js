@@ -125,17 +125,11 @@ class ComicRoute extends Component {
           imageUrl={initialCell.imageUrl}
           schemaVersion={initialCell.schemaVersion}
         />
-          {/* - iMessage/Messages https://developer.apple.com/library/archive/technotes/tn2444/_index.html
-                * Images should be at least 900px in width
-              - android app Messages
-                * rectangular preview image. 900*350 seems to work here
-                * 23 characters max for caption  */}
-          {/* <meta property="og:site_name" content="drawdrawink" />
-          <meta property="og:title" content={title} />
-          <meta property="og:image" content={imageUrl} />
-          {/* The link preview generation will look for an apple-touch-icon, favicon, or one specified by <link rel="...">. 
-              Icons should be square, and at least 108px per side. */}
-          {/* <link rel="apple-touch-icon" href="https://www.link.to/icon/appIcon.png"> */}
+          
+        {/* <meta property="og:site_name" content="drawdrawink" />
+        {/* The link preview generation will look for an apple-touch-icon, favicon, or one specified by <link rel="...">. 
+            Icons should be square, and at least 108px per side. */}
+        {/* <link rel="apple-touch-icon" href="https://www.link.to/icon/appIcon.png"> */}
 
         <CenteredContainer>
           <Comic

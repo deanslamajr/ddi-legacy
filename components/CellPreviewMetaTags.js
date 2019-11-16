@@ -10,16 +10,30 @@ export const CellPreviewMetaTags = ({
   caption,
   imageUrl,
   schemaVersion
-}) => (<Head>
-  {/* Twitter https://developer.twitter.com/en/docs/tweets/optimize-with-cards/overview/summary.html */}
-  <meta name="twitter:card" content='summary' />
-  <meta name="twitter:site" content={publicRuntimeConfig.TWITTER_HANDLE} />
-  <meta name="twitter:title" content={title || caption} />
-  <meta name="twitter:description" content={caption} />
-  {/* Images for this Card support an aspect ratio of 1:1 */ }
-  {/* with minimum dimensions of 144x144 or maximum of 4096x4096 pixels. */ }
-  {/* Images must be less than 5MB in size. The image will be cropped to a square on all platforms. */ }
-  {/* JPG, PNG, WEBP and GIF formats are supported. Only the first frame of an animated GIF will be used. */ }
-  {/* SVG is not supported  */}
-  <meta name="twitter:image" content={getCellUrl(imageUrl, schemaVersion)} />
-</Head>);
+}) => {
+  const imageAbsoluteUrl = getCellUrl(imageUrl, schemaVersion);
+
+  return (<Head>
+    {/* Twitter https://developer.twitter.com/en/docs/tweets/optimize-with-cards/overview/summary.html */}
+    <meta name="twitter:card" content='summary' />
+    <meta name="twitter:site" content={publicRuntimeConfig.TWITTER_HANDLE} />
+    <meta name="twitter:title" content={title || caption} />
+    <meta name="twitter:description" content={caption} />
+    {/* Images for this Card support an aspect ratio of 1:1 */ }
+    {/* with minimum dimensions of 144x144 or maximum of 4096x4096 pixels. */ }
+    {/* Images must be less than 5MB in size. The image will be cropped to a square on all platforms. */ }
+    {/* JPG, PNG, WEBP and GIF formats are supported. Only the first frame of an animated GIF will be used. */ }
+    {/* SVG is not supported  */}
+    <meta name="twitter:image" content={imageAbsoluteUrl} />
+
+    {/* iOS Message https://scottbartell.com/2019/03/05/implementing-imessage-link-previews/ */ }
+    {/* iMessage/Messages https://developer.apple.com/library/archive/technotes/tn2444/_index.html */ }
+    {/* note: Images less than 150px in width will not be used, or may be presented as icons */ }
+    <meta property="og:title" content={title || caption} />
+    <meta property="og:image" content={imageAbsoluteUrl} />
+    
+    {/* - android app Messages
+        * rectangular preview image. 900*350 seems to work here
+        * 23 characters max for caption */}
+  </Head>)
+};

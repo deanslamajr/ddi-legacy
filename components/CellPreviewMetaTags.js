@@ -38,5 +38,10 @@ export const CellPreviewMetaTags = ({
     <meta property="og:image" content={imageAbsoluteUrl} />
     <meta property="og:site_name" content={APP_TITLE} />
 
+    {/* Facebook https://developers.facebook.com/docs/sharing/webmasters/ */}
+    {/* <meta property="og:url" content="http://www.nytimes.com/2015/02/19/arts/international/when-great-minds-dont-think-alike.html" /> */}
+    <meta property="og:type" content="article" />
+    <meta property="og:description" content={caption} />
+
   </Head>)
 };

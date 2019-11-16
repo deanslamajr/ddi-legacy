@@ -9,7 +9,8 @@ const clientEnvironment = {
   GA_ID: fromProcessEnv('GA_ID'),
   CAPTCHA_V3_SITE_KEY: fromProcessEnv('CAPTCHA_V3_SITE_KEY'),
   CAPTCHA_V2_SITE_KEY: fromProcessEnv('CAPTCHA_V2_SITE_KEY'),
-  CELL_IMAGES_DOMAIN: fromProcessEnv('CELL_IMAGES_DOMAIN')
+  CELL_IMAGES_DOMAIN: fromProcessEnv('CELL_IMAGES_DOMAIN'),
+  TWITTER_HANDLE: fromProcessEnv('TWITTER_HANDLE')
 }
 
 function fromProcessEnv (name) {

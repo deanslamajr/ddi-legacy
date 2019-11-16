@@ -14,6 +14,8 @@ import {CellPreviewMetaTags} from '../components/CellPreviewMetaTags'
 import { Router } from '../routes'
 import { getApi } from '../helpers'
 
+import {APP_TITLE} from '../config/constants.json';
+
 const CenteredContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -75,7 +77,7 @@ class CellRoute extends Component {
     return (
       <div>
         <Head>
-          <title>DrawDrawInk - {caption ? `${caption}` : 'Cell'}</title>
+          <title>{APP_TITLE} - {caption ? `${caption}` : 'Cell'}</title>
         </Head>
         <CellPreviewMetaTags
           caption={caption || ' '}

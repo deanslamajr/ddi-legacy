@@ -15,7 +15,9 @@ import {
 import {CellPreviewMetaTags} from '../../components/CellPreviewMetaTags';
 
 import { Router } from '../../routes'
-import { getApi, forwardCookies, redirect } from '../../helpers'
+import { getApi, forwardCookies, redirect } from '../../helpers';
+
+import {APP_TITLE} from '../../config/constants.json';
 
 const CenteredContainer = styled.div`
   display: flex;
@@ -117,7 +119,7 @@ class ComicRoute extends Component {
     return (
       <div>
         <Head>
-          <title>DrawDrawInk - {title ? `${title}` : 'Comic'}</title>
+          <title>{APP_TITLE} - {title ? `${title}` : 'Comic'}</title>
         </Head>
         <CellPreviewMetaTags
           title={title}
@@ -125,11 +127,6 @@ class ComicRoute extends Component {
           imageUrl={initialCell.imageUrl}
           schemaVersion={initialCell.schemaVersion}
         />
-          
-        {/* <meta property="og:site_name" content="drawdrawink" />
-        {/* The link preview generation will look for an apple-touch-icon, favicon, or one specified by <link rel="...">. 
-            Icons should be square, and at least 108px per side. */}
-        {/* <link rel="apple-touch-icon" href="https://www.link.to/icon/appIcon.png"> */}
 
         <CenteredContainer>
           <Comic

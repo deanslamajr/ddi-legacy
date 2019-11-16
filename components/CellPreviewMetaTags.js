@@ -3,6 +3,8 @@ import getConfig from 'next/config';
 
 import {getCellUrl} from '../helpers'
 
+import {APP_TITLE} from '../config/constants.json';
+
 const { publicRuntimeConfig } = getConfig();
 
 export const CellPreviewMetaTags = ({
@@ -28,12 +30,13 @@ export const CellPreviewMetaTags = ({
 
     {/* iOS Message https://scottbartell.com/2019/03/05/implementing-imessage-link-previews/ */ }
     {/* iMessage/Messages https://developer.apple.com/library/archive/technotes/tn2444/_index.html */ }
-    {/* note: Images less than 150px in width will not be used, or may be presented as icons */ }
+    {/*   * Images less than 150px in width will not be used, or may be presented as icons */ }
+    {/* Android app Messages */}
+    {/*   * rectangular preview image. 900*350 seems to work here */}
+    {/*   * 23 characters max for caption */}
     <meta property="og:title" content={title || caption} />
     <meta property="og:image" content={imageAbsoluteUrl} />
-    
-    {/* - android app Messages
-        * rectangular preview image. 900*350 seems to work here
-        * 23 characters max for caption */}
+    <meta property="og:site_name" content={APP_TITLE} />
+
   </Head>)
 };

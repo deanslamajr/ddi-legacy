@@ -71,7 +71,9 @@ async function sign (req, res) {
     } = req.body;
 
     if (newCells.length > MAX_DIRTY_CELLS) {
-      throw new Error(`comic::sign - The number of cells to sign, ${newCells.length}, exceeded the system limit of ${MAX_DIRTY_CELLS}.`);
+      // @TODO log
+      console.error(`comic::sign - The number of cells to sign, ${newCells.length}, exceeded the system limit of ${MAX_DIRTY_CELLS}.`);
+      return res.sendStatus(400);
     }
 
     /**

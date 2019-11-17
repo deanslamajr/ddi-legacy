@@ -2,6 +2,10 @@ const {Comics} = require('../../models')
 const { falsePositiveResponse, isUserAuthorized } = require('../utils');
 const {sequelize} = require('../../adapters/db')
 
+const {
+  MAX_DIRTY_CELLS
+} = require('../../../config/constants.json')
+
 function updateCell (
   {studioState, caption, order, previousCellUrlId, schemaVersion, updateImageUrl, urlId},
   cells,
@@ -82,6 +86,12 @@ async function update (req, res) {
   
     if (!isUserAuthorized(req.session, comic.creator_user_id)) {
       return falsePositiveResponse(`comic::update - User with id:${req.session.userId} is not authorized to update the comic with id:${comic.id}`, res)
+    }
+
+    if (cellsToUpdate.length > MAX_DIRTY_CELLS) {
+      // @TODO log
+      console.error(`comic::update - The number of cells to update, ${cellsToUpdate.length}, exceeded the system limit of ${MAX_DIRTY_CELLS}.`);
+      return res.sendStatus(400);
     }
   
     const cells = await comic.getCells();

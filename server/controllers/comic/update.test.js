@@ -1,5 +1,11 @@
+const cloneDeep = require('lodash/cloneDeep');
+
 const {update} = require('./update');
 const {Comics} = require('../../models');
+
+const {
+  MAX_DIRTY_CELLS
+} = require('../../../config/constants.json')
 
 jest.mock('../../models');
 jest.mock('../../adapters/db');
@@ -16,17 +22,19 @@ describe('controllers/comic/update', () => {
   const updateComic = jest.fn();
   const updateCell = jest.fn();
 
+  const cellToUpdate1 = {
+    id: initialCellId,
+    url_id: initialCellUrlId,
+    update: updateCell
+  };
+  const cellToUpdate2 = {
+    id: someExistingId,
+    url_id: someExistingUrlId,
+    update: updateCell
+  };
   const cellsOnComic = [
-    {
-      id: initialCellId,
-      url_id: initialCellUrlId,
-      update: updateCell
-    },
-    {
-      id: someExistingId,
-      url_id: someExistingUrlId,
-      update: updateCell
-    }
+    cellToUpdate1,
+    cellToUpdate2
   ];
 
   const studioState = {};
@@ -105,6 +113,23 @@ describe('controllers/comic/update', () => {
       await update(mockedReq, res);
 
       expect(sendStatus.mock.calls[0][0]).toBe(200);
+    });
+  });
+
+  describe('if the number of cells to update exceeds the system maximum', () => {
+    it('should respond 400', async () => {
+      const badRequest = cloneDeep(req);
+      badRequest.body.cells = [];
+
+      // create request with 1 more cell than allowed
+      for (let updateCount = 0; updateCount < MAX_DIRTY_CELLS + 1; updateCount++) {
+        const cellToUpdate = cloneDeep(cellToUpdate1);
+        badRequest.body.cells.push(cellToUpdate)
+      }
+
+      await update(badRequest, res);
+
+      expect(sendStatus).toHaveBeenCalledWith(400);
     });
   });
 

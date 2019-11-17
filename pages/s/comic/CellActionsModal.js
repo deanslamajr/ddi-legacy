@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { Router } from '../../../routes'
 import Cell from '../../../components/Cell'
 import Modal, { CenteredButtons } from '../../../components/Modal'
-import { MenuButton } from '../../../components/Buttons'
+import { PinkMenuButton } from '../../../components/Buttons'
 
 import {SCHEMA_VERSION} from '../../../config/constants.json';
 
@@ -39,9 +39,9 @@ export default class CellActionsModal extends React.Component {
         removeborders
       />
       <CenteredButtons>
-        <MenuButton onClick={this.navigateToCellStudio}>
+        <PinkMenuButton onClick={this.navigateToCellStudio}>
           EDIT
-        </MenuButton>
+        </PinkMenuButton>
       </CenteredButtons>
     </HomeModal>)
   }

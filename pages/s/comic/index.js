@@ -8,6 +8,7 @@ import ComicActionsModal from './ComicActionsModal'
 import CellActionsModal from './CellActionsModal'
 import AddCellModal from './AddCellModal'
 import PublishPreviewModal from './PublishPreviewModal'
+import ReachedDirtyCellLimitModal from './ReachedDirtyCellLimitModal'
 
 import { createUpdatePayload } from './createUpdatePayload';
 
@@ -27,6 +28,8 @@ import {
 } from '../../../config/constants.json';
 
 const { publicRuntimeConfig } = getConfig();
+
+const MAX_DIRTY_CELLS = 10;
 
 const SIDE_BUTTONS_SPACER = 0//.4
 const cellWidth = `${(1 - SIDE_BUTTONS_SPACER) * theme.layout.width}px`;
@@ -97,7 +100,7 @@ function uploadImage(imageFile, signedRequest) {
 const AddCellButton = styled(PinkMenuButton)`
   font-size: 2.5rem;
   width: ${props => props.theme.layout.width}px;
-`
+`;
 
 const OuterContainer = styled.div`
   display: flex;
@@ -147,7 +150,8 @@ class StudioV2 extends Component {
     showAddCellModal: false,
     showComicActionsModal: false,
     showCellActionsModal: false,
-    showPreviewModal: false
+    showPreviewModal: false,
+    showReachedDirtyCellLimitModal: false
   }
 
   async componentDidMount() {
@@ -174,6 +178,14 @@ class StudioV2 extends Component {
 
   showAddCellModal = () => {
     this.setState({ showAddCellModal: true })
+  }
+
+  hideReachedDirtyCellLimitModal = () => {
+    this.setState({ showReachedDirtyCellLimitModal: false })
+  }
+
+  showReachedDirtyCellLimitModal = (cb = () => {}) => {
+    this.setState({ showReachedDirtyCellLimitModal: true }, cb)
   }
 
   navigateToNewComic = () => {
@@ -218,7 +230,11 @@ class StudioV2 extends Component {
   }
 
   renderAddCellButton = () => {
-    return (<AddCellButton onClick={() => this.showAddCellModal()}>
+    const handleClick = this.canDirtyMoreCells()
+      ? this.showAddCellModal
+      : this.showReachedDirtyCellLimitModal;
+
+    return (<AddCellButton onClick={() => handleClick()}>
       +
     </AddCellButton>)
   }
@@ -248,9 +264,9 @@ class StudioV2 extends Component {
       : [];
   }
 
-  handlePublishPreviewClick = () => {
+  handlePublishPreviewClick = (cb) => {
     this.togglePreviewModal(true);
-    this.toggleComicActionsModal(false);
+    cb();
   }
 
   togglePreviewModal = (shouldShow) => {
@@ -390,6 +406,23 @@ class StudioV2 extends Component {
     await axios.patch(`/api/comic/${comicUrlIdToUpdate}`, updatePayload);
   }
 
+  // Only allow up to 10 cells to be dirty at any given time
+  canDirtyMoreCells = () => {
+    const sortedCells = this.getCellsFromState();
+    const dirtyCells = sortedCells.filter(({isDirty}) => isDirty);
+    return dirtyCells.length < MAX_DIRTY_CELLS;
+  }
+
+  handleCellClick = (activeCell) => {
+    // if this cell is pristine but we've reached the limit of dirty cells
+    // don't allow edits to this cell
+    if (!activeCell.isDirty && !this.canDirtyMoreCells()) {
+      this.showReachedDirtyCellLimitModal();
+    } else {
+      this.setState({activeCell});
+    }
+  }
+
   render() {
     const sortedCells = this.getCellsFromState();
 
@@ -397,7 +430,7 @@ class StudioV2 extends Component {
       <OuterContainer>
         {/* CELLS */}
         {sortedCells.map((cell) => (
-          <div key={cell.imageUrl} onClick={() => this.setState({ activeCell: cell })}>
+          <div key={cell.imageUrl} onClick={() => this.handleCellClick(cell)}>
             {cell.isDirty && <UnpublishedChangesLabel />}
             <StudioCell
               clickable
@@ -422,7 +455,7 @@ class StudioV2 extends Component {
       {this.state.showComicActionsModal && <ComicActionsModal
         onCancelClick={() => this.toggleComicActionsModal(false)}
         onDeleteClick={() => this.handleDeleteComicClick()}
-        onPublishClick={() => this.handlePublishPreviewClick()}
+        onPublishClick={() => this.handlePublishPreviewClick(() => this.toggleComicActionsModal(false))}
       />}
 
       {this.state.activeCell && <CellActionsModal
@@ -434,6 +467,11 @@ class StudioV2 extends Component {
         onCancelClick={() => this.togglePreviewModal(false)}
         onPublishClick={() => this.publish()}
         cells={sortedCells}
+      />}
+
+      {this.state.showReachedDirtyCellLimitModal && <ReachedDirtyCellLimitModal
+        onCancelClick={() => this.hideReachedDirtyCellLimitModal()}
+        onPublishClick={() => this.handlePublishPreviewClick(() => this.hideReachedDirtyCellLimitModal())}
       />}
 
       <NavButton

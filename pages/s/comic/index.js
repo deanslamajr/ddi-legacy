@@ -225,8 +225,12 @@ class StudioV2 extends Component {
   }
 
   navigateBack = () => {
-    this.props.showSpinner()
-    Router.pushRoute(`/comic/${this.props.comicUrlId}`)
+    this.props.showSpinner();
+    if(isDraftId(this.props.comicUrlId)) {
+      Router.pushRoute('/gallery');
+    } else {
+      Router.pushRoute(`/comic/${this.props.comicUrlId}`);
+    }
   }
 
   renderAddCellButton = () => {

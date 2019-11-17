@@ -18,8 +18,17 @@ const define = () => ({
   update
 })
 
-const mockTransaction = 'mockTransaction';
-const transaction = (trnsctn) => trnsctn(mockTransaction)
+const mockTransaction = {
+  commit: () => {},
+  rollback: () => {}
+};
+const transaction = (trnsctn) => {
+  if (trnsctn) {
+    return trnsctn(mockTransaction);
+  } else {
+    return Promise.resolve(mockTransaction);
+  }
+}
 
 const sequelize = {
   define,
@@ -28,5 +37,6 @@ const sequelize = {
 
 module.exports = {
   sequelize,
+  __mockTransaction: mockTransaction, 
   __setFindOne
 }

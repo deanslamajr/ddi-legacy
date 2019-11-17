@@ -24,12 +24,12 @@ import { generateCellImage } from '../../../helpers/generateCellImageFromEmojis'
 import { isDraftId } from '../../../shared/isDraftId';
 
 import {
-  CAPTCHA_ACTION_CELL_PUBLISH, SCHEMA_VERSION
+  CAPTCHA_ACTION_CELL_PUBLISH,
+  MAX_DIRTY_CELLS,
+  SCHEMA_VERSION
 } from '../../../config/constants.json';
 
 const { publicRuntimeConfig } = getConfig();
-
-const MAX_DIRTY_CELLS = 10;
 
 const SIDE_BUTTONS_SPACER = 0//.4
 const cellWidth = `${(1 - SIDE_BUTTONS_SPACER) * theme.layout.width}px`;

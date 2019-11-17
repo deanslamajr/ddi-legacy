@@ -404,7 +404,7 @@ describe('clientCache', () => {
     });
 
     describe('if the passed comic is entirely of cells of schemaVersion < 4', () => {
-      it('should add a new comic to the client cache with the data from the passed api comic datastructure', () => {
+      xit('should add a new comic to the client cache with the data from the passed api comic datastructure', () => {
         throw new Error('implement test!');
         
         createComicFromPublishedComic(comicFromApi);
@@ -415,7 +415,7 @@ describe('clientCache', () => {
         expect(cache.comics).toHaveProperty(yetAnotherComicUrlId);
       });
       
-      it('should add a new cell to the client cache for each cell included in the passed api comic datastructure', () => {
+      xit('should add a new cell to the client cache for each cell included in the passed api comic datastructure', () => {
         throw new Error('implement test!');
       });
     });

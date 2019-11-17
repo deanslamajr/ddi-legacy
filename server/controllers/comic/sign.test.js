@@ -88,6 +88,16 @@ describe('controllers/comic/sign', () => {
     });
   });
 
+  describe('if the number of cells to sign exceeds the system maximum', () => {
+    it('should respond 200', async () => {
+      req.body.newCells = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
+
+      await sign(req, res);
+
+      expect(sendStatus).toHaveBeenCalledWith(500);
+    });
+  });
+
   describe('if CAPTCHA_V3_SITE_KEY env var exists', () => {
     const captchaResponseSuccess = {
       action: CAPTCHA_ACTION_CELL_PUBLISH,

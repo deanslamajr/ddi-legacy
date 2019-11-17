@@ -11,7 +11,9 @@ const {
 } = require('../../env-config');
 const {isDraftId} = require('../../../shared/isDraftId');
 const {
-  CAPTCHA_ACTION_CELL_PUBLISH, CAPTCHA_THRESHOLD
+  CAPTCHA_ACTION_CELL_PUBLISH,
+  CAPTCHA_THRESHOLD,
+  MAX_DIRTY_CELLS
 } = require('../../../config/constants.json')
 
 function verifyCaptchaToken (token, isV2) {
@@ -59,7 +61,7 @@ async function sign (req, res) {
 
   try {
     if (!req.session.userId) {
-      throw new Error('User session does not exist!')
+      throw new Error('User session does not exist!');
     }
 
     const {
@@ -67,6 +69,10 @@ async function sign (req, res) {
       v3Token,
       newCells
     } = req.body;
+
+    if (newCells.length > MAX_DIRTY_CELLS) {
+      throw new Error(`comic::sign - The number of cells to sign, ${newCells.length}, exceeded the system limit of ${MAX_DIRTY_CELLS}.`);
+    }
 
     /**
      * CAPTCHA

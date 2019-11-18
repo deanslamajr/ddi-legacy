@@ -33,6 +33,8 @@ const setUpApp = () => {
 
   server.use('/api', api)
 
+  server.use('/', express.static(__dirname + '/../static'));
+
   server.use(handler)
 
   server.listen(port, (err) => {

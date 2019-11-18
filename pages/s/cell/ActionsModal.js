@@ -14,7 +14,7 @@ export default class ActionsModal extends React.Component {
     const {
       onCancelClick,
       onCanvasColorSelect,
-      onResetClick,
+      onClearClick,
       onPreviewClick,
       toggleCaptionModal
     } = this.props
@@ -36,8 +36,8 @@ export default class ActionsModal extends React.Component {
         </PinkMenuButton>
       </CenteredButtons>
       <CenteredButtons>
-        <MenuButton onClick={onResetClick}>
-          RESET
+        <MenuButton onClick={onClearClick}>
+          CLEAR
         </MenuButton>
       </CenteredButtons>
     </HomeModal>)

@@ -241,7 +241,7 @@ export const getComic = (comicUrlId) => {
   return cache.comics[comicUrlId];
 }
 
-export const setCellStudioState = (cellUrlId, newStudioState, {setHasNewImage = true}) => {
+export const setCellStudioState = (cellUrlId, newStudioState, {setHasNewImage = true} = {}) => {
   const cache = getCache();
 
   const cellToUpdate = cache.cells[cellUrlId];

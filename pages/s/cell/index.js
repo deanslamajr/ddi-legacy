@@ -111,7 +111,6 @@ class CellStudio extends Component {
    **/
   clearCache = () => {
     const {clearStudioState} = require('../../../helpers/clientCache');
-    // @todo if this cell is a duplicate, pass the duplicated cell's studio state as 2nd argument
     clearStudioState(this.props.cellUrlId);
   }
 
@@ -551,7 +550,7 @@ class CellStudio extends Component {
     }
   }
 
-  onResetClick = () => {
+  onClearClick = () => {
     this.toggleActionsModal(false);
     this.toggleResetWarningModal(true);
   }
@@ -625,7 +624,7 @@ class CellStudio extends Component {
                 <ActionsModal
                   onCancelClick={() => this.toggleActionsModal(false)}
                   onCanvasColorSelect={() => showCanvaColorMenu()}
-                  onResetClick={() => this.onResetClick()}
+                  onClearClick={() => this.onClearClick()}
                   onPreviewClick={() => this.handlePreviewClick()}
                   toggleCaptionModal={this.showCaptionModalFromActionsModal}
                 />
@@ -667,8 +666,8 @@ class CellStudio extends Component {
         />}
 
         {this.state.showResetWarningModal && <WarningModal
-          message='Reset the Canvas?'
-          okButtonLabel='RESET'
+          message='Clear the Canvas?'
+          okButtonLabel='CLEAR'
           onCancelClick={() => this.toggleResetWarningModal(false)}
           onOkClick={() => this.resetStudioSession()}
         />}

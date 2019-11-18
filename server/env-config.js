@@ -10,7 +10,8 @@ const clientEnvironment = {
   CAPTCHA_V3_SITE_KEY: fromProcessEnv('CAPTCHA_V3_SITE_KEY'),
   CAPTCHA_V2_SITE_KEY: fromProcessEnv('CAPTCHA_V2_SITE_KEY'),
   CELL_IMAGES_DOMAIN: fromProcessEnv('CELL_IMAGES_DOMAIN'),
-  TWITTER_HANDLE: fromProcessEnv('TWITTER_HANDLE')
+  TWITTER_HANDLE: fromProcessEnv('TWITTER_HANDLE'),
+  GOOGLE_SITE_VERIFICATION: fromProcessEnv('GOOGLE_SITE_VERIFICATION')
 }
 
 function fromProcessEnv (name) {

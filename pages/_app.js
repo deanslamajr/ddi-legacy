@@ -225,6 +225,9 @@ class MyApp extends App {
           <meta name="msapplication-TileColor" content="#da532c"/>
           <meta name="msapplication-config" content={`${publicRuntimeConfig.FAVICON_ROOT_URL}/browserconfig.xml`}/>
           <meta name="theme-color" content="#ffffff"/>
+          
+          {/* Google Search Dashboard - proof of domain ownership */}
+          <meta name="google-site-verification" content={`${publicRuntimeConfig.GOOGLE_SITE_VERIFICATION}`} />
         </Head>
 
         <MobileViewportSettings />

@@ -195,6 +195,7 @@ export const deleteCell = (cellUrlId) => {
   // get the comic associated with this cellUrlId
   const comicUrlId = getComicUrlIdFromCellUrlId(cellUrlId);
 
+  const deletedCellsPreviousCellUrlId = cache.cells[cellUrlId].previousCellUrlId;
   // delete this cell from the cache
   delete cache.cells[cellUrlId];
 
@@ -208,8 +209,15 @@ export const deleteCell = (cellUrlId) => {
     const secondCell = comicsCells.find(
       ({previousCellUrlId}) => previousCellUrlId === cellUrlId
     );
-    cache.comics[comicUrlId].initialCellUrlId = secondCell.urlId;
+    if (secondCell) {
+      cache.comics[comicUrlId].initialCellUrlId = secondCell.urlId;
+    }
   }
+
+  // if any cells reference this cell as previousCellUrlId
+  // update those cell's to reference this cell's previousCellUrlId
+  const cellsThatReferenceThisCellAsPreviousCellUrlId = comicsCells.filter(({previousCellUrlId}) => previousCellUrlId === cellUrlId);
+  cellsThatReferenceThisCellAsPreviousCellUrlId.forEach(cell => cell.previousCellUrlId = deletedCellsPreviousCellUrlId);
 
   // save cache
   setCache(cache);

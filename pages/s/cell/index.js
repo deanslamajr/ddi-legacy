@@ -497,12 +497,15 @@ class CellStudio extends Component {
     deleteCell(this.props.cellUrlId);
   }
 
-  exit = () => {
+  exit = (comicUrlId) => {
     this.props.showSpinner();
 
-    if (Object.keys(this.state.studioState.emojis).length) {
-      const {getComicUrlIdFromCellUrlId} = require('../../../helpers/clientCache');
-      const comicUrlId = getComicUrlIdFromCellUrlId(this.props.cellUrlId);
+    const {getCellsByComicUrlId, getComicUrlIdFromCellUrlId} = require('../../../helpers/clientCache');
+    comicUrlId = comicUrlId || getComicUrlIdFromCellUrlId(this.props.cellUrlId);
+    const cells = getCellsByComicUrlId(comicUrlId);
+    const numberOfCells = Object.keys(cells).length;
+
+    if (numberOfCells > 0) {
       Router.pushRoute(`/s/comic/${comicUrlId}`);
     }
     else {
@@ -545,8 +548,10 @@ class CellStudio extends Component {
       this.closeEmojiPicker();
     }
     else {
+      const {getComicUrlIdFromCellUrlId} = require('../../../helpers/clientCache');
+      const comicUrlId = getComicUrlIdFromCellUrlId(this.props.cellUrlId);
       this.deleteDraft();
-      this.exit();
+      this.exit(comicUrlId);
     }
   }
 

@@ -17,7 +17,7 @@ function transformComicFromDB (comic) {
 
   const cleanedCells = comic.cells.map(cell => transformCellsFromDB(cell, comic.cells));
 
-  if (cleanedCells[0].schemaVersion >= 4) {
+  if (cleanedCells.length && cleanedCells[0].schemaVersion >= 4) {
     const initialCell = comic.cells.find(({id}) => id === comic.initial_cell_id);
     sortedCells = sortCellsV4(initialCell.url_id, cleanedCells);
   } else {
@@ -26,7 +26,7 @@ function transformComicFromDB (comic) {
   
   return {
     cellsCount: sortedCells.length,
-    initialCell: sortedCells[0],
+    initialCell: sortedCells.length ? sortedCells[0] : null,
     updatedAt: comic.updated_at,
     urlId: comic.url_id
   }

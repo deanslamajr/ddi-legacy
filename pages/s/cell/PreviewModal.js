@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import Cell from '../../../components/Cell'
-import {PinkMenuButton} from '../../../components/Buttons'
+import {MenuButton, PinkMenuButton} from '../../../components/Buttons'
 import Modal, { CenteredButtons } from '../../../components/Modal'
 
 import {SCHEMA_VERSION} from '../../../config/constants.json'
@@ -23,6 +23,7 @@ const PreviewModalContainer = styled(Modal)`
 
 function PreviewModal ({
   cellImageUrl,
+  onBackToComicClick,
   onCancelClick,
   onEditCaptionClick,
   caption
@@ -39,8 +40,13 @@ function PreviewModal ({
       />
     </CenteredContainer>
     <CenteredButtons>
-      <PinkMenuButton onClick={onEditCaptionClick}>
+      <MenuButton onClick={onEditCaptionClick}>
         CAPTION
+      </MenuButton>
+    </CenteredButtons>
+    <CenteredButtons>
+      <PinkMenuButton onClick={onBackToComicClick}>
+        BACK TO COMIC
       </PinkMenuButton>
     </CenteredButtons>
   </PreviewModalContainer>)

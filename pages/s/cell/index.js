@@ -659,6 +659,7 @@ class CellStudio extends Component {
 
         {this.state.showPreviewModal && <PreviewModal
           cellImageUrl={this.state.cellImageUrl}
+          onBackToComicClick={() => this.exit()}
           onCancelClick={() => this.togglePreviewModal(false)}
           onEditCaptionClick={() => this.toggleCaptionModal(true)}
           caption={this.state.studioState.caption || ''}

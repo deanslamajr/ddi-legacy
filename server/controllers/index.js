@@ -2,12 +2,7 @@ const express = require('express')
 
 const {login, logout} = require('./user')
 const { sign } = require('./sign')
-const {
-  all: getCells,
-  get: getCell,
-  getParent,
-  update: updateCell
-} = require('./cell')
+const {get: getCell} = require('./cell')
 const {
   all: getComics,
   inactivate: deleteComic,
@@ -25,8 +20,6 @@ router.post('/user/logout', logout);
 router.post('/sign', sign)
 
 router.get('/cell/:cellId', getCell)
-router.put('/cell/:cellId', updateCell)
-router.get('/cells', getCells)
 
 router.post('/comic/:comicUrlId/sign', signComic);
 router.get('/comic/:comicId', getComic);

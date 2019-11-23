@@ -1,6 +1,5 @@
 const { Cells } = require('../models')
-const { falsePositiveResponse, isUserAuthorized } = require('./utils')
-const { validateStudioState } = require('../../shared/validators')
+const { falsePositiveResponse } = require('./utils')
 
 async function get (req, res) {
   const cellId = req.params.cellId
@@ -18,56 +17,6 @@ async function get (req, res) {
   })
 }
 
-async function all (req, res) {
-  const cells = await Cells.findAll({})
-  res.json(cells)
-}
-
-async function activateComic (cell) {
-  const comic = await cell.getComic();
-  return comic.update({is_active: true});
-}
-
-async function update (req, res) {
-  try {
-    const cellId = req.params.cellId
-
-    const studioState = validateStudioState(req.body.studioState)
-
-    const cell = await Cells.findOne({ where: { url_id: cellId }})
-
-    if (!cell) {
-      return falsePositiveResponse(`cell::update - There is not a Cell with id:${cellId}`, res)
-    }
-
-    if (!isUserAuthorized(req.session, cell.creator_user_id)) {
-      // @todo proper log
-      // @todo this should probably provide some kind of false positive response
-      console.error('Unauthorized user!')
-      return res.sendStatus(401)
-    }
-
-    const activateComicPromise = req.body.activateComic
-      ? activateComic(cell)
-      : Promise.resolve();
-
-    const updateCellPromise = cell.update({ studio_state: studioState });
-
-    await Promise.all([
-      updateCellPromise,
-      activateComicPromise
-    ]);
-    
-    res.sendStatus(200);
-  }
-  catch (e) {
-    console.error(e)
-    throw e
-  }
-}
-
 module.exports = {
-  all,
-  get,
-  update
+  get
 }

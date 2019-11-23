@@ -92,8 +92,7 @@ class CellStudio extends Component {
         showEmojiPicker,
         studioState: cachedStudioState
       }, () => {
-        this.updateKonvaCache();
-        this.updateMaskKonvaCache();
+        this.updateAllKonvaCachesAndForceComponentUpdate();
       });
     }
     else {

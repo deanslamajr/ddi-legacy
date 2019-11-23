@@ -36,7 +36,7 @@ export default class CellActionsModal extends React.Component {
         isImageUrlAbsolute={hasNewImage}
         schemaVersion={schemaVersion}
         caption={studioState.caption}
-        removeborders
+        removeBorders
       />
       <CenteredButtons>
         <PinkMenuButton onClick={this.navigateToCellStudio}>

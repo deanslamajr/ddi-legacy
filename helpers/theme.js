@@ -11,6 +11,10 @@ const theme = {
     width: 250,
     height: 250
   },
+  cell: {
+    fullWidth: '100%',
+    width: '300px'
+  },
   layout: {
     width: 250,
     bottomPadding: 75

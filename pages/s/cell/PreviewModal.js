@@ -31,7 +31,7 @@ function PreviewModal ({
   return (<PreviewModalContainer onCancelClick={onCancelClick}>
     <CenteredContainer>
       <Cell
-        removeborders
+        removeBorders
         imageUrl={cellImageUrl}
         schemaVersion={SCHEMA_VERSION}
         caption={caption}

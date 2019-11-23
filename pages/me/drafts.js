@@ -92,7 +92,7 @@ class DraftsRoute extends Component {
               clickable
               imageUrl={imageUrl}
               isImageUrlAbsolute
-              removeborders
+              removeBorders
               schemaVersion={SCHEMA_VERSION}
               width="250px"
             />

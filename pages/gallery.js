@@ -13,6 +13,7 @@ import {ErrorCell, LoadingCell} from '../components/Loading'
 
 import { getCellUrl } from '../helpers'
 import { media, shadow } from '../helpers/style-utils'
+import theme from '../helpers/theme'
 
 import { Link, Router } from '../routes'
 
@@ -60,8 +61,8 @@ const Thumb = ({cellsCount, imageUrl}) => {
     {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}
     <Thumbnail
       src={imageUrl}
-      loader={<LoadingCell removeborders/>}
-      unloader={<ErrorCell removeborders/>}
+      loader={<LoadingCell width={theme.cell.fullWidth} />}
+      unloader={<ErrorCell width={theme.cell.fullWidth} />}
     />
   </>)
 }
@@ -71,7 +72,7 @@ const OldThumb = ({caption, cellsCount, schemaVersion, imageUrl}) => {
     {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}
     <Cell
       clickable
-      removeborders
+      removeBorders
       imageUrl={imageUrl}
       isImageUrlAbsolute={schemaVersion>1}
       schemaVersion={schemaVersion}

@@ -71,16 +71,16 @@ export function LoadSpinner ({percentCompleted}) {
 }
 
 const Image = styled.img`
-  width: ${props => props.width || (props.removeborders ? '100%' : '300px')};
+  width: ${props => props.width || props.theme.cell.width};
   max-width: calc(100vw - 7px);
 `;
 
-export const LoadingCell = ({removeborders}) => <Image
+export const LoadingCell = ({width}) => <Image
     src={`${publicRuntimeConfig.ASSETS_ROOT_URL}/loading.png`}
-    removeborders={removeborders}
+    width={width}
   />
 
-export const ErrorCell = ({removeborders}) => <Image
+export const ErrorCell = ({width}) => <Image
     src={`${publicRuntimeConfig.ASSETS_ROOT_URL}/error.png`}
-    removeborders={removeborders}
+    width={width}
   />

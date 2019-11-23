@@ -43,6 +43,10 @@ async function get (req, res) {
     // resolve comic.initialCellUrlId
     const initialCell = cellsData.find(({id}) => comic.initial_cell_id === id)
     initialCellUrlId = initialCell && initialCell.url_id;
+  } else {
+    // resolve comic.initialCellUrlId
+    const initialCell = cellsData.find(({order}) => order === 0)
+    initialCellUrlId = initialCell && initialCell.url_id;
   }
 
   res.json({

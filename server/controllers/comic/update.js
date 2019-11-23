@@ -1,6 +1,9 @@
 const {Comics} = require('../../models')
 const { falsePositiveResponse, isUserAuthorized } = require('../utils');
 const {sequelize} = require('../../adapters/db')
+const {
+  validateCaption, validateStudioState
+} = require('../../../shared/validators')
 
 const {
   MAX_DIRTY_CELLS
@@ -32,10 +35,10 @@ function updateCell (
     updatePayload.previous_cell_id = previousCell.id;
   }
   if (typeof caption === 'string') {
-    updatePayload.caption = caption;
+    updatePayload.caption = validateCaption(caption);
   }
   if (studioState) {
-    updatePayload.studio_state = studioState;
+    updatePayload.studio_state = validateStudioState(studioState);
   }
   if (updateImageUrl) {
     updatePayload.image_url = cell.draft_image_url;

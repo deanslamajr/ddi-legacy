@@ -417,6 +417,12 @@ class StudioV2 extends Component {
     return dirtyCells.length < MAX_DIRTY_CELLS;
   }
 
+  isComicDirty = () => {
+    const sortedCells = this.getCellsFromState();
+    const dirtyCells = sortedCells.filter(({isDirty}) => isDirty);
+    return dirtyCells.length > 0;
+  }
+
   handleCellClick = (activeCell) => {
     // if this cell is pristine but we've reached the limit of dirty cells
     // don't allow edits to this cell
@@ -457,6 +463,7 @@ class StudioV2 extends Component {
       />}
 
       {this.state.showComicActionsModal && <ComicActionsModal
+        isComicDirty={this.isComicDirty()}
         onCancelClick={() => this.toggleComicActionsModal(false)}
         onDeleteClick={() => this.handleDeleteComicClick()}
         onPublishClick={() => this.handlePublishPreviewClick(() => this.toggleComicActionsModal(false))}

@@ -18,16 +18,12 @@ export default class ComicActionsModal extends React.Component {
   }
 
   renderDeleteWarning = () => {
-    const {
-      onDeleteClick
-    } = this.props;
-
     return (<React.Fragment>
       <MessageContainer>
         Are you sure you want to delete this comic?
       </MessageContainer>
       <CenteredButtons>
-        <MenuButton onClick={onDeleteClick}>
+        <MenuButton onClick={this.props.onDeleteClick}>
           DELETE
         </MenuButton>
       </CenteredButtons>
@@ -41,11 +37,11 @@ export default class ComicActionsModal extends React.Component {
           DELETE
         </MenuButton>
       </CenteredButtons>
-      <CenteredButtons>
+      {this.props.isComicDirty && <CenteredButtons>
         <PinkMenuButton onClick={() => this.props.onPublishClick()}>
           PUBLISH
         </PinkMenuButton>
-      </CenteredButtons>
+      </CenteredButtons>}
     </React.Fragment>);
   }
 

@@ -596,52 +596,55 @@ class CellStudio extends Component {
 
         <div style={{display: 'none'}} id={CELL_IMAGE_ID} />
 
-        <CenteredContainer>
-          <EmojiCanvas
-            activeEmojiId={this.state.studioState.activeEmojiId}
-            backgroundColor={this.state.studioState.backgroundColor}
-            emojis={this.state.studioState.emojis}
-            emojiRefs={this.emojiRefs}
-            handleDragEnd={this.handleDragEnd}
-          />
-          <EverythingElseContainer>
-            <BuilderMenu
-              activeEmoji={activeEmoji}
-              changeActiveEmoji={this.changeActiveEmoji}
-              backgroundColor={this.state.studioState.backgroundColor}
-              decreaseStackOrder={this.decreaseStackOrder}
-              emojis={this.state.studioState.emojis}
-              increaseStackOrder={this.increaseStackOrder}
-              incrementField={this.incrementField}
-              onChangeClick={this.openEmojiPickerToChangeEmoji}
-              onColorChange={this.onColorChange}
-              onDeleteClick={this.deleteActiveEmoji}
-              onDuplicateClick={this.duplicateActiveEmoji}
-              openEmojiPicker={this.openEmojiPicker}
-              scaleField={this.scaleField}
-              setField={this.setField}
-              setFilterColor={this.setFilterColor}
-              hideActionsMenu={() => this.toggleActionsModal(false)}
-              isActionsModalVisible={this.state.showActionsModal}
-              toggleFilter={this.toggleFilter}
-              renderActionsMenu={({showCanvaColorMenu}) => (
-                <ActionsModal
-                  onCancelClick={() => this.toggleActionsModal(false)}
-                  onCanvasColorSelect={() => showCanvaColorMenu()}
-                  onClearClick={() => this.onClearClick()}
-                  onPreviewClick={() => this.handlePreviewClick()}
-                  toggleCaptionModal={this.showCaptionModalFromActionsModal}
-                />
-              )}
-            />
-
-            {this.state.showEmojiPicker && <EmojiPicker
+        {this.state.showEmojiPicker
+          ? (
+            <EmojiPicker
               onSelect={this.state.onEmojiSelect}
               onCancel={this.onPickerCancel}
               backButtonLabel={this.state.studioState.activeEmojiId ? 'BACK' : 'EXIT'}
-            />}
-          </EverythingElseContainer>
-        </CenteredContainer>
+            />)
+          : (
+            <CenteredContainer>
+              <EmojiCanvas
+                activeEmojiId={this.state.studioState.activeEmojiId}
+                backgroundColor={this.state.studioState.backgroundColor}
+                emojis={this.state.studioState.emojis}
+                emojiRefs={this.emojiRefs}
+                handleDragEnd={this.handleDragEnd}
+              />
+              <EverythingElseContainer>
+                <BuilderMenu
+                  activeEmoji={activeEmoji}
+                  changeActiveEmoji={this.changeActiveEmoji}
+                  backgroundColor={this.state.studioState.backgroundColor}
+                  decreaseStackOrder={this.decreaseStackOrder}
+                  emojis={this.state.studioState.emojis}
+                  increaseStackOrder={this.increaseStackOrder}
+                  incrementField={this.incrementField}
+                  onChangeClick={this.openEmojiPickerToChangeEmoji}
+                  onColorChange={this.onColorChange}
+                  onDeleteClick={this.deleteActiveEmoji}
+                  onDuplicateClick={this.duplicateActiveEmoji}
+                  openEmojiPicker={this.openEmojiPicker}
+                  scaleField={this.scaleField}
+                  setField={this.setField}
+                  setFilterColor={this.setFilterColor}
+                  hideActionsMenu={() => this.toggleActionsModal(false)}
+                  isActionsModalVisible={this.state.showActionsModal}
+                  toggleFilter={this.toggleFilter}
+                  renderActionsMenu={({showCanvaColorMenu}) => (
+                    <ActionsModal
+                      onCancelClick={() => this.toggleActionsModal(false)}
+                      onCanvasColorSelect={() => showCanvaColorMenu()}
+                      onClearClick={() => this.onClearClick()}
+                      onPreviewClick={() => this.handlePreviewClick()}
+                      toggleCaptionModal={this.showCaptionModalFromActionsModal}
+                    />
+                  )}
+                />
+              </EverythingElseContainer>
+            </CenteredContainer>)
+        }
 
         {!this.state.showEmojiPicker && <NavButton
           value='EXIT'

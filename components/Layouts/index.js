@@ -4,11 +4,12 @@ import Head from 'next/head'
 import theme from '../../helpers/theme'
 import {media} from '../../helpers/style-utils'
 
-const GrayBackground = createGlobalStyle`
+const GlobalStyles = createGlobalStyle`
   body {
     background-color: ${theme.colors.lightGray};
     margin: 0;
     color: ${theme.colors.black};
+    font-family: 'Nunito', sans-serif;
 
     ${media.phoneMax`
       overflow-x: hidden;
@@ -23,6 +24,6 @@ function MobileViewportSettings () {
 }
 
 export {
-  GrayBackground,
+  GlobalStyles,
   MobileViewportSettings
 }

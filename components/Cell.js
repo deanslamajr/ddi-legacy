@@ -76,8 +76,8 @@ export default function Cell ({
       ? (<CellBorder>
         <CellImage
           src={cellUrl}
-          loader={<LoadingCell width={removeBorders && theme.cell.fullWidth} />}
-          unloader={<ErrorCell width={removeBorders && theme.cell.fullWidth} />}
+          loader={<LoadingCell width={theme.cell.fullWidth} />}
+          unloader={<ErrorCell width={theme.cell.fullWidth} />}
           width={removeBorders && theme.cell.fullWidth}
         />
       </CellBorder>)
@@ -85,8 +85,8 @@ export default function Cell ({
         <CellImage
           src={cellUrl}
           width={width || (removeBorders && theme.cell.fullWidth)}
-          loader={<LoadingCell width={removeBorders && theme.cell.fullWidth} />}
-          unloader={<ErrorCell width={removeBorders && theme.cell.fullWidth} />}
+          loader={<LoadingCell width={theme.cell.fullWidth} />}
+          unloader={<ErrorCell width={theme.cell.fullWidth} />}
         />
         {caption && caption.length && <DynamicTextContainer fontRatio={17}>
           {nl2br(caption)}

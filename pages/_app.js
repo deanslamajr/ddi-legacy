@@ -12,7 +12,7 @@ import { Router } from '../routes'
 
 import theme from '../helpers/theme'
 
-import { GrayBackground, MobileViewportSettings } from '../components/Layouts'
+import {GlobalStyles, MobileViewportSettings} from '../components/Layouts'
 import {LoadSpinner} from '../components/Loading'
 
 const { publicRuntimeConfig } = getConfig()
@@ -228,10 +228,13 @@ class MyApp extends App {
           
           {/* Google Search Dashboard - proof of domain ownership */}
           <meta name="google-site-verification" content={`${publicRuntimeConfig.GOOGLE_SITE_VERIFICATION}`} />
+
+          {/* Fonts */}
+          <link href="https://fonts.googleapis.com/css?family=Nunito&display=swap" rel="stylesheet"/>
         </Head>
 
         <MobileViewportSettings />
-        <GrayBackground />
+        <GlobalStyles />
 
         {this.state.showSpinner && <LoadSpinner percentCompleted={percentCompleted} />}
 

@@ -7,6 +7,7 @@ import getConfig from 'next/config'
 import ComicActionsModal from './ComicActionsModal'
 import CellActionsModal from './CellActionsModal'
 import AddCellModal from './AddCellModal'
+import PublishFailModal from './PublishFailModal'
 import PublishPreviewModal from './PublishPreviewModal'
 import ReachedDirtyCellLimitModal from './ReachedDirtyCellLimitModal'
 
@@ -147,9 +148,11 @@ class StudioV2 extends Component {
   state = {
     activeCell: null,
     comic: {},
+    hasFailedCaptcha: false,
     showAddCellModal: false,
-    showComicActionsModal: false,
+    showPublishFailModal: false,
     showCellActionsModal: false,
+    showComicActionsModal: false,
     showPreviewModal: false,
     showReachedDirtyCellLimitModal: false
   }
@@ -216,14 +219,6 @@ class StudioV2 extends Component {
     Router.pushRoute(`/s/cell/${cellUrlId}`)
   }
 
-  toggleComicActionsModal = (newValue) => {
-    this.setState({ showComicActionsModal: newValue })
-  }
-
-  toggleCellActionsModal = (newValue) => {
-    this.setState({ showCellActionsModal: newValue })
-  }
-
   navigateBack = () => {
     this.props.showSpinner();
     if(isDraftId(this.props.comicUrlId)) {
@@ -273,8 +268,33 @@ class StudioV2 extends Component {
     cb();
   }
 
+  retryPublish = (token) => {
+    this.togglePublishFailModal(false);
+    
+    this.publish(token);
+  }
+
+  cancelPublishAttemp = () => {
+    this.togglePublishFailModal(false)
+  }
+
+  toggleComicActionsModal = (newValue) => {
+    this.setState({ showComicActionsModal: newValue })
+  }
+
+  toggleCellActionsModal = (newValue) => {
+    this.setState({ showCellActionsModal: newValue })
+  }
+
   togglePreviewModal = (shouldShow) => {
     this.setState({ showPreviewModal: shouldShow });
+  }
+
+  togglePublishFailModal = (newValue, hasFailedCaptcha) => {
+    this.setState({
+      hasFailedCaptcha,
+      showPublishFailModal: newValue
+    })
   }
 
   getCellsWithNewImage = () => {
@@ -282,7 +302,7 @@ class StudioV2 extends Component {
     return cells.filter(({ hasNewImage }) => hasNewImage);
   }
 
-  publish = async () => {
+  publish = async (v2CaptchaToken) => {
     let signedCells;
     let comicUrlId;
     // minimum number of "jobs" required to finish a publish
@@ -291,34 +311,48 @@ class StudioV2 extends Component {
 
     const cellsThatRequireUploads = this.getCellsWithNewImage();
 
-    if (cellsThatRequireUploads.length) {
-      // if image uploading is required:
-      // 1 + # of cells that require uploads
-      totalJobsCount += 1 + cellsThatRequireUploads.length;
+    try {
+      if (cellsThatRequireUploads.length) {
+        // if image uploading is required:
+        // 1 + # of cells that require uploads
+        totalJobsCount += 1 + cellsThatRequireUploads.length;
+  
+        this.props.showSpinner(totalJobsCount);
+  
+        const uploadResponse = await this.upload(v2CaptchaToken);
+  
+        // fail case, do not continue
+        if (!uploadResponse) {
+          return;
+        }
+  
+        signedCells = uploadResponse.signedCells;
+        comicUrlId = uploadResponse.comicUrlId;
+      } else {
+        this.props.showSpinner(totalJobsCount);
+        comicUrlId = this.props.comicUrlId;
+      }
+  
+      await this.publishComicUpdate({
+        comicUrlIdToUpdate: comicUrlId,
+        signedCells
+      });
+  
+      this.props.markJobAsFinished();
+  
+      //delete comic from client cache
+      const {deleteComic} = require('../../../helpers/clientCache');
+      deleteComic(this.props.comicUrlId);
+  
+      Router.pushRoute(`/comic/${comicUrlId}`)
+    } catch (e) {
+      console.error(e);
+      // @todo log this
 
-      this.props.showSpinner(totalJobsCount);
-
-      const uploadResponse = await this.upload();
-
-      signedCells = uploadResponse.signedCells;
-      comicUrlId = uploadResponse.comicUrlId;
-    } else {
-      this.props.showSpinner(totalJobsCount);
-      comicUrlId = this.props.comicUrlId;
+      this.props.hideSpinner();
+      this.togglePreviewModal(false);
+      this.togglePublishFailModal(true);
     }
-
-    await this.publishComicUpdate({
-      comicUrlIdToUpdate: comicUrlId,
-      signedCells
-    });
-
-    this.props.markJobAsFinished();
-
-    //delete comic from client cache
-    const {deleteComic} = require('../../../helpers/clientCache');
-    deleteComic(this.props.comicUrlId);
-
-    Router.pushRoute(`/comic/${comicUrlId}`)
   }
 
   upload = async (v2CaptchaToken) => {
@@ -346,7 +380,10 @@ class StudioV2 extends Component {
       console.error(e);
       const isCaptchaFail = e && e.response && e.response.status === 400;
       // @todo log this
-      //this.togglePublishFailModal(true, isCaptchaFail);
+
+      this.props.hideSpinner();
+      this.togglePreviewModal(false);
+      this.togglePublishFailModal(true, isCaptchaFail);
     }
   }
 
@@ -483,6 +520,12 @@ class StudioV2 extends Component {
       {this.state.showReachedDirtyCellLimitModal && <ReachedDirtyCellLimitModal
         onCancelClick={() => this.hideReachedDirtyCellLimitModal()}
         onPublishClick={() => this.handlePublishPreviewClick(() => this.hideReachedDirtyCellLimitModal())}
+      />}
+
+      {this.state.showPublishFailModal && <PublishFailModal
+        hasFailedCaptcha={this.state.hasFailedCaptcha}
+        onRetryClick={token => this.retryPublish(token)}
+        onCancelClick={() => this.cancelPublishAttemp()}
       />}
 
       <NavButton

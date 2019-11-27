@@ -108,7 +108,8 @@ async function sign (req, res) {
           throw new Error(`V3 Recaptcha verification returned with a score below the acceptable threshold. Threshold:${captchaVerifyResponse.score} Actual: ${CAPTCHA_THRESHOLD}`);
         }
       } catch (e) {
-        return falsePositiveResponse(e, res);
+        console.error(e);
+        return res.sendStatus(400);
       }
     }
 

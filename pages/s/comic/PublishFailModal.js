@@ -3,8 +3,8 @@ import getConfig from 'next/config'
 import styled from 'styled-components'
 import ReCAPTCHA from 'react-google-recaptcha';
 
-import { MenuButton, PinkMenuButton } from '../../components/Buttons'
-import Modal, { CenteredButtons, MessageContainer } from '../../components/Modal'
+import { PinkMenuButton } from '../../../components/Buttons'
+import Modal, { CenteredButtons, MessageContainer } from '../../../components/Modal'
 
 const { publicRuntimeConfig } = getConfig()
 
@@ -20,9 +20,9 @@ function PublishFailModal ({hasFailedCaptcha, onRetryClick, onCancelClick}) {
 
   const message = hasFailedCaptcha
     ? ''
-    : 'There was an error while publishing this cell :(';
+    : 'There was an error while publishing :(';
 
-  return (<PublishFailModalContainer>
+  return (<PublishFailModalContainer onCancelClick={onCancelClick}>
     <MessageContainer>
       {message}
     </MessageContainer>
@@ -35,11 +35,6 @@ function PublishFailModal ({hasFailedCaptcha, onRetryClick, onCancelClick}) {
       : <PinkMenuButton onClick={() => onRetryClick()}>
         TRY AGAIN
       </PinkMenuButton>}
-    </CenteredButtons>
-    <CenteredButtons>
-      <MenuButton onClick={onCancelClick}>
-        CANCEL
-      </MenuButton>
     </CenteredButtons>
   </PublishFailModalContainer>)
 }

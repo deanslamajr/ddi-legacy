@@ -1,7 +1,6 @@
 const express = require('express')
 
 const {login, logout} = require('./user')
-const { sign } = require('./sign')
 const {get: getCell} = require('./cell')
 const {
   all: getComics,
@@ -16,8 +15,6 @@ const router = express.Router()
 
 router.post('/user/login', login);
 router.post('/user/logout', logout);
-
-router.post('/sign', sign)
 
 router.get('/cell/:cellId', getCell)
 

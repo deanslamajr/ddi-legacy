@@ -17,6 +17,10 @@ const CenteredCell = styled.div`
   margin: 1.5rem;
 `;
 
+const DraftsContainer = styled.div` 
+  margin: 1rem auto 5rem;
+`
+
 class DraftsRoute extends Component {
   state = {
     draftComics: []
@@ -33,7 +37,18 @@ class DraftsRoute extends Component {
     const dirtyComics = getDirtyComics();
 
     if (dirtyComics && dirtyComics.length) {
-      dirtyComics.sort((comicA, comicB) => comicB.lastModified - comicA.lastModified);
+      dirtyComics.sort((comicA, comicB) => {
+        // Handle cases where lastModified doesn't exist on a cached comic
+        if (!comicA.lastModified && !comicB.lastModified) {
+          return 0;
+        } else if (!comicA.lastModified) {
+          return -1;
+        } else if (!comicB.lastModified) {
+          return 1;
+        }
+
+        return comicB.lastModified - comicA.lastModified;
+      });
 
       const draftComics = dirtyComics.map(dirtyComic => {
         const studioState = getStudioState(dirtyComic.initialCellUrlId);
@@ -77,22 +92,25 @@ class DraftsRoute extends Component {
       <div>
         <CenteredCell>DRAFTS</CenteredCell>
 
-        {this.state.draftComics.map(({urlId: comicUrlId, initialCell: {imageUrl, studioState}}) => (
-          <CenteredCell
-            key={comicUrlId}
-            onClick={() => this.navigateToDraft(comicUrlId)}
-          >
-            <Cell
-              caption={studioState.caption}
-              clickable
-              imageUrl={imageUrl}
-              isImageUrlAbsolute
-              removeBorders
-              schemaVersion={SCHEMA_VERSION}
-              width="250px"
-            />
-          </CenteredCell>)
-        )}
+        <DraftsContainer>
+          {this.state.draftComics.map(({urlId: comicUrlId, initialCell: {imageUrl, studioState}}) => (
+            <CenteredCell
+              key={comicUrlId}
+              onClick={() => this.navigateToDraft(comicUrlId)}
+            >
+              <Cell
+                caption={studioState.caption}
+                clickable
+                imageUrl={imageUrl}
+                isImageUrlAbsolute
+                removeBorders
+                schemaVersion={SCHEMA_VERSION}
+                width="250px"
+              />
+            </CenteredCell>)
+          )}
+        </DraftsContainer>
+        
         <NavButton
           value='GALLERY'
           cb={this.navigateToGallery}

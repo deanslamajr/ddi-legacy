@@ -140,6 +140,13 @@ const getLastCell = (cache, comicUrlId) => {
     : null;
 }
 
+function transformStudioStateToV4 (studioStatePreV4) {
+  return {
+    ...studioStatePreV4,
+    caption: studioStatePreV4.title
+  }
+}
+
 export const getComicUrlIdFromCellUrlId = (cellUrlId) => {
   const cache = getCache();
 
@@ -334,11 +341,15 @@ export const getComics = () => {
   return cache.comics;
 }
 
-function transformStudioStateToV4 (studioStatePreV4) {
-  return {
-    ...studioStatePreV4,
-    caption: studioStatePreV4.title
-  }
+export const getDirtyComics = () => {
+  const comics = getComics();
+
+  const dirtyComics = Object.values(comics).filter(({urlId}) => {
+    const cells = getCellsByComicUrlId(urlId);
+    return Object.values(cells).some(({isDirty}) => isDirty);
+  })
+
+  return dirtyComics;
 }
 
 // comicFromApi (v4) = {

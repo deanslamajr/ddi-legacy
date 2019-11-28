@@ -13,6 +13,7 @@ import {
   getComic,
   getComics,
   getComicUrlIdFromCellUrlId,
+  getDirtyComics,
   setCellStudioState
 } from './clientCache';
 
@@ -21,26 +22,44 @@ jest.mock('shortid');
 
 describe('clientCache', () => {
   const mockComicUrlId = 'mockComicUrlId';
+  const mockPristineComicUrlId = 'mockPristineComicUrlId'
   const mockCellUrlId = 'mockCellUrlId';
+  const mockPristineCellUrlId = 'mockPristineCellUrlId';
 
   const mockCell = {
     comicUrlId: mockComicUrlId,
     urlId: mockCellUrlId,
+    isDirty: true,
     studioState: {}
   };
 
+  const mockPristineCell = {
+    comicUrlId: mockPristineComicUrlId,
+    urlId: mockPristineCellUrlId,
+    isDirty: false,
+    studioState: {}
+  }
+
   const mockComic = {
+    urlId: mockComicUrlId,
     initialCellUrlId: mockCellUrlId
   };
 
+  const mockPristineComic = {
+    urlId: mockPristineComicUrlId,
+    initialCellUrlId: mockPristineCellUrlId
+  }
+
   const comics = {
-    [mockComicUrlId]: mockComic
+    [mockComicUrlId]: mockComic,
+    [mockPristineComicUrlId]: mockPristineComic
   };
 
   const mockCache = {
     comics,
     cells: {
-      [mockCellUrlId]: mockCell
+      [mockCellUrlId]: mockCell,
+      [mockPristineCellUrlId]: mockPristineCell
     }
   };
 
@@ -292,6 +311,13 @@ describe('clientCache', () => {
     });
   });
 
+  describe('getDirtyComics', () => {
+    it('should return the currently cached comics datastructure', () => {
+      const actual = getDirtyComics();
+      expect(actual).toMatchSnapshot();
+    });
+  });
+
   describe('deleteComic', () => {
     it('should delete the given comic from client cache', () => {
       deleteComic(mockComicUrlId);
@@ -394,11 +420,9 @@ describe('clientCache', () => {
         createComicFromPublishedComic(comicFromApiV4);
         const cache = store('');
 
-        const cellIds = Object.keys(cache.cells);
-
-        cellIds.forEach(cellId => {
-          expect(cache.cells).toHaveProperty(cellId);
-          expect(cache.cells[cellId]).toMatchSnapshot();
+        comicFromApiV4.cells.forEach(({urlId: cellUrlId}) => {
+          expect(cache.cells).toHaveProperty(cellUrlId);
+          expect(cache.cells[cellUrlId]).toMatchSnapshot();
         });
       });
     });

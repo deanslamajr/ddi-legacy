@@ -2,14 +2,6 @@
 
 exports[`clientCache createComicFromPublishedComic if the passed comic is entirely of cells of schemaVersion >= 4 should add a new cell to the client cache for each cell included in the passed api comic datastructure 1`] = `
 Object {
-  "comicUrlId": "mockComicUrlId",
-  "studioState": Object {},
-  "urlId": "mockCellUrlId",
-}
-`;
-
-exports[`clientCache createComicFromPublishedComic if the passed comic is entirely of cells of schemaVersion >= 4 should add a new cell to the client cache for each cell included in the passed api comic datastructure 2`] = `
-Object {
   "comicUrlId": "yetAnotherComicUrlId",
   "hasNewImage": false,
   "imageUrl": "someImageUrl.png",
@@ -20,7 +12,7 @@ Object {
 }
 `;
 
-exports[`clientCache createComicFromPublishedComic if the passed comic is entirely of cells of schemaVersion >= 4 should add a new cell to the client cache for each cell included in the passed api comic datastructure 3`] = `
+exports[`clientCache createComicFromPublishedComic if the passed comic is entirely of cells of schemaVersion >= 4 should add a new cell to the client cache for each cell included in the passed api comic datastructure 2`] = `
 Object {
   "comicUrlId": "yetAnotherComicUrlId",
   "hasNewImage": false,
@@ -37,4 +29,13 @@ Object {
   "initialCellUrlId": "someInitialCellUrlId",
   "urlId": "yetAnotherComicUrlId",
 }
+`;
+
+exports[`clientCache getDirtyComics should return the currently cached comics datastructure 1`] = `
+Array [
+  Object {
+    "initialCellUrlId": "mockCellUrlId",
+    "urlId": "mockComicUrlId",
+  },
+]
 `;

@@ -130,10 +130,10 @@ class GalleryRoute extends Component {
   navigateToNewOrDrafts = () => {
     this.props.showSpinner()
     
-    const {getComics} = require('../helpers/clientCache');
-    const comics = getComics();
+    const {getDirtyComics} = require('../helpers/clientCache');
+    const dirtyComics = getDirtyComics();
     
-    if (comics && Object.keys(comics).length) {
+    if (dirtyComics && dirtyComics.length) {
       // if comics exist on client cache, nav to drafts
       return Router.pushRoute('/me/drafts');
     } else {

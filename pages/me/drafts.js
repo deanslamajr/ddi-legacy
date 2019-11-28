@@ -29,10 +29,10 @@ class DraftsRoute extends Component {
 
   async componentDidMount () {
     //@TODO fetch comics from client cache and add to state
-    const {getComics, getStudioState} = require('../../helpers/clientCache');
-    const comics = getComics();
+    const {getDirtyComics, getStudioState} = require('../../helpers/clientCache');
+    const dirtyComics = getDirtyComics();
 
-    if (comics && Object.keys(comics).length) {
+    if (dirtyComics && dirtyComics.length) {
       // drafts = [{
         // urlId: '',
         // initialCell: {
@@ -40,13 +40,13 @@ class DraftsRoute extends Component {
         //   studioState: {}
         // }
       // }]
-      const draftComics = Object.values(comics).map(comic => {
-        const studioState = getStudioState(comic.initialCellUrlId);
+      const draftComics = dirtyComics.map(dirtyComic => {
+        const studioState = getStudioState(dirtyComic.initialCellUrlId);
 
         return {
-          urlId: comic.urlId,
+          urlId: dirtyComic.urlId,
           initialCell: {
-            urlId: comic.initialCellUrlId,
+            urlId: dirtyComic.initialCellUrlId,
             studioState
           }
         }

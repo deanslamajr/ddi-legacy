@@ -3,6 +3,8 @@ const cloneDeep = require('lodash/cloneDeep');
 const {update} = require('./update');
 const {Comics} = require('../../models');
 
+const {getInitializedStudioState} = require('../../../helpers/clientCache');
+
 const {
   MAX_DIRTY_CELLS
 } = require('../../../config/constants.json')
@@ -37,7 +39,9 @@ describe('controllers/comic/update', () => {
     cellToUpdate2
   ];
 
-  const studioState = {};
+  const studioState = getInitializedStudioState();
+  studioState.activeEmojiId = 0;
+  
   const cellsToUpdate = [
     {
       studioState,

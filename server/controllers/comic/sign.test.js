@@ -123,17 +123,17 @@ describe('controllers/comic/sign', () => {
       });
 
       describe('if verify captcha request is unsuccessful', () => {
-        it('should respond 200', async () => {
+        it('should respond 400', async () => {
           post.mockImplementationOnce(() => {throw new Error('Bad request');});
 
           await sign(req, res);
 
-          expect(sendStatus).toHaveBeenCalledWith(200);
+          expect(sendStatus).toHaveBeenCalledWith(400);
         });
       });
 
       describe('if verify captcha request returns successs=false', () => {
-        it('should respond 200', async () => {
+        it('should respond 400', async () => {
           const mockResponse = {data: {
             ...captchaResponseSuccess,
             success: false
@@ -142,12 +142,12 @@ describe('controllers/comic/sign', () => {
 
           await sign(req, res);
 
-          expect(sendStatus).toHaveBeenCalledWith(200);
+          expect(sendStatus).toHaveBeenCalledWith(400);
         });
       });
 
       describe('if verify captcha call returns an action that is not CAPTCHA_ACTION_CELL_PUBLISH', () => {
-        it('should respond 200', async () => {
+        it('should respond 400', async () => {
           const mockResponse = {data: {
             ...captchaResponseSuccess,
             action: 'INCORRECT_ACTION'
@@ -156,12 +156,12 @@ describe('controllers/comic/sign', () => {
 
           await sign(req, res);
 
-          expect(sendStatus).toHaveBeenCalledWith(200);
+          expect(sendStatus).toHaveBeenCalledWith(400);
         });
       });
 
       describe('if verify captcha call returns a score that is lower than CAPTCHA_THRESHOLD', () => {
-        it('should respond 200', async () => {
+        it('should respond 400', async () => {
           const mockResponse = {data: {
             ...captchaResponseSuccess,
             score: CAPTCHA_THRESHOLD - 0.1
@@ -170,7 +170,7 @@ describe('controllers/comic/sign', () => {
 
           await sign(req, res);
 
-          expect(sendStatus).toHaveBeenCalledWith(200);
+          expect(sendStatus).toHaveBeenCalledWith(400);
         });
       });
     });
@@ -191,7 +191,7 @@ describe('controllers/comic/sign', () => {
       });
 
       describe('if verify captcha request returns successs=false', () => {
-        it('should respond 200', async () => {
+        it('should respond 400', async () => {
           const mockResponse = {data: {
             ...captchaResponseSuccess,
             success: false
@@ -200,17 +200,17 @@ describe('controllers/comic/sign', () => {
 
           await sign(req, res);
 
-          expect(sendStatus).toHaveBeenCalledWith(200);
+          expect(sendStatus).toHaveBeenCalledWith(400);
         });
       });
 
       describe('if verify captcha request is unsuccessful', () => {
-        it('should respond 200', async () => {
+        it('should respond 400', async () => {
           post.mockImplementationOnce(() => {throw new Error('Bad request');});
 
           await sign(req, res);
 
-          expect(sendStatus).toHaveBeenCalledWith(200);
+          expect(sendStatus).toHaveBeenCalledWith(400);
         });
       });
     });

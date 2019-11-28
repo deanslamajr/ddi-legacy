@@ -33,13 +33,8 @@ class DraftsRoute extends Component {
     const dirtyComics = getDirtyComics();
 
     if (dirtyComics && dirtyComics.length) {
-      // drafts = [{
-        // urlId: '',
-        // initialCell: {
-        //   urlId: '',
-        //   studioState: {}
-        // }
-      // }]
+      dirtyComics.sort((comicA, comicB) => comicB.lastModified - comicA.lastModified);
+
       const draftComics = dirtyComics.map(dirtyComic => {
         const studioState = getStudioState(dirtyComic.initialCellUrlId);
 

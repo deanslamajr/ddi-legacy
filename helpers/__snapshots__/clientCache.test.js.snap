@@ -27,6 +27,7 @@ Object {
 exports[`clientCache createComicFromPublishedComic if the passed comic is entirely of cells of schemaVersion >= 4 should add a new comic to the client cache with the data from the passed api comic datastructure 1`] = `
 Object {
   "initialCellUrlId": "someInitialCellUrlId",
+  "lastModified": Any<Number>,
   "urlId": "yetAnotherComicUrlId",
 }
 `;

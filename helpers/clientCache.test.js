@@ -410,7 +410,7 @@ describe('clientCache', () => {
         const cache = store('');
   
         expect(cache.comics).toHaveProperty(yetAnotherComicUrlId);
-        expect(cache.comics[yetAnotherComicUrlId]).toMatchSnapshot();
+        expect(cache.comics[yetAnotherComicUrlId]).toMatchSnapshot({lastModified: expect.any(Number)});
       });
       
       it('should add a new cell to the client cache for each cell included in the passed api comic datastructure', () => {

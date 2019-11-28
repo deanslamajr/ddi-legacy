@@ -83,12 +83,14 @@ const getInitializedCache = () => {
   return cloneDeep(emptyCache);
 }
 
-const getInitializedStudioState = () => {
-  return cloneDeep(emptyStudioState);
-}
-
 const getInitializedComic = () => {
   return cloneDeep(emptyComic);
+}
+
+const createNewComic = () => {
+  const newComic = getInitializedComic();
+  newComic.lastModified = Date.now();
+  return newComic;
 }
 
 const getInitializedCell = ({
@@ -145,6 +147,10 @@ function transformStudioStateToV4 (studioStatePreV4) {
     ...studioStatePreV4,
     caption: studioStatePreV4.title
   }
+}
+
+export const getInitializedStudioState = () => {
+  return cloneDeep(emptyStudioState);
 }
 
 export const getComicUrlIdFromCellUrlId = (cellUrlId) => {
@@ -246,14 +252,25 @@ export const doesComicUrlIdExist = (comicUrlId, cache) => {
   return Object.keys(cache.comics).includes(comicUrlId);
 }
 
-export const getComic = (comicUrlId) => {
-  const cache = getCache();
+export const getComic = (comicUrlId, cache) => {
+  if (!cache) {
+    cache = getCache();
+  }
 
   if (!cache || !cache.comics || !cache.comics[comicUrlId]) {
     return null;
   }
 
   return cache.comics[comicUrlId];
+}
+
+function updateComicLastModified (comicUrlId, cache) {
+  if (!cache) {
+    cache = getCache();
+  }
+
+  const comicToUpdate = getComic(comicUrlId, cache);
+  comicToUpdate.lastModified = Date.now();
 }
 
 export const setCellStudioState = (cellUrlId, newStudioState, {setHasNewImage = true} = {}) => {
@@ -267,6 +284,8 @@ export const setCellStudioState = (cellUrlId, newStudioState, {setHasNewImage = 
   if(setHasNewImage) {
     cellToUpdate.hasNewImage = true;
   }
+
+  updateComicLastModified(cellToUpdate.comicUrlId, cache);
 
   setCache(cache);
 }
@@ -284,8 +303,10 @@ export const createNewCell = (comicUrlId, initialStudioState) => {
     if (!cache.comics) {
       cache.comics = {};
     }
-    cache.comics[comicUrlId] = getInitializedComic();
+    cache.comics[comicUrlId] = createNewComic();
     cache.comics[comicUrlId].urlId = comicUrlId;
+  } else {
+    updateComicLastModified(comicUrlId, cache);
   }
 
   const lastCell = getLastCell(cache, comicUrlId);
@@ -344,6 +365,10 @@ export const getComics = () => {
 export const getDirtyComics = () => {
   const comics = getComics();
 
+  if (!comics) {
+    return [];
+  }
+
   const dirtyComics = Object.values(comics).filter(({urlId}) => {
     const cells = getCellsByComicUrlId(urlId);
     return Object.values(cells).some(({isDirty}) => isDirty);
@@ -397,7 +422,7 @@ export const createComicFromPublishedComic = ({
       });
     })
 
-    const comic = getInitializedComic();
+    const comic = createNewComic();
     comic.urlId = comicUrlId;
     comic.initialCellUrlId = initialCellUrlId;
     cache.comics[comicUrlId] = comic;
@@ -436,7 +461,7 @@ export const createComicFromPublishedComic = ({
       });
     }
 
-    const comic = getInitializedComic();
+    const comic = createNewComic();
     comic.urlId = comicUrlId;
     comic.initialCellUrlId = sortedCells[0].urlId;
     cache.comics[comicUrlId] = comic;

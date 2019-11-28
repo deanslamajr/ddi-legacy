@@ -42,9 +42,9 @@ class DraftsRoute extends Component {
         if (!comicA.lastModified && !comicB.lastModified) {
           return 0;
         } else if (!comicA.lastModified) {
-          return -1;
-        } else if (!comicB.lastModified) {
           return 1;
+        } else if (!comicB.lastModified) {
+          return -1;
         }
 
         return comicB.lastModified - comicA.lastModified;

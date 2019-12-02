@@ -1,6 +1,6 @@
 {
   "name": "draw-draw-ink",
-  "version": "1.6.1-g6b326.0",
+  "version": "1.6.1-g1000a.0",
   "main": "app.js",
   "engines": {
     "node": "10.17.0"

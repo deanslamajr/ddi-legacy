@@ -1,0 +1,26 @@
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# Node
+node_modules
+
+# Secrets
+.env
+config/config.json
+
+# VS Code
+.vscode
+
+# newrelic
+newrelic_agent.log
+
+# next.js
+.next
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*

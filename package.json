@@ -2,6 +2,9 @@
   "name": "draw-draw-ink",
   "version": "1.6.0",
   "main": "app.js",
+  "engines": {
+    "node": "10.17.0"
+  },
   "scripts": {
     "deploy:qa": "npm version prerelease --preid=g\"$(git rev-parse --short=5 HEAD)\" && eb deploy ddi-qa --label \"$(git describe)\" --timeout 20",
     "deploy:prod:patch": "npm version patch && eb deploy ddi-prod --label \"$(git describe)\" --timeout 20",
@@ -12,7 +15,11 @@
     "migrate": "sequelize db:migrate",
     "migrate:undo": "sequelize db:migrate:undo",
     "test": "jest --watch",
-    "test:nowatch": "jest"
+    "test:nowatch": "jest",
+    "image:build": "sudo docker build -f ../deployment/draw-draw-ink/Dockerfile -t deanslamajr/draw-draw-ink:\"$(git describe)\" .",
+    "image:promote": "",
+    "publish": "npm run image:build && npm run image:promote",
+    "publish:test": "npm version prerelease --preid=g\"$(git rev-parse --short=5 HEAD)\" && npm run publish"
   },
   "repository": {
     "type": "git",

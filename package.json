@@ -17,7 +17,7 @@
     "test": "jest --watch",
     "test:nowatch": "jest",
     "image:build": "sudo docker build -f ../deployment/draw-draw-ink/Dockerfile -t deanslamajr/draw-draw-ink:\"$(git describe)\" .",
-    "image:promote": "",
+    "image:promote": "sudo docker push deanslamajr/draw-draw-ink:\"$(git describe)\"",
     "publish": "npm run image:build && npm run image:promote",
     "publish:test": "npm version prerelease --preid=g\"$(git rev-parse --short=5 HEAD)\" && npm run publish"
   },

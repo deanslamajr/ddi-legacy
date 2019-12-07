@@ -5,7 +5,6 @@ const clientEnvironment = {
   HOST: fromProcessEnv('HOST'),
   FAVICON_ROOT_URL: fromProcessEnv('FAVICON_ROOT_URL'),
   ASSETS_ROOT_URL: fromProcessEnv('ASSETS_ROOT_URL'),
-  APP_URL_DOMAIN: fromProcessEnv('APP_URL_DOMAIN'),
   GA_ID: fromProcessEnv('GA_ID'),
   CAPTCHA_V3_SITE_KEY: fromProcessEnv('CAPTCHA_V3_SITE_KEY'),
   CAPTCHA_V2_SITE_KEY: fromProcessEnv('CAPTCHA_V2_SITE_KEY'),

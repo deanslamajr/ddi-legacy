@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Head from 'next/head';
 import styled from 'styled-components';
 import cloneDeep from 'lodash/cloneDeep';
+import axios from 'axios';
 
 import ActionsModal from './ActionsModal';
 import BuilderMenu from './BuilderMenu';
@@ -17,6 +18,7 @@ import {NavButton, BOTTOM_LEFT, BOTTOM_RIGHT} from '../../../components/navigati
 import { Router } from '../../../routes';
 
 import {generateCellImageFromEmojis} from '../../../helpers/generateCellImageFromEmojis'
+import {getApi} from '../../../helpers';
 import {sortByOrder} from '../../../helpers/sorts'
 import theme from '../../../helpers/theme';
 import {
@@ -49,6 +51,11 @@ const CenteredContainer = styled.div`
   overflow-x: hidden;
 `
 
+function isDuplicatePath (path) {
+  const tokens = path.split('/');
+  return tokens.includes('duplicate');
+}
+
 //
 // Cell Studio
 class CellStudio extends Component {
@@ -76,18 +83,39 @@ class CellStudio extends Component {
     };
   }
 
-  static async getInitialProps ({ query, req, res }) {
+  static async getInitialProps ({ asPath, query, req }) {
+    let studioState;
+
+    if (isDuplicatePath(asPath)) {
+      try {
+        const { data } = await axios.get(getApi(`/api/cell/${query.cellUrlId}`, req));
+        studioState = data.studioState;
+      }
+      catch(e) {
+        // on error e.g. cellUrlId doesn't exist
+        // fall through, don't refresh studioState
+      }
+    }
+
     return {
-      cellUrlId: query.cellUrlId
+      cellUrlId: query.cellUrlId,
+      studioState
     };
   }
 
   componentDidMount() {
     const {getStudioState} = require('../../../helpers/clientCache');
-    const cachedStudioState = getStudioState(this.props.cellUrlId);
+    let cachedStudioState;
+    let showEmojiPicker;
+
+    const isNotDuplicatingCell = !this.props.studioState;
+    
+    if (isNotDuplicatingCell) {
+      cachedStudioState = getStudioState(this.props.cellUrlId);
+    }
 
     if (cachedStudioState) {
-      const showEmojiPicker = Object.keys(cachedStudioState.emojis).length === 0;
+      showEmojiPicker = Object.keys(cachedStudioState.emojis).length === 0;
       this.setState({
         showEmojiPicker,
         studioState: cachedStudioState
@@ -96,8 +124,16 @@ class CellStudio extends Component {
       });
     }
     else {
-      this.createNewComicAndCell();
-      this.setState({showEmojiPicker: true})
+      this.createNewComicAndCell(this.props.studioState);
+
+      if (this.props.studioState) {
+        showEmojiPicker = Object.keys(this.props.studioState.emojis).length === 0;
+      }
+
+      this.setState({
+        showEmojiPicker,
+        studioState: this.props.studioState
+      });
     }
 
     this.props.hideSpinner();

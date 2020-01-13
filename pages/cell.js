@@ -35,25 +35,21 @@ class CellRoute extends Component {
     return {
       canDuplicate: data.studioState ? true : false,
       imageUrl: data.image_url,
-      cellId: query.cellId,
+      cellUrlId: query.cellId,
       schemaVersion: data.schemaVersion,
-      caption: data.caption
+      caption: data.caption,
+      comicUrlId: data.comicUrlId
     }
   }
 
-  navigateToGallery = () => {
+  navigateToComic = () => {
     this.props.showSpinner()
-    Router.pushRoute('/gallery')
-  }
-
-  navigateToStudio = () => {
-    this.props.showSpinner()
-    Router.pushRoute('/studio/new/new')
+    Router.pushRoute(`/comic/${this.props.comicUrlId}`)
   }
 
   navigateToDuplicate = () => {
     this.props.showSpinner()
-    Router.pushRoute(`/studio/new/${this.props.cellId}`)
+    Router.pushRoute(`/s/cell/${this.props.cellUrlId}/duplicate`)
   }
 
   componentDidMount () {
@@ -90,8 +86,8 @@ class CellRoute extends Component {
         </CenteredContainer>
 
         <NavButton
-          value='GALLERY'
-          cb={this.navigateToGallery}
+          value='COMIC'
+          cb={this.navigateToComic}
           position={BOTTOM_LEFT}
         />
 

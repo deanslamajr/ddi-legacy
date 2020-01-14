@@ -106,37 +106,33 @@ class CellStudio extends Component {
   componentDidMount() {
     const {getStudioState} = require('../../../helpers/clientCache');
     let cachedStudioState;
-    let showEmojiPicker;
-
-    const isNotDuplicatingCell = !this.props.studioState;
     
-    if (isNotDuplicatingCell) {
+    const stateUpdate = {
+      showEmojiPicker: true
+    }
+
+    // don't attempt to refresh studio state if in the process of duplicating
+    if (!this.props.studioState) {
       cachedStudioState = getStudioState(this.props.cellUrlId);
     }
 
     if (cachedStudioState) {
-      showEmojiPicker = Object.keys(cachedStudioState.emojis).length === 0;
-      this.setState({
-        showEmojiPicker,
-        studioState: cachedStudioState
-      }, () => {
-        this.updateAllKonvaCachesAndForceComponentUpdate();
-      });
+      stateUpdate.showEmojiPicker = Object.keys(cachedStudioState.emojis).length === 0;
+      stateUpdate.studioState = cachedStudioState;
     }
     else {
       this.createNewComicAndCell(this.props.studioState);
 
       if (this.props.studioState) {
-        showEmojiPicker = Object.keys(this.props.studioState.emojis).length === 0;
+        stateUpdate.showEmojiPicker = Object.keys(this.props.studioState.emojis).length === 0;
+        stateUpdate.studioState = this.props.studioState;
       }
-
-      this.setState({
-        showEmojiPicker,
-        studioState: this.props.studioState
-      });
     }
 
-    this.props.hideSpinner();
+    this.setState(stateUpdate, () => {
+      this.updateAllKonvaCachesAndForceComponentUpdate();
+      this.props.hideSpinner();
+    });
   }
 
   /*******

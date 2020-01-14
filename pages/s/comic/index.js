@@ -242,9 +242,18 @@ class StudioV2 extends Component {
     this.props.showSpinner();
     this.toggleComicActionsModal(false);
     try {
-      await axios.delete(`/api/comic/${this.props.comicUrlId}`);
-      // remove this comic from the gallery cache
-      this.props.deleteComicFromCache(this.props.comicUrlId, () => Router.pushRoute('/gallery'));
+      // Delete the draft from local cache
+      if (isDraftId(this.props.comicUrlId)) {
+        const { deleteComic } = require('../../../helpers/clientCache');
+        deleteComic(this.props.comicUrlId);
+        Router.pushRoute('/gallery');
+      } 
+      // Delete the published comic
+      else {
+        await axios.delete(`/api/comic/${this.props.comicUrlId}`);
+        // remove this comic from the gallery cache
+        this.props.deleteComicFromCache(this.props.comicUrlId, () => Router.pushRoute('/gallery'));
+      }
     }
     catch (error) {
       this.props.hideSpinner();

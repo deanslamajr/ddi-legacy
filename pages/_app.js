@@ -7,6 +7,7 @@ import axios from 'axios'
 import queryString from 'query-string'
 import ReactGA from 'react-ga';
 import { load } from 'recaptcha-v3'
+import * as Sentry from '@sentry/node'
 
 import { Router } from '../routes'
 
@@ -15,7 +16,15 @@ import theme from '../helpers/theme'
 import {GlobalStyles, MobileViewportSettings} from '../components/Layouts'
 import {LoadSpinner} from '../components/Loading'
 
-const { publicRuntimeConfig } = getConfig()
+const { publicRuntimeConfig } = getConfig();
+
+if (publicRuntimeConfig.SENTRY_DSN) {
+  Sentry.init({
+    dsn: publicRuntimeConfig.SENTRY_DSN,
+    environment: publicRuntimeConfig.ENV,
+    release: publicRuntimeConfig.APP_VERSION
+  });
+}
 
 async function getNewerComics (currentComics) {
   const latestUpdatedAt = currentComics[0].updatedAt

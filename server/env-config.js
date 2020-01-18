@@ -1,7 +1,11 @@
 // environment variables
 require('dotenv').config()
 
+const {version} = require('../package.json');
+
 const clientEnvironment = {
+  APP_VERSION: version,
+  ENV: fromProcessEnv('ENV'),
   HOST: fromProcessEnv('HOST'),
   FAVICON_ROOT_URL: fromProcessEnv('FAVICON_ROOT_URL'),
   ASSETS_ROOT_URL: fromProcessEnv('ASSETS_ROOT_URL'),
@@ -10,7 +14,8 @@ const clientEnvironment = {
   CAPTCHA_V2_SITE_KEY: fromProcessEnv('CAPTCHA_V2_SITE_KEY'),
   CELL_IMAGES_DOMAIN: fromProcessEnv('CELL_IMAGES_DOMAIN'),
   TWITTER_HANDLE: fromProcessEnv('TWITTER_HANDLE'),
-  GOOGLE_SITE_VERIFICATION: fromProcessEnv('GOOGLE_SITE_VERIFICATION')
+  GOOGLE_SITE_VERIFICATION: fromProcessEnv('GOOGLE_SITE_VERIFICATION'),
+  SENTRY_DSN: fromProcessEnv('SENTRY_DSN')
 }
 
 function fromProcessEnv (name) {

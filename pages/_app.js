@@ -18,7 +18,10 @@ import {LoadSpinner} from '../components/Loading'
 
 const { publicRuntimeConfig } = getConfig();
 
+console.log('publicRuntimeConfig.SENTRY_DSN:', publicRuntimeConfig.SENTRY_DSN)
+
 if (publicRuntimeConfig.SENTRY_DSN) {
+  console.log('inside "if (publicRuntimeConfig.SENTRY_DSN) {"')
   Sentry.init({
     dsn: publicRuntimeConfig.SENTRY_DSN,
     environment: publicRuntimeConfig.ENV,

@@ -25,4 +25,8 @@ router.delete('/comic/:comicId', deleteComic);
 router.get('/comics', getComics)
 router.get('/comics/latest', getNewerThan)
 
+router.get('/errortest', () => {
+  throw new Error('test error from api!');
+});
+
 module.exports = router

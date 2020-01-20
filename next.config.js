@@ -1,4 +1,5 @@
 const withCSS = require('@zeit/next-css')
+const withSourceMaps = require('@zeit/next-source-maps')()
 
 const { clientEnvironment, serverEnvironment } = require('./server/env-config')
 
@@ -13,7 +14,7 @@ const envConfigs = {
   publicRuntimeConfig: clientEnvironment
 }
 
-module.exports = Object.assign({}, cssConfigs, envConfigs, {
+module.exports = withSourceMaps(Object.assign({}, cssConfigs, envConfigs, {
   generateBuildId: async () => {
     const {version} = require('./package.json')
     return version || 'SOME_BUILD_ID'
@@ -40,4 +41,4 @@ module.exports = Object.assign({}, cssConfigs, envConfigs, {
 
     return config
   },
-})
+}));

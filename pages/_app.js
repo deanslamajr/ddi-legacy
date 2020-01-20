@@ -7,7 +7,6 @@ import axios from 'axios'
 import queryString from 'query-string'
 import ReactGA from 'react-ga';
 import { load } from 'recaptcha-v3'
-import * as Sentry from '@sentry/node'
 
 import { Router } from '../routes'
 
@@ -15,16 +14,11 @@ import theme from '../helpers/theme'
 
 import {GlobalStyles, MobileViewportSettings} from '../components/Layouts'
 import {LoadSpinner} from '../components/Loading'
+import sentry from '../shared/sentry'
+
+const {captureException} = sentry();
 
 const { publicRuntimeConfig } = getConfig();
-
-if (publicRuntimeConfig.SENTRY_DSN) {
-  Sentry.init({
-    dsn: publicRuntimeConfig.SENTRY_DSN,
-    environment: publicRuntimeConfig.ENV,
-    release: publicRuntimeConfig.APP_VERSION
-  });
-}
 
 async function getNewerComics (currentComics) {
   const latestUpdatedAt = currentComics[0].updatedAt
@@ -60,21 +54,60 @@ class MyApp extends App {
     recaptcha: undefined,
     showSpinner: true,
     totalNumberOfJobs: null,
-    finishedJobsCount: null
+    finishedJobsCount: null,
+    hasError: false,
+    errorEventId: undefined
   }
 
   static async getInitialProps({ Component, ctx }) {
-    let pageProps = {};
-    if (Component.getInitialProps) {
-        pageProps = await Component.getInitialProps(ctx);
-    }
-    
-    // only on server side rendering
-    if (ctx.req) {
-      pageProps.userId = ctx.req.session.userId;
-    }
+    let userId;
 
-    return { pageProps };
+    try {
+      let pageProps = {}
+
+      if (Component.getInitialProps) {
+        pageProps = await Component.getInitialProps(ctx)
+      }
+
+      // only on server side rendering
+      if (ctx.req) {
+        userId = ctx.req.session.userId;
+        pageProps.userId = userId;
+      }
+
+      return { pageProps }
+    } catch (error) {
+      // Capture errors that happen during a page's getInitialProps.
+      // This will work on both client and server sides.
+      const errorEventId = captureException(error, {...ctx, userId})
+      return {
+        hasError: true,
+        errorEventId,
+      }
+    }
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    // If there was an error generated within getInitialProps, and we haven't
+    // yet seen an error, we add it to this.state here
+    return {
+      hasError: props.hasError || state.hasError || false,
+      errorEventId: props.errorEventId || state.errorEventId || undefined,
+    }
+  }
+
+  static getDerivedStateFromError() {
+    // React Error Boundary here allows us to set state flagging the error (and
+    // later render a fallback UI).
+    return { hasError: true }
+  }
+
+  componentDidCatch(error, errorInfo) {
+    const errorEventId = captureException(error, { errorInfo, userId: this.props.userId })
+
+    // Store the event id at this point as we don't have access to it within
+    // `getDerivedStateFromError`.
+    this.setState({ errorEventId })
   }
 
   hideSpinner = (cb = () => {}) => {
@@ -213,9 +246,23 @@ class MyApp extends App {
     const { Component, pageProps } = this.props
 
     const percentCompleted = this.state.totalNumberOfJobs
-      && Math.round((this.state.finishedJobsCount / this.state.totalNumberOfJobs) * 100);
+      && Math.round((this.state.finishedJobsCount / this.state.totalNumberOfJobs) * 100);    
 
-    return (
+    return this.state.hasError ? (
+      <section>
+        <h1>There was an error!</h1>
+        <p>
+          <a
+            href="#"
+            onClick={() => {
+              window.location.reload(true)
+            }}
+          >
+            Try reloading the page
+          </a>
+        </p>
+      </section>
+    ) : (
       <Container>
         <Head>
           <title>DrawDrawInk</title>

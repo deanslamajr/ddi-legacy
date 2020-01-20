@@ -15,7 +15,8 @@ const clientEnvironment = {
   CELL_IMAGES_DOMAIN: fromProcessEnv('CELL_IMAGES_DOMAIN'),
   TWITTER_HANDLE: fromProcessEnv('TWITTER_HANDLE'),
   GOOGLE_SITE_VERIFICATION: fromProcessEnv('GOOGLE_SITE_VERIFICATION'),
-  SENTRY_DSN: fromProcessEnv('SENTRY_DSN')
+  SENTRY_DSN: fromProcessEnv('SENTRY_DSN'),
+  NODE_ENV: fromProcessEnv('NODE_ENV')
 }
 
 function fromProcessEnv (name) {
@@ -25,7 +26,6 @@ function fromProcessEnv (name) {
 const serverSecrets = {
   // app
   PORT: fromProcessEnv('PORT'),
-  NODE_ENV: fromProcessEnv('NODE_ENV'),
   COOKIE_SECRET: fromProcessEnv('COOKIE_SECRET'),
   CAPTCHA_V3_SECRET: fromProcessEnv('CAPTCHA_V3_SECRET'),
   CAPTCHA_V2_SECRET: fromProcessEnv('CAPTCHA_V2_SECRET'),

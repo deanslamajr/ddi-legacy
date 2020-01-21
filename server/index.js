@@ -52,6 +52,17 @@ const setUpApp = () => {
 
   server.use('/api', api)
 
+  // In production we only want to serve source maps to Sentry.io requests
+  server.get(/\.map/, (req, res, next) => {
+    const token = serverEnvironment.SENTRY_SOURCEMAPS_TOKEN;
+    if (!dev && !!token && req.headers['x-sentry-token'] !== token) {
+      return res.status(401)
+        .send('Authentication access token is required to access the source map.');
+    }
+
+    next();
+  })
+
   server.use('/', express.static(__dirname + '/../static'));
 
   server.use(handler)

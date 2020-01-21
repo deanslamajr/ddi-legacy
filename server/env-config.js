@@ -41,7 +41,9 @@ const serverSecrets = {
   PGDB_HOST: fromProcessEnv('PGDB_HOST'),
   // NEWRELIC
   NR_APP_NAME: fromProcessEnv('NR_APP_NAME'),
-  NR_LICENSE: fromProcessEnv('NR_LICENSE')
+  NR_LICENSE: fromProcessEnv('NR_LICENSE'),
+  // SENTRY
+  SENTRY_SOURCEMAPS_TOKEN: fromProcessEnv('SENTRY_SOURCEMAPS_TOKEN')
 }
 
 const serverEnvironment = Object.assign({}, clientEnvironment, serverSecrets)

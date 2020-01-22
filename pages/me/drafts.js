@@ -26,13 +26,7 @@ class DraftsRoute extends Component {
     draftComics: []
   }
 
-  static async getInitialProps ({ query, req, res }) {
-    // const { data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req), forwardCookies(req));
-    return {}
-  }
-
   async componentDidMount () {
-    //@TODO fetch comics from client cache and add to state
     const {getDirtyComics, getStudioState} = require('../../helpers/clientCache');
     const dirtyComics = getDirtyComics();
 

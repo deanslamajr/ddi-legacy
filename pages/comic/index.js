@@ -3,8 +3,8 @@ import { Component } from 'react'
 import styled from 'styled-components'
 import axios from 'axios'
 
-import { sortByOrder } from '../../helpers/sorts'
 import { media } from '../../helpers/style-utils'
+import sentry from '../../shared/sentry'
 import Comic from './Comic'
 
 import {
@@ -18,6 +18,8 @@ import { Router } from '../../routes'
 import { getApi, forwardCookies, redirect } from '../../helpers';
 
 import {APP_TITLE} from '../../config/constants.json';
+
+const {captureException} = sentry();
 
 const CenteredContainer = styled.div`
   display: flex;
@@ -44,15 +46,18 @@ class ComicRoute extends Component {
     try{
       // destructuring syntax - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#Assignment_without_declaration
       ({ data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req), forwardCookies(req)));
+      if (!data.isActive) {
+        throw new Error(`Comic with id:${query.comicId} does not exist.`);
+      }
     }
     catch(error) {
-      // @todo log error
+      captureException(error);
       comicIdIsValid = false;
     }
 
-    if (!comicIdIsValid || !data.isActive) {
-      // @todo log this case
+    if (!comicIdIsValid) {
       redirect('/gallery', res);
+      return {};
     }
 
     const initialCell = data.cells.find(({urlId}) => urlId === data.initialCellUrlId);
@@ -76,32 +81,6 @@ class ComicRoute extends Component {
     Router.pushRoute(`/s/comic/${this.props.comicId}`);
   }
 
-  /**
-   * not in use bc it doesn't seem to work on iOS safari
-   */
-  downloadCells = (e) => {
-    const {cells, comicId} = this.props;
-
-    e.preventDefault();
-
-    cells.sort(sortByOrder).forEach(({imageUrl}, currentIndex) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', imageUrl, true);
-      xhr.responseType = 'blob';
-      xhr.onload = () => {
-          const urlCreator = window.URL || window.webkitURL;
-          const href = urlCreator.createObjectURL(xhr.response);
-          const tag = document.createElement('a');
-          tag.href = href;
-          tag.download = `${comicId}_${currentIndex + 1}of${cells.length}.png`;
-          document.body.appendChild(tag);
-          tag.click();
-          document.body.removeChild(tag);
-      }
-      xhr.send();
-    })
-  }
-
   componentDidMount () {
     this.props.hideSpinner()
   }
@@ -114,8 +93,6 @@ class ComicRoute extends Component {
       userCanEdit
     } = this.props
 
-    
-    
     return (
       <div>
         <Head>

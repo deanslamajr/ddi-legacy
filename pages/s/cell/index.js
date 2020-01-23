@@ -18,7 +18,7 @@ import {NavButton, BOTTOM_LEFT, BOTTOM_RIGHT} from '../../../components/navigati
 import { Router } from '../../../routes';
 
 import {generateCellImageFromEmojis} from '../../../helpers/generateCellImageFromEmojis'
-import {getApi} from '../../../helpers';
+import {getApi, getUserIdFromCtx} from '../../../helpers';
 import {sortByOrder} from '../../../helpers/sorts'
 import theme from '../../../helpers/theme';
 import {
@@ -29,7 +29,11 @@ import {
   RGBA
 } from '../../../helpers/konvaDrawingUtils';
 
+import sentry from '../../../shared/sentry'
+
 import {APP_TITLE} from '../../../config/constants.json';
+
+const {captureException} = sentry();
 
 const CELL_IMAGE_ID = 'cell-image';
 
@@ -83,17 +87,24 @@ class CellStudio extends Component {
     };
   }
 
-  static async getInitialProps ({ asPath, query, req }) {
+  static async getInitialProps (ctx) {
+    const { asPath, query, req } = ctx;
     let studioState;
+    const userId = getUserIdFromCtx(ctx);
 
     if (isDuplicatePath(asPath)) {
       try {
         const { data } = await axios.get(getApi(`/api/cell/${query.cellUrlId}`, req));
+
+        // Not OK
+        if(data === 'OK') {
+          throw new Error(`Cell with urlId ${query.cellUrlId} does not exist.`)
+        }
+
         studioState = data.studioState;
       }
-      catch(e) {
-        // on error e.g. cellUrlId doesn't exist
-        // fall through, don't refresh studioState
+      catch(error) {
+        captureException(error, {...ctx, userId});
       }
     }
 

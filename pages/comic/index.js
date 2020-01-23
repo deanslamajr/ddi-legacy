@@ -15,7 +15,7 @@ import {
 import {CellPreviewMetaTags} from '../../components/CellPreviewMetaTags';
 
 import { Router } from '../../routes'
-import { getApi, forwardCookies, redirect } from '../../helpers';
+import { getApi, getUserIdFromCtx, forwardCookies, redirect } from '../../helpers';
 
 import {APP_TITLE} from '../../config/constants.json';
 
@@ -39,19 +39,21 @@ const CreateButton = styled(NavButton)`
 `
 
 class ComicRoute extends Component {
-  static async getInitialProps ({ query, req, res }) {
+  static async getInitialProps (ctx) {
+    const { query, req, res } = ctx;
     let data;
     let comicIdIsValid = true;
+    const userId = getUserIdFromCtx(ctx);
 
     try{
       // destructuring syntax - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#Assignment_without_declaration
       ({ data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req), forwardCookies(req)));
       if (!data.isActive) {
-        throw new Error(`Comic with id:${query.comicId} does not exist.`);
+        throw new Error(`Comic with urlId ${query.comicId} does not exist.`);
       }
     }
     catch(error) {
-      captureException(error);
+      captureException(error, {...ctx, userId});
       comicIdIsValid = false;
     }
 

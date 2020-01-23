@@ -42,3 +42,13 @@ export function getCellUrl(imageUrl, schemaVersion) {
     ? `https://${publicRuntimeConfig.CELL_IMAGES_DOMAIN}/${imageUrl}`
     : imageUrl;
 }
+
+export function getUserIdFromCtx(ctx) {
+  let userId;
+  // only on server side rendering
+  if (ctx && ctx.req && ctx.req.session) {
+    userId = ctx.req.session.userId;
+  }
+
+  return userId;
+}

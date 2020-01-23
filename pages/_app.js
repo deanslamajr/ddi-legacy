@@ -11,6 +11,7 @@ import { load } from 'recaptcha-v3'
 import { Router } from '../routes'
 
 import theme from '../helpers/theme'
+import {getUserIdFromCtx} from '../helpers'
 
 import {GlobalStyles, MobileViewportSettings} from '../components/Layouts'
 import {LoadSpinner} from '../components/Loading'
@@ -65,15 +66,13 @@ class MyApp extends App {
     try {
       let pageProps = {}
 
+      userId = getUserIdFromCtx(ctx);
+
       if (Component.getInitialProps) {
         pageProps = await Component.getInitialProps(ctx)
       }
 
-      // only on server side rendering
-      if (ctx.req) {
-        userId = ctx.req.session.userId;
-        pageProps.userId = userId;
-      }
+      pageProps.userId = userId;
 
       return { pageProps }
     } catch (error) {
@@ -103,11 +102,13 @@ class MyApp extends App {
   }
 
   componentDidCatch(error, errorInfo) {
+    console.log('component did catch')
     const errorEventId = captureException(error, { errorInfo, userId: this.props.userId })
 
     // Store the event id at this point as we don't have access to it within
     // `getDerivedStateFromError`.
     this.setState({ errorEventId })
+    super.componentDidCatch(error, errorInfo)
   }
 
   hideSpinner = (cb = () => {}) => {

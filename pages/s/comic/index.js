@@ -90,12 +90,8 @@ function uploadImage(imageFile, signedRequest) {
           resolve();
         }
         else {
-          // @todo better UX
-          captureException(new Error('Could not upload file!'), {errorInfo: {
-            statusText: xhr.statusText,
-            status: xhr.status
-          }});
-          reject();
+          const error = new Error(`Could not upload file. status:${xhr.status} statusText:${xhr.statusText}`);
+          reject(error);
         }
       }
     }

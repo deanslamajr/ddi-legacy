@@ -86,7 +86,7 @@ function uploadImage(imageFile, signedRequest) {
     xhr.open('PUT', signedRequest)
     xhr.onreadystatechange = async () => {
       if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
+        if (xhr.status !== 200) {
           resolve();
         }
         else {
@@ -244,6 +244,7 @@ class StudioV2 extends Component {
     this.props.showSpinner();
     this.toggleComicActionsModal(false);
     try {
+      throw new Error('shits fucked');
       // Delete the draft from local cache
       if (isDraftId(this.props.comicUrlId)) {
         const { deleteComic } = require('../../../helpers/clientCache');
@@ -325,6 +326,7 @@ class StudioV2 extends Component {
     const cellsThatRequireUploads = this.getCellsWithNewImage();
 
     try {
+      //throw new Error('publish is broke too!')
       if (cellsThatRequireUploads.length) {
         // if image uploading is required:
         // 1 + # of cells that require uploads

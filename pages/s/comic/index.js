@@ -24,6 +24,8 @@ import theme from '../../../helpers/theme'
 import { generateCellImage } from '../../../helpers/generateCellImageFromEmojis'
 import { isDraftId } from '../../../shared/isDraftId';
 
+import sentry from '../../../shared/sentry';
+
 import {
   CAPTCHA_ACTION_CELL_PUBLISH,
   MAX_DIRTY_CELLS,
@@ -31,6 +33,8 @@ import {
 } from '../../../config/constants.json';
 
 const { publicRuntimeConfig } = getConfig();
+
+const {captureException} = sentry();
 
 const SIDE_BUTTONS_SPACER = 0//.4
 const cellWidth = `${(1 - SIDE_BUTTONS_SPACER) * theme.layout.width}px`;
@@ -51,9 +55,8 @@ async function hydrateComicFromApi(comicUrlId) {
       throw new Error(`Comic with urlId:${comicUrlId} cannot be edited as it is not active.`);
     }
   }
-  catch (e) {
-    //@TODO log
-    console.error(e);
+  catch (error) {
+    captureException(error);
     return null
   }
 
@@ -88,7 +91,10 @@ function uploadImage(imageFile, signedRequest) {
         }
         else {
           // @todo better UX
-          console.error('could not upload file!')
+          captureException(new Error('Could not upload file!'), {errorInfo: {
+            statusText: xhr.statusText,
+            status: xhr.status
+          }});
           reject();
         }
       }
@@ -257,8 +263,10 @@ class StudioV2 extends Component {
     }
     catch (error) {
       this.props.hideSpinner();
-      // @todo log error
-      console.error(error);
+      captureException(error, {errorInfo: {
+        componentState: {...this.state}
+      }});
+      
       return;
     }
   }
@@ -354,9 +362,10 @@ class StudioV2 extends Component {
       deleteComic(this.props.comicUrlId);
   
       Router.pushRoute(`/comic/${comicUrlId}`)
-    } catch (e) {
-      console.error(e);
-      // @todo log this
+    } catch (error) {
+      captureException(error, {errorInfo: {
+        componentState: {...this.state}
+      }});
 
       this.props.hideSpinner();
       this.togglePreviewModal(false);
@@ -385,10 +394,13 @@ class StudioV2 extends Component {
 
       return { comicUrlId, signedCells };
     }
-    catch (e) {
-      console.error(e);
-      const isCaptchaFail = e && e.response && e.response.status === 400;
-      // @todo log this
+    catch (error) {
+      const isCaptchaFail = error && error.response && error.response.status === 400;
+      
+      captureException(error, {errorInfo: {
+        componentState: {...this.state},
+        isCaptchaFail
+      }});
 
       this.props.hideSpinner();
       this.togglePreviewModal(false);

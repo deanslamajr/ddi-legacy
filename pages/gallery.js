@@ -143,6 +143,9 @@ class GalleryRoute extends Component {
   }
 
   showMoreComics = async () => {
+    const newError = new Error('breaking this button on purpose!!!');
+    newError.someData = 'some value';
+    throw newError;
     this.props.showSpinner()
     this.props.fetchMoreComics(this.props.hideSpinner)
   }

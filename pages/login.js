@@ -5,6 +5,10 @@ import styled from 'styled-components'
 import { Router } from '../routes'
 import { media } from '../helpers/style-utils'
 
+import sentry from '../shared/sentry';
+
+const {captureException} = sentry();
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
@@ -49,8 +53,10 @@ class Login extends Component {
       Router.pushRoute('/gallery')
     }
     catch(error) {
-      console.error(error);
-      // @todo log error
+      captureException(error, {errorInfo: {
+        componentState: {...this.state}
+      }});
+      
       this.setState({error})
     }
   }

@@ -102,7 +102,6 @@ class MyApp extends App {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.log('component did catch')
     const errorEventId = captureException(error, { errorInfo, userId: this.props.userId })
 
     // Store the event id at this point as we don't have access to it within

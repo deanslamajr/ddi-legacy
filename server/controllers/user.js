@@ -25,7 +25,7 @@ async function login (req, res) {
     const user = await Users.findOne({where: {username}})
     if (!user) {
       // @todo log
-      res.sendStatus(404);
+      return res.sendStatus(404);
     }
 
     const match = await bcrypt.compare(passwordFromInput, user.password)
@@ -34,7 +34,7 @@ async function login (req, res) {
       return res.sendStatus(200)
     } else {
       // @todo log
-      res.sendStatus(404);
+      return res.sendStatus(404);
     }
   }
   catch(error) {

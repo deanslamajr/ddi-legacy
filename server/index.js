@@ -5,6 +5,7 @@ const cookieSession = require('cookie-session')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const cluster = require('cluster')
+const cors = require('cors')
 
 const handleUserSession = require('./middleware/userSession')
 const api = require('./controllers')
@@ -20,21 +21,27 @@ const handler = routes.getRequestHandler(app)
 const server = express()
 
 const setUpApp = () => {
+  // if local dev or QA envs, turn off the cors protections
+  // This is useful for developing DDIv2 against DDIv1 data
+  if (process.env.ENV !== 'production') {
+    server.use(cors())
+  }
+
   // if in production envs
   // only allow https connections
   // http://blog.lookfar.com/blog/2017/07/19/how-to-https-all-the-things-in-node/
   if (process.env.NODE_ENV === 'production') {
-    server.enable('trust proxy');
+    server.enable('trust proxy')
 
-    server.use(function(req, res, next){
+    server.use(function (req, res, next) {
       // load balancer will add this header to normal requests
       // health check requests won't have this header
       // consequently, we allow requests that don't have the header
       // so that health check passes
       if (req.header('x-forwarded-proto') === 'http') {
-        res.redirect('https://' + req.header('host') + req.url);
-      } else{
-        next();
+        res.redirect('https://' + req.header('host') + req.url)
+      } else {
+        next()
       }
     })
   }
@@ -43,16 +50,18 @@ const setUpApp = () => {
   server.use(cookieParser())
 
   // setup session cookie
-  server.use(cookieSession({
-    secret: serverEnvironment.COOKIE_SECRET,
-    expires: new Date(253402300000000)  // Approximately Friday, 31 Dec 9999 23:59:59 GMT
-  }))
+  server.use(
+    cookieSession({
+      secret: serverEnvironment.COOKIE_SECRET,
+      expires: new Date(253402300000000), // Approximately Friday, 31 Dec 9999 23:59:59 GMT
+    })
+  )
 
   server.use(handleUserSession)
 
   server.use('/api', api)
 
-  server.use('/', express.static(__dirname + '/../static'));
+  server.use('/', express.static(__dirname + '/../static'))
 
   server.use(handler)
 
@@ -72,31 +81,38 @@ const setupWorkerProcesses = () => {
 
   // iterate on number of cores need to be utilized by an application
   // current example will utilize all of them
-  for(let i = 0; i < numCores; i++) {
+  for (let i = 0; i < numCores; i++) {
     // creating workers and pushing reference in an array
     // these references can be used to receive messages from workers
     const worker = cluster.fork()
 
     // to receive messages from worker process
-    worker.on('message', message => {
+    worker.on('message', (message) => {
       console.log(message)
     })
   }
 
   // process is clustered on a core and process id is assigned
-  cluster.on('online', worker => {
+  cluster.on('online', (worker) => {
     console.log('Worker ' + worker.process.pid + ' is listening')
   })
 
   // if any of the worker process dies then start a new one by simply forking another one
   cluster.on('exit', (worker, code, signal) => {
-    console.log('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal)
+    console.log(
+      'Worker ' +
+        worker.process.pid +
+        ' died with code: ' +
+        code +
+        ', and signal: ' +
+        signal
+    )
     console.log('Starting a new worker')
-    
+
     const newWorker = cluster.fork()
 
     // to receive messages from worker process
-    newWorker.on('message', message => {
+    newWorker.on('message', (message) => {
       console.log(message)
     })
   })
@@ -117,7 +133,6 @@ const setupServer = (isClusterRequired) => {
   }
 }
 
-app.prepare()
-  .then(() => {
-    setupServer(!dev)
-  })
+app.prepare().then(() => {
+  setupServer(!dev)
+})

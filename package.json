@@ -6,10 +6,6 @@
     "node": "10.17.0"
   },
   "scripts": {
-    "deploy:qa": "npm version prerelease --preid=g\"$(git rev-parse --short=5 HEAD)\" && eb deploy ddi-qa --label \"$(git describe)\" --timeout 20",
-    "deploy:prod:patch": "npm version patch && eb deploy ddi-prod --label \"$(git describe)\" --timeout 20",
-    "deploy:prod:minor": "npm version minor && eb deploy ddi-prod --label \"$(git describe)\" --timeout 20",
-    "deploy:prod:major": "npm version major && eb deploy ddi-prod --label \"$(git describe)\" --timeout 20",
     "dev": "nodemon server/index.js",
     "start": "next build && node server/index.js",
     "migrate": "sequelize db:migrate",

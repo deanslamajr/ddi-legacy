@@ -4,6 +4,7 @@ import styled from 'styled-components'
 
 import { Router } from '../routes'
 import { media } from '../helpers/style-utils'
+import { DDI_APP_PAGES } from '../helpers/urls'
 
 const Form = styled.form`
   display: flex;
@@ -25,10 +26,10 @@ const Input = styled.input`
 class Login extends Component {
   state = {
     username: '',
-    password: ''
+    password: '',
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.props.hideSpinner()
   }
 
@@ -40,60 +41,55 @@ class Login extends Component {
     // prevent page refresh
     event.preventDefault()
 
-    try{
+    try {
       await axios.post('/api/user/login', {
         username: this.state.username,
-        password: this.state.password
+        password: this.state.password,
       })
-  
-      Router.pushRoute('/gallery')
-    }
-    catch(error) {
-      console.error(error);
+
+      Router.pushRoute(DDI_APP_PAGES.getGalleryPageUrl())
+    } catch (error) {
+      console.error(error)
       // @todo log error
-      this.setState({error})
+      this.setState({ error })
     }
   }
 
   logout = async () => {
-    try{
+    try {
       await axios.post('/api/user/logout')
-  
-      Router.pushRoute('/gallery')
-    }
-    catch(error) {
-      console.error(error);
+
+      Router.pushRoute(DDI_APP_PAGES.getGalleryPageUrl())
+    } catch (error) {
+      console.error(error)
       // @todo log error
-      this.setState({error})
+      this.setState({ error })
     }
   }
 
-  render () {
-    return <div>
-      <Form onSubmit={this.handleSubmit}>
-        <Input
-          type='text'
-          onChange={e => this.handleChange('username', e)}
-          placeholder='username'
-        />
-        <Input
-          type='password'
-          onChange={e => this.handleChange('password', e)}
-          placeholder='password'
-        />
-        <Input
-          type='submit'
-          value='Login'
-        />
-        <Input
-          type='button'
-          value='Logout'
-          onClick={() => this.logout()}
-        />
-        {this.state.error && <Input as='div'>{this.state.error.message}</Input>}
-      </Form>
-    </div>
+  render() {
+    return (
+      <div>
+        <Form onSubmit={this.handleSubmit}>
+          <Input
+            type="text"
+            onChange={(e) => this.handleChange('username', e)}
+            placeholder="username"
+          />
+          <Input
+            type="password"
+            onChange={(e) => this.handleChange('password', e)}
+            placeholder="password"
+          />
+          <Input type="submit" value="Login" />
+          <Input type="button" value="Logout" onClick={() => this.logout()} />
+          {this.state.error && (
+            <Input as="div">{this.state.error.message}</Input>
+          )}
+        </Form>
+      </div>
+    )
   }
 }
 
-export default Login 
+export default Login

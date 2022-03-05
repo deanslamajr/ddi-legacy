@@ -5,19 +5,21 @@ import axios from 'axios'
 
 import { sortByOrder } from '../../helpers/sorts'
 import { media } from '../../helpers/style-utils'
+import { getApi, forwardCookies, redirect } from '../../helpers'
+import { DDI_APP_PAGES } from '../../helpers/urls'
+
 import Comic from './Comic'
 
 import {
   NavButton,
   BOTTOM_LEFT,
-  BOTTOM_RIGHT
+  BOTTOM_RIGHT,
 } from '../../components/navigation'
-import {CellPreviewMetaTags} from '../../components/CellPreviewMetaTags';
+import { CellPreviewMetaTags } from '../../components/CellPreviewMetaTags'
 
 import { Router } from '../../routes'
-import { getApi, forwardCookies, redirect } from '../../helpers';
 
-import {APP_TITLE} from '../../config/constants.json';
+import { APP_TITLE } from '../../config/constants.json'
 
 const CenteredContainer = styled.div`
   display: flex;
@@ -37,89 +39,88 @@ const CreateButton = styled(NavButton)`
 `
 
 class ComicRoute extends Component {
-  static async getInitialProps ({ query, req, res }) {
-    let data;
-    let comicIdIsValid = true;
+  static async getInitialProps({ query, req, res }) {
+    let data
+    let comicIdIsValid = true
 
-    try{
+    try {
       // destructuring syntax - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#Assignment_without_declaration
-      ({ data } = await axios.get(getApi(`/api/comic/${query.comicId}`, req), forwardCookies(req)));
-    }
-    catch(error) {
+      ;({ data } = await axios.get(
+        getApi(`/api/comic/${query.comicId}`, req),
+        forwardCookies(req)
+      ))
+    } catch (error) {
       // @todo log error
-      comicIdIsValid = false;
+      comicIdIsValid = false
     }
 
     if (!comicIdIsValid || !data.isActive) {
       // @todo log this case
-      redirect('/gallery', res);
+      redirect(DDI_APP_PAGES.getGalleryPageUrl(), res)
     }
 
-    const initialCell = data.cells.find(({urlId}) => urlId === data.initialCellUrlId);
+    const initialCell = data.cells.find(
+      ({ urlId }) => urlId === data.initialCellUrlId
+    )
 
     return {
       cells: data.cells,
       comicId: query.comicId,
       initialCell: initialCell,
       title: data.title,
-      userCanEdit: data.userCanEdit
+      userCanEdit: data.userCanEdit,
     }
   }
 
   navigateToGallery = () => {
     this.props.showSpinner()
-    Router.pushRoute('/gallery')
+    Router.pushRoute(DDI_APP_PAGES.getGalleryPageUrl())
   }
 
   navigateToStudio = () => {
-    this.props.showSpinner();
-    Router.pushRoute(`/s/comic/${this.props.comicId}`);
+    this.props.showSpinner()
+    Router.pushRoute(`/s/comic/${this.props.comicId}`)
   }
 
   /**
    * not in use bc it doesn't seem to work on iOS safari
    */
   downloadCells = (e) => {
-    const {cells, comicId} = this.props;
+    const { cells, comicId } = this.props
 
-    e.preventDefault();
+    e.preventDefault()
 
-    cells.sort(sortByOrder).forEach(({imageUrl}, currentIndex) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', imageUrl, true);
-      xhr.responseType = 'blob';
+    cells.sort(sortByOrder).forEach(({ imageUrl }, currentIndex) => {
+      const xhr = new XMLHttpRequest()
+      xhr.open('GET', imageUrl, true)
+      xhr.responseType = 'blob'
       xhr.onload = () => {
-          const urlCreator = window.URL || window.webkitURL;
-          const href = urlCreator.createObjectURL(xhr.response);
-          const tag = document.createElement('a');
-          tag.href = href;
-          tag.download = `${comicId}_${currentIndex + 1}of${cells.length}.png`;
-          document.body.appendChild(tag);
-          tag.click();
-          document.body.removeChild(tag);
+        const urlCreator = window.URL || window.webkitURL
+        const href = urlCreator.createObjectURL(xhr.response)
+        const tag = document.createElement('a')
+        tag.href = href
+        tag.download = `${comicId}_${currentIndex + 1}of${cells.length}.png`
+        document.body.appendChild(tag)
+        tag.click()
+        document.body.removeChild(tag)
       }
-      xhr.send();
+      xhr.send()
     })
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.props.hideSpinner()
   }
 
-  render () {
-    const {
-      cells,
-      initialCell,
-      title,
-      userCanEdit
-    } = this.props
+  render() {
+    const { cells, initialCell, title, userCanEdit } = this.props
 
-    
-    
     return (
       <div>
         <Head>
-          <title>{APP_TITLE} - {title ? `${title}` : 'Comic'}</title>
+          <title>
+            {APP_TITLE} - {title ? `${title}` : 'Comic'}
+          </title>
         </Head>
         <CellPreviewMetaTags
           title={title}
@@ -137,15 +138,17 @@ class ComicRoute extends Component {
           />
         </CenteredContainer>
 
-        {userCanEdit && <NavButton
-          accented
-          value='EDIT'
-          cb={this.navigateToStudio}
-          position={BOTTOM_RIGHT}
-        />}
+        {userCanEdit && (
+          <NavButton
+            accented
+            value="EDIT"
+            cb={this.navigateToStudio}
+            position={BOTTOM_RIGHT}
+          />
+        )}
 
         <NavButton
-          value='GALLERY'
+          value="GALLERY"
           cb={this.navigateToGallery}
           position={BOTTOM_LEFT}
         />

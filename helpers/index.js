@@ -3,23 +3,25 @@ import { Router } from '../routes'
 
 const { publicRuntimeConfig } = getConfig()
 
-export const getApi = (path, prependHost = false) => prependHost
-  ? `${publicRuntimeConfig.HOST}${path}`
-  : path
+export const getApi = (path, prependHost = false) =>
+  prependHost ? `${publicRuntimeConfig.HOST}${path}` : path
 
 // assumes upstream middleware parses cookies onto req e.g. cookie-parser
 export const forwardCookies = (req) => {
   let options = {}
 
   if (req && req.cookies) {
-    const cookieString = Object.keys(req.cookies).reduce((headerString, key) => {
-      return `${headerString}${key}=${req.cookies[key]};`
-    }, '')
+    const cookieString = Object.keys(req.cookies).reduce(
+      (headerString, key) => {
+        return `${headerString}${key}=${req.cookies[key]};`
+      },
+      ''
+    )
 
     options = {
       headers: {
-          Cookie: cookieString
-      }
+        Cookie: cookieString,
+      },
     }
   }
 
@@ -29,16 +31,10 @@ export const forwardCookies = (req) => {
 export function redirect(url, res) {
   if (res) {
     res.writeHead(302, {
-      Location: url
+      Location: url,
     })
     res.end()
   } else {
-    Router.pushRoute(url);
+    Router.pushRoute(url)
   }
-}
-
-export function getCellUrl(imageUrl, schemaVersion) {
-  return schemaVersion >= 3
-    ? `https://${publicRuntimeConfig.CELL_IMAGES_DOMAIN}/${imageUrl}`
-    : imageUrl;
 }

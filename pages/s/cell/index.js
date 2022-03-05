@@ -1,44 +1,49 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
-import Head from 'next/head';
-import styled from 'styled-components';
-import cloneDeep from 'lodash/cloneDeep';
-import axios from 'axios';
+import { Component } from 'react'
+import PropTypes from 'prop-types'
+import Head from 'next/head'
+import styled from 'styled-components'
+import cloneDeep from 'lodash/cloneDeep'
+import axios from 'axios'
 
-import ActionsModal from './ActionsModal';
-import BuilderMenu from './BuilderMenu';
-import CaptionModal from './CaptionModal';
-import EmojiCanvas from './EmojiCanvas';
-import EmojiPicker from './EmojiPicker';
-import PreviewModal from './PreviewModal';
-import WarningModal from './WarningModal';
+import ActionsModal from './ActionsModal'
+import BuilderMenu from './BuilderMenu'
+import CaptionModal from './CaptionModal'
+import EmojiCanvas from './EmojiCanvas'
+import EmojiPicker from './EmojiPicker'
+import PreviewModal from './PreviewModal'
+import WarningModal from './WarningModal'
 
-import {NavButton, BOTTOM_LEFT, BOTTOM_RIGHT} from '../../../components/navigation'
+import {
+  NavButton,
+  BOTTOM_LEFT,
+  BOTTOM_RIGHT,
+} from '../../../components/navigation'
 
-import { Router } from '../../../routes';
+import { Router } from '../../../routes'
 
-import {generateCellImageFromEmojis} from '../../../helpers/generateCellImageFromEmojis'
-import {getApi} from '../../../helpers';
-import {sortByOrder} from '../../../helpers/sorts'
-import theme from '../../../helpers/theme';
+import { generateCellImageFromEmojis } from '../../../helpers/generateCellImageFromEmojis'
+import { getApi } from '../../../helpers'
+import { sortByOrder } from '../../../helpers/sorts'
+import theme from '../../../helpers/theme'
 import {
   createNewEmojiComponentState,
   konvaCacheConfig,
   EMOJI_MASK_REF_ID,
   EMOJI_MASK_OUTLINE_REF_ID,
-  RGBA
-} from '../../../helpers/konvaDrawingUtils';
+  RGBA,
+} from '../../../helpers/konvaDrawingUtils'
+import { DDI_APP_PAGES } from '../../../helpers/urls'
 
-import {APP_TITLE} from '../../../config/constants.json';
+import { APP_TITLE } from '../../../config/constants.json'
 
-const CELL_IMAGE_ID = 'cell-image';
+const CELL_IMAGE_ID = 'cell-image'
 
 //
 // Styled Components
 //
 const EverythingElseContainer = styled.div`
-  margin-top: ${props => props.theme.canvas.width + 5}px;
-  width: ${props => props.theme.canvas.width}px;
+  margin-top: ${(props) => props.theme.canvas.width + 5}px;
+  width: ${(props) => props.theme.canvas.width}px;
 `
 
 const CenteredContainer = styled.div`
@@ -51,24 +56,24 @@ const CenteredContainer = styled.div`
   overflow-x: hidden;
 `
 
-function isDuplicatePath (path) {
-  const tokens = path.split('/');
-  return tokens.includes('duplicate');
+function isDuplicatePath(path) {
+  const tokens = path.split('/')
+  return tokens.includes('duplicate')
 }
 
 //
 // Cell Studio
 class CellStudio extends Component {
-  constructor () {
-    super();
-    this.emojiRefs = [];
+  constructor() {
+    super()
+    this.emojiRefs = []
 
     this.initialStudioState = {
       activeEmojiId: null,
       backgroundColor: theme.colors.white,
       caption: '',
       currentEmojiId: 1,
-      emojis: {}
+      emojis: {},
     }
 
     this.state = {
@@ -79,19 +84,20 @@ class CellStudio extends Component {
       showActionsModal: false,
       showResetWarningModal: false,
       showPreviewModal: false,
-      studioState: cloneDeep(this.initialStudioState)
-    };
+      studioState: cloneDeep(this.initialStudioState),
+    }
   }
 
-  static async getInitialProps ({ asPath, query, req }) {
-    let studioState;
+  static async getInitialProps({ asPath, query, req }) {
+    let studioState
 
     if (isDuplicatePath(asPath)) {
       try {
-        const { data } = await axios.get(getApi(`/api/cell/${query.cellUrlId}`, req));
-        studioState = data.studioState;
-      }
-      catch(e) {
+        const { data } = await axios.get(
+          getApi(`/api/cell/${query.cellUrlId}`, req)
+        )
+        studioState = data.studioState
+      } catch (e) {
         // on error e.g. cellUrlId doesn't exist
         // fall through, don't refresh studioState
       }
@@ -99,92 +105,99 @@ class CellStudio extends Component {
 
     return {
       cellUrlId: query.cellUrlId,
-      studioState
-    };
+      studioState,
+    }
   }
 
   componentDidMount() {
-    const {getStudioState} = require('../../../helpers/clientCache');
-    let cachedStudioState;
-    
+    const { getStudioState } = require('../../../helpers/clientCache')
+    let cachedStudioState
+
     const stateUpdate = {
-      showEmojiPicker: true
+      showEmojiPicker: true,
     }
 
     // don't attempt to refresh studio state if in the process of duplicating
     if (!this.props.studioState) {
-      cachedStudioState = getStudioState(this.props.cellUrlId);
+      cachedStudioState = getStudioState(this.props.cellUrlId)
     }
 
     if (cachedStudioState) {
-      stateUpdate.showEmojiPicker = Object.keys(cachedStudioState.emojis).length === 0;
-      stateUpdate.studioState = cachedStudioState;
-    }
-    else {
-      this.createNewComicAndCell(this.props.studioState);
+      stateUpdate.showEmojiPicker =
+        Object.keys(cachedStudioState.emojis).length === 0
+      stateUpdate.studioState = cachedStudioState
+    } else {
+      this.createNewComicAndCell(this.props.studioState)
 
       if (this.props.studioState) {
-        stateUpdate.showEmojiPicker = Object.keys(this.props.studioState.emojis).length === 0;
-        stateUpdate.studioState = this.props.studioState;
+        stateUpdate.showEmojiPicker =
+          Object.keys(this.props.studioState.emojis).length === 0
+        stateUpdate.studioState = this.props.studioState
       }
     }
 
     this.setState(stateUpdate, () => {
-      this.updateAllKonvaCachesAndForceComponentUpdate();
-      this.props.hideSpinner();
-    });
+      this.updateAllKonvaCachesAndForceComponentUpdate()
+      this.props.hideSpinner()
+    })
   }
 
   /*******
    * Client Cache i.e. localstorage
-   ***** 
-   **** 
+   *****
+   ****
    **/
   clearCache = () => {
-    const {clearStudioState} = require('../../../helpers/clientCache');
-    clearStudioState(this.props.cellUrlId);
+    const { clearStudioState } = require('../../../helpers/clientCache')
+    clearStudioState(this.props.cellUrlId)
   }
 
   createNewComicAndCell = (initialStudioState) => {
     // create new cell in cache
-    const {createNewCell} = require('../../../helpers/clientCache');
-    const cellUrlId = createNewCell(undefined, initialStudioState);
+    const { createNewCell } = require('../../../helpers/clientCache')
+    const cellUrlId = createNewCell(undefined, initialStudioState)
 
-    Router.replaceRoute(`/s/cell/${cellUrlId}`);
+    Router.replaceRoute(`/s/cell/${cellUrlId}`)
   }
 
-  saveStudioStateToCache = ({setHasNewImage = true} = {}) => {
+  saveStudioStateToCache = ({ setHasNewImage = true } = {}) => {
     const {
       doesCellUrlIdExist,
-      setCellStudioState
-    } = require('../../../helpers/clientCache');
+      setCellStudioState,
+    } = require('../../../helpers/clientCache')
 
     if (!doesCellUrlIdExist(this.props.cellUrlId)) {
-      this.createNewComicAndCell(this.state.studioState);
-    }
-    else {
-      setCellStudioState(this.props.cellUrlId, this.state.studioState, {setHasNewImage});
+      this.createNewComicAndCell(this.state.studioState)
+    } else {
+      setCellStudioState(this.props.cellUrlId, this.state.studioState, {
+        setHasNewImage,
+      })
     }
   }
 
   /*******
    * Konva Cache (some konva changes require a konva object's state to be "cached")
-   ***** 
-   **** 
+   *****
+   ****
    **/
   updateAllKonvaCachesAndForceComponentUpdate = () => {
-    this.updateAllKonvaCaches();
-    this.forceUpdate();
+    this.updateAllKonvaCaches()
+    this.forceUpdate()
   }
 
   updateAllKonvaCaches = () => {
     // emojis canvas cache updates
-    Object.keys(this.state.studioState.emojis).forEach(emoji => this.updateKonvaCache(emoji));
+    Object.keys(this.state.studioState.emojis).forEach((emoji) =>
+      this.updateKonvaCache(emoji)
+    )
     // mask canvas cache update
-    this.updateMaskKonvaCache();
+    this.updateMaskKonvaCache()
   }
 
-  updateKonvaCache = (emojiId = this.state.studioState.activeEmojiId, useOutline) => {
+  updateKonvaCache = (
+    emojiId = this.state.studioState.activeEmojiId,
+    useOutline
+  ) => {
     const emojiRefToUpdate = this.emojiRefs[emojiId]
 
     if (emojiRefToUpdate) {
@@ -197,45 +210,48 @@ class CellStudio extends Component {
   }
 
   updateMaskKonvaCache = () => {
-    this.updateKonvaCache(EMOJI_MASK_REF_ID);
-    this.updateKonvaCache(EMOJI_MASK_OUTLINE_REF_ID, true);
+    this.updateKonvaCache(EMOJI_MASK_REF_ID)
+    this.updateKonvaCache(EMOJI_MASK_OUTLINE_REF_ID, true)
   }
 
   /*******
    * Canvas manipulation handlers
-   ***** 
-   **** 
+   *****
+   ****
    **/
-  handleDragEnd = ({xDiff, yDiff}) => {
-    this.setState(({studioState}) => {
-      const activeEmojiId = studioState.activeEmojiId;
-      const clonedStudioState = cloneDeep(studioState);
-      const clonedEmojis = clonedStudioState.emojis;
-      const activeEmoji = clonedEmojis[activeEmojiId];
-      
-      clonedEmojis[activeEmojiId].x = activeEmoji.x + xDiff;
-      clonedEmojis[activeEmojiId].y = activeEmoji.y + yDiff;
-      
-      return { studioState: clonedStudioState };
-    }, this.saveStudioStateToCache);
+  handleDragEnd = ({ xDiff, yDiff }) => {
+    this.setState(({ studioState }) => {
+      const activeEmojiId = studioState.activeEmojiId
+      const clonedStudioState = cloneDeep(studioState)
+      const clonedEmojis = clonedStudioState.emojis
+      const activeEmoji = clonedEmojis[activeEmojiId]
+
+      clonedEmojis[activeEmojiId].x = activeEmoji.x + xDiff
+      clonedEmojis[activeEmojiId].y = activeEmoji.y + yDiff
+
+      return { studioState: clonedStudioState }
+    }, this.saveStudioStateToCache)
   }
 
   changeActiveEmoji = (id) => {
-    this.setState(({studioState}) => {
-      const clonedStudioState = cloneDeep(studioState);
-      clonedStudioState.activeEmojiId = id;
-      return {studioState: clonedStudioState};
-    }, () => {
-      this.updateAllKonvaCachesAndForceComponentUpdate();
-      this.saveStudioStateToCache();
-    })
+    this.setState(
+      ({ studioState }) => {
+        const clonedStudioState = cloneDeep(studioState)
+        clonedStudioState.activeEmojiId = id
+        return { studioState: clonedStudioState }
+      },
+      () => {
+        this.updateAllKonvaCachesAndForceComponentUpdate()
+        this.saveStudioStateToCache()
+      }
+    )
   }
 
   decreaseStackOrder = (id) => {
-    this.setState(({studioState}) => {
-      const activeEmojiId = studioState.activeEmojiId;
-      const clonedStudioState = cloneDeep(studioState);
-      const clonedEmojis = clonedStudioState.emojis;
+    this.setState(({ studioState }) => {
+      const activeEmojiId = studioState.activeEmojiId
+      const clonedStudioState = cloneDeep(studioState)
+      const clonedEmojis = clonedStudioState.emojis
 
       // get index of activeEmoji
       const activeEmoji = clonedEmojis[id || activeEmojiId]
@@ -248,7 +264,9 @@ class CellStudio extends Component {
         let emojiToDecreaseOrder = activeEmojiOrder
         do {
           emojiToDecreaseOrder -= 1
-          emojiToDecrease = clonedEmojisValues.find(({ order }) => order === emojiToDecreaseOrder)
+          emojiToDecrease = clonedEmojisValues.find(
+            ({ order }) => order === emojiToDecreaseOrder
+          )
         } while (!emojiToDecrease)
 
         // swap the order of the two emojis
@@ -261,10 +279,10 @@ class CellStudio extends Component {
   }
 
   increaseStackOrder = (id) => {
-    this.setState(({studioState}) => {
-      const activeEmojiId = studioState.activeEmojiId;
-      const clonedStudioState = cloneDeep(studioState);
-      const clonedEmojis = clonedStudioState.emojis;
+    this.setState(({ studioState }) => {
+      const activeEmojiId = studioState.activeEmojiId
+      const clonedStudioState = cloneDeep(studioState)
+      const clonedEmojis = clonedStudioState.emojis
 
       // get index of activeEmoji
       const activeEmoji = clonedEmojis[id || activeEmojiId]
@@ -273,14 +291,18 @@ class CellStudio extends Component {
       const clonedEmojisValues = Object.values(clonedEmojis)
 
       if (clonedEmojisValues.length) {
-        const topStackOrder = clonedEmojisValues.sort(sortByOrder)[clonedEmojisValues.length - 1].order
+        const topStackOrder =
+          clonedEmojisValues.sort(sortByOrder)[clonedEmojisValues.length - 1]
+            .order
 
-        if (activeEmojiOrder < topStackOrder) {        
+        if (activeEmojiOrder < topStackOrder) {
           let emojiToIncrease
           let emojiToIncreaseOrder = activeEmojiOrder
           do {
             emojiToIncreaseOrder += 1
-            emojiToIncrease = clonedEmojisValues.find(({ order }) => order === emojiToIncreaseOrder)
+            emojiToIncrease = clonedEmojisValues.find(
+              ({ order }) => order === emojiToIncreaseOrder
+            )
           } while (!emojiToIncrease)
 
           // swap the order of the two emojis
@@ -294,314 +316,348 @@ class CellStudio extends Component {
   }
 
   incrementField = (field, amount, cb = this.saveStudioStateToCache) => {
-    this.setState(({studioState}) => {
-      const activeEmojiId = studioState.activeEmojiId;
-      const clonedStudioState = cloneDeep(studioState);
-      const clonedEmojis = clonedStudioState.emojis;
+    this.setState(({ studioState }) => {
+      const activeEmojiId = studioState.activeEmojiId
+      const clonedStudioState = cloneDeep(studioState)
+      const clonedEmojis = clonedStudioState.emojis
 
-      clonedEmojis[activeEmojiId][field] += amount;
-      
-      return {studioState: clonedStudioState};
+      clonedEmojis[activeEmojiId][field] += amount
+
+      return { studioState: clonedStudioState }
     }, cb)
   }
 
   onCaptionModalSave = async (newCaption) => {
-    this.setState(({studioState}) => {
-      const clonedStudioState = cloneDeep(studioState);
-      clonedStudioState.caption = newCaption; 
+    this.setState(
+      ({ studioState }) => {
+        const clonedStudioState = cloneDeep(studioState)
+        clonedStudioState.caption = newCaption
 
-      return {studioState: clonedStudioState};
-    }, () => {
-      this.saveStudioStateToCache(({setHasNewImage: false}));
-      this.toggleCaptionModal(false);
-    })
+        return { studioState: clonedStudioState }
+      },
+      () => {
+        this.saveStudioStateToCache({ setHasNewImage: false })
+        this.toggleCaptionModal(false)
+      }
+    )
   }
 
   onColorChange = (hex) => {
-    this.setState(({studioState}) => {
-      const clonedStudioState = cloneDeep(studioState);
-      clonedStudioState.backgroundColor = hex;
+    this.setState(
+      ({ studioState }) => {
+        const clonedStudioState = cloneDeep(studioState)
+        clonedStudioState.backgroundColor = hex
 
-      return {studioState: clonedStudioState}
-    }, () => this.saveStudioStateToCache());
+        return { studioState: clonedStudioState }
+      },
+      () => this.saveStudioStateToCache()
+    )
   }
 
   deleteActiveEmoji = (cb = () => {}) => {
     let actionsAfterStateUpdate
 
-    this.setState(({studioState}) => {
-      const activeEmojiId = studioState.activeEmojiId;
-      const clonedStudioState = cloneDeep(studioState);
-      const clonedEmojis = clonedStudioState.emojis;
+    this.setState(
+      ({ studioState }) => {
+        const activeEmojiId = studioState.activeEmojiId
+        const clonedStudioState = cloneDeep(studioState)
+        const clonedEmojis = clonedStudioState.emojis
 
-      delete clonedEmojis[activeEmojiId]
+        delete clonedEmojis[activeEmojiId]
 
-      const clonedEmojisValues = Object.values(clonedEmojis)
+        const clonedEmojisValues = Object.values(clonedEmojis)
 
-      let newActiveEmojiId
-      // if this deletes the last emoji
-      // 1. clear active emoji
-      // 2. bind show emojiPicker function to cb
-      if (!clonedEmojisValues.length) {
-        // 1.
-        newActiveEmojiId = null
-        // 2. 
-        actionsAfterStateUpdate = () => {
-          this.openEmojiPicker();
-          cb();
+        let newActiveEmojiId
+        // if this deletes the last emoji
+        // 1. clear active emoji
+        // 2. bind show emojiPicker function to cb
+        if (!clonedEmojisValues.length) {
+          // 1.
+          newActiveEmojiId = null
+          // 2.
+          actionsAfterStateUpdate = () => {
+            this.openEmojiPicker()
+            cb()
+          }
+        } else {
+          newActiveEmojiId = clonedEmojisValues[0].id
+          actionsAfterStateUpdate = () => {
+            this.updateAllKonvaCachesAndForceComponentUpdate()
+            cb()
+          }
         }
-      }
-      else {
-        newActiveEmojiId = clonedEmojisValues[0].id
-        actionsAfterStateUpdate = () => {
-          this.updateAllKonvaCachesAndForceComponentUpdate();
-          cb();
-        };
-      }
 
-      clonedStudioState.activeEmojiId = newActiveEmojiId;
+        clonedStudioState.activeEmojiId = newActiveEmojiId
 
-      return {studioState: clonedStudioState};
-    }, () => {
-      this.saveStudioStateToCache();
-      actionsAfterStateUpdate();
-    })
+        return { studioState: clonedStudioState }
+      },
+      () => {
+        this.saveStudioStateToCache()
+        actionsAfterStateUpdate()
+      }
+    )
   }
 
   duplicateActiveEmoji = (cb = () => {}) => {
-    this.setState(({studioState}) => {
-      const {
-        activeEmojiId, currentEmojiId
-      } = studioState;
+    this.setState(
+      ({ studioState }) => {
+        const { activeEmojiId, currentEmojiId } = studioState
 
-      const clonedStudioState = cloneDeep(studioState);
-      const clonedEmojis = clonedStudioState.emojis;
+        const clonedStudioState = cloneDeep(studioState)
+        const clonedEmojis = clonedStudioState.emojis
 
-      const activeEmoji = clonedEmojis[activeEmojiId];
-      const duplicatedActiveEmoji = cloneDeep(activeEmoji);
+        const activeEmoji = clonedEmojis[activeEmojiId]
+        const duplicatedActiveEmoji = cloneDeep(activeEmoji)
 
-      // update the duplicate's unique information
-      duplicatedActiveEmoji.id = currentEmojiId;
-      duplicatedActiveEmoji.order = currentEmojiId;
+        // update the duplicate's unique information
+        duplicatedActiveEmoji.id = currentEmojiId
+        duplicatedActiveEmoji.order = currentEmojiId
 
-      clonedEmojis[currentEmojiId] = duplicatedActiveEmoji;
+        clonedEmojis[currentEmojiId] = duplicatedActiveEmoji
 
-      clonedStudioState.activeEmojiId = currentEmojiId;
-      clonedStudioState.currentEmojiId = currentEmojiId + 1;
+        clonedStudioState.activeEmojiId = currentEmojiId
+        clonedStudioState.currentEmojiId = currentEmojiId + 1
 
-      return {studioState: clonedStudioState};
-    }, () => {
-      this.updateAllKonvaCachesAndForceComponentUpdate();
-      this.saveStudioStateToCache();
-      cb();
-    });
+        return { studioState: clonedStudioState }
+      },
+      () => {
+        this.updateAllKonvaCachesAndForceComponentUpdate()
+        this.saveStudioStateToCache()
+        cb()
+      }
+    )
   }
 
   changeEmoji = (emoji) => {
-    this.setState(({studioState}) => {
-      const activeEmojiId = studioState.activeEmojiId;
-      const clonedStudioState = cloneDeep(studioState);
-      const clonedEmojis = clonedStudioState.emojis;
+    this.setState(
+      ({ studioState }) => {
+        const activeEmojiId = studioState.activeEmojiId
+        const clonedStudioState = cloneDeep(studioState)
+        const clonedEmojis = clonedStudioState.emojis
 
-      const activeEmoji = clonedEmojis[activeEmojiId]
+        const activeEmoji = clonedEmojis[activeEmojiId]
 
-      activeEmoji.emoji = emoji
+        activeEmoji.emoji = emoji
 
-      return {
-        showEmojiPicker: false,
-        studioState: clonedStudioState
-      };
-    }, () => {
-      this.updateAllKonvaCachesAndForceComponentUpdate();
-      this.saveStudioStateToCache();
-    })
-  } 
+        return {
+          showEmojiPicker: false,
+          studioState: clonedStudioState,
+        }
+      },
+      () => {
+        this.updateAllKonvaCachesAndForceComponentUpdate()
+        this.saveStudioStateToCache()
+      }
+    )
+  }
 
   createNewEmoji = (emoji) => {
-    this.setState(({studioState}) => {
-      const currentEmojiId = studioState.currentEmojiId;
-      const clonedStudioState = cloneDeep(studioState);
-      const clonedEmojis = clonedStudioState.emojis;
+    this.setState(
+      ({ studioState }) => {
+        const currentEmojiId = studioState.currentEmojiId
+        const clonedStudioState = cloneDeep(studioState)
+        const clonedEmojis = clonedStudioState.emojis
 
-      const newEmoji = createNewEmojiComponentState(emoji, currentEmojiId);
-      clonedEmojis[newEmoji.id] = newEmoji;
+        const newEmoji = createNewEmojiComponentState(emoji, currentEmojiId)
+        clonedEmojis[newEmoji.id] = newEmoji
 
-      clonedStudioState.activeEmojiId = newEmoji.id;
-      clonedStudioState.currentEmojiId = currentEmojiId + 1;
+        clonedStudioState.activeEmojiId = newEmoji.id
+        clonedStudioState.currentEmojiId = currentEmojiId + 1
 
-      return {
-        studioState: clonedStudioState,
-        showEmojiPicker: false
+        return {
+          studioState: clonedStudioState,
+          showEmojiPicker: false,
+        }
+      },
+      () => {
+        this.updateAllKonvaCachesAndForceComponentUpdate()
+        this.saveStudioStateToCache()
       }
-    }, () => {
-      this.updateAllKonvaCachesAndForceComponentUpdate();
-      this.saveStudioStateToCache();
-    })
+    )
   }
 
   scaleField = (field, amount) => {
-    this.setState(({studioState}) => {
-      const activeEmojiId = studioState.activeEmojiId;
-      const clonedStudioState = cloneDeep(studioState);
-      const clonedEmojis = clonedStudioState.emojis;
+    this.setState(({ studioState }) => {
+      const activeEmojiId = studioState.activeEmojiId
+      const clonedStudioState = cloneDeep(studioState)
+      const clonedEmojis = clonedStudioState.emojis
 
-      clonedEmojis[activeEmojiId][field] *= amount;
-      
-      return {studioState: clonedStudioState};
-    }, this.saveStudioStateToCache);
+      clonedEmojis[activeEmojiId][field] *= amount
+
+      return { studioState: clonedStudioState }
+    }, this.saveStudioStateToCache)
   }
 
   setField = (field, value) => {
-    this.setState(({studioState}) => {
-      const activeEmojiId = studioState.activeEmojiId;
-      const clonedStudioState = cloneDeep(studioState);
-      const clonedEmojis = clonedStudioState.emojis;
+    this.setState(
+      ({ studioState }) => {
+        const activeEmojiId = studioState.activeEmojiId
+        const clonedStudioState = cloneDeep(studioState)
+        const clonedEmojis = clonedStudioState.emojis
 
-      clonedEmojis[activeEmojiId][field] = value;
-      
-      return {studioState: clonedStudioState};
-    }, () => {
-      this.saveStudioStateToCache();
-      this.updateKonvaCache();
-      this.updateMaskKonvaCache();
-    });
+        clonedEmojis[activeEmojiId][field] = value
+
+        return { studioState: clonedStudioState }
+      },
+      () => {
+        this.saveStudioStateToCache()
+        this.updateKonvaCache()
+        this.updateMaskKonvaCache()
+      }
+    )
   }
 
   setFilterColor = (rgb) => {
-    this.setState(({studioState}) => {
-      const activeEmojiId = studioState.activeEmojiId;
-      const clonedStudioState = cloneDeep(studioState);
-      const clonedEmojis = clonedStudioState.emojis;
+    this.setState(
+      ({ studioState }) => {
+        const activeEmojiId = studioState.activeEmojiId
+        const clonedStudioState = cloneDeep(studioState)
+        const clonedEmojis = clonedStudioState.emojis
 
-      clonedEmojis[activeEmojiId].red = rgb.r;
-      clonedEmojis[activeEmojiId].blue = rgb.b;
-      clonedEmojis[activeEmojiId].green = rgb.g;
-      
-      return {studioState: clonedStudioState};
-    }, () => {
-      this.saveStudioStateToCache();
-      this.updateKonvaCache();
-      this.updateMaskKonvaCache();
-    })
+        clonedEmojis[activeEmojiId].red = rgb.r
+        clonedEmojis[activeEmojiId].blue = rgb.b
+        clonedEmojis[activeEmojiId].green = rgb.g
+
+        return { studioState: clonedStudioState }
+      },
+      () => {
+        this.saveStudioStateToCache()
+        this.updateKonvaCache()
+        this.updateMaskKonvaCache()
+      }
+    )
   }
 
   toggleFilter = () => {
-    this.setState(({studioState}) => {
-      const activeEmojiId = studioState.activeEmojiId;
-      const clonedStudioState = cloneDeep(studioState);
-      const clonedEmojis = clonedStudioState.emojis;
+    this.setState(
+      ({ studioState }) => {
+        const activeEmojiId = studioState.activeEmojiId
+        const clonedStudioState = cloneDeep(studioState)
+        const clonedEmojis = clonedStudioState.emojis
 
-      clonedEmojis[activeEmojiId].filters = clonedEmojis[activeEmojiId].filters
-        ? undefined
-        : [RGBA]
-      
-        return {studioState: clonedStudioState};
-    }, () => {
-      this.updateKonvaCache();
-      this.saveStudioStateToCache();
-    })
+        clonedEmojis[activeEmojiId].filters = clonedEmojis[activeEmojiId]
+          .filters
+          ? undefined
+          : [RGBA]
+
+        return { studioState: clonedStudioState }
+      },
+      () => {
+        this.updateKonvaCache()
+        this.saveStudioStateToCache()
+      }
+    )
   }
 
   resetStudioSession = () => {
-    this.clearCache();
+    this.clearCache()
 
     // @todo handle case where this cell is a duplicate of another cell
     // e.g. merge in the studio state from the duplicate
 
-    this.setState({
-      showEmojiPicker: true, // @todo false if this is a duplicated comic
-      studioState: cloneDeep(this.initialStudioState)
-    }, () => this.toggleResetWarningModal(false));
+    this.setState(
+      {
+        showEmojiPicker: true, // @todo false if this is a duplicated comic
+        studioState: cloneDeep(this.initialStudioState),
+      },
+      () => this.toggleResetWarningModal(false)
+    )
   }
 
   /*******
    * UI
-   ***** 
-   **** 
+   *****
+   ****
    **/
   closeEmojiPicker = () => {
     this.setState({ showEmojiPicker: false })
   }
 
   deleteDraft = () => {
-    const {deleteCell} = require('../../../helpers/clientCache');
-    deleteCell(this.props.cellUrlId);
+    const { deleteCell } = require('../../../helpers/clientCache')
+    deleteCell(this.props.cellUrlId)
   }
 
   exit = (comicUrlId) => {
-    this.props.showSpinner();
+    this.props.showSpinner()
 
-    const {getCellsByComicUrlId, getComicUrlIdFromCellUrlId} = require('../../../helpers/clientCache');
-    comicUrlId = comicUrlId || getComicUrlIdFromCellUrlId(this.props.cellUrlId);
-    const cells = getCellsByComicUrlId(comicUrlId);
-    const numberOfCells = Object.keys(cells).length;
+    const {
+      getCellsByComicUrlId,
+      getComicUrlIdFromCellUrlId,
+    } = require('../../../helpers/clientCache')
+    comicUrlId = comicUrlId || getComicUrlIdFromCellUrlId(this.props.cellUrlId)
+    const cells = getCellsByComicUrlId(comicUrlId)
+    const numberOfCells = Object.keys(cells).length
 
     if (numberOfCells > 0) {
-      Router.pushRoute(`/s/comic/${comicUrlId}`);
+      Router.pushRoute(`/s/comic/${comicUrlId}`)
+    } else {
+      Router.pushRoute(DDI_APP_PAGES.getGalleryPageUrl())
     }
-    else {
-      Router.pushRoute('/gallery');
-    } 
   }
 
   handlePreviewClick = async () => {
-    this.toggleActionsModal(false);
-    this.props.showSpinner();
+    this.toggleActionsModal(false)
+    this.props.showSpinner()
 
-    const {url: cellImageUrl} = await generateCellImageFromEmojis({
+    const { url: cellImageUrl } = await generateCellImageFromEmojis({
       emojis: this.state.studioState.emojis,
       backgroundColor: this.state.studioState.backgroundColor,
-      htmlElementId: CELL_IMAGE_ID
-    });
+      htmlElementId: CELL_IMAGE_ID,
+    })
 
-    this.setState({cellImageUrl}, () => {
-      this.togglePreviewModal(true);
-      this.props.hideSpinner();
-    });
+    this.setState({ cellImageUrl }, () => {
+      this.togglePreviewModal(true)
+      this.props.hideSpinner()
+    })
   }
 
   openEmojiPickerToChangeEmoji = (cb = () => {}) => {
-    this.setState({
-      onEmojiSelect: this.changeEmoji,
-      showEmojiPicker: true
-    }, cb);
+    this.setState(
+      {
+        onEmojiSelect: this.changeEmoji,
+        showEmojiPicker: true,
+      },
+      cb
+    )
   }
 
   openEmojiPicker = () => {
     this.setState({
       onEmojiSelect: this.createNewEmoji,
-      showEmojiPicker: true
-    });
+      showEmojiPicker: true,
+    })
   }
 
   onPickerCancel = () => {
     if (Object.keys(this.state.studioState.emojis).length) {
-      this.closeEmojiPicker();
-    }
-    else {
-      const {getComicUrlIdFromCellUrlId} = require('../../../helpers/clientCache');
-      const comicUrlId = getComicUrlIdFromCellUrlId(this.props.cellUrlId);
-      this.deleteDraft();
-      this.exit(comicUrlId);
+      this.closeEmojiPicker()
+    } else {
+      const {
+        getComicUrlIdFromCellUrlId,
+      } = require('../../../helpers/clientCache')
+      const comicUrlId = getComicUrlIdFromCellUrlId(this.props.cellUrlId)
+      this.deleteDraft()
+      this.exit(comicUrlId)
     }
   }
 
   onClearClick = () => {
-    this.toggleActionsModal(false);
-    this.toggleResetWarningModal(true);
+    this.toggleActionsModal(false)
+    this.toggleResetWarningModal(true)
   }
 
   showCaptionModalFromActionsModal = () => {
-    this.toggleActionsModal(false);
-    this.toggleCaptionModal(true);
+    this.toggleActionsModal(false)
+    this.toggleCaptionModal(true)
   }
 
   toggleActionsModal = (newValue) => {
-    this.setState({ showActionsModal: newValue });
+    this.setState({ showActionsModal: newValue })
   }
 
   toggleCaptionModal = (newValue) => {
-    this.setState({ showCaptionModal: newValue });
+    this.setState({ showCaptionModal: newValue })
   }
 
   togglePreviewModal = (newValue = !this.state.showPreviewModal) => {
@@ -609,16 +665,17 @@ class CellStudio extends Component {
   }
 
   toggleResetWarningModal = (newValue = !this.state.showResetWarningModal) => {
-    this.setState({ showResetWarningModal: newValue });
+    this.setState({ showResetWarningModal: newValue })
   }
 
   /*******
    * Render method
-   ***** 
-   **** 
+   *****
+   ****
    **/
-  render () {
-    const activeEmoji = this.state.studioState.emojis[this.state.studioState.activeEmojiId];
+  render() {
+    const activeEmoji =
+      this.state.studioState.emojis[this.state.studioState.activeEmojiId]
 
     return (
       <div>
@@ -626,97 +683,109 @@ class CellStudio extends Component {
           <title>{APP_TITLE} - cell studio</title>
         </Head>
 
-        <div style={{display: 'none'}} id={CELL_IMAGE_ID} />
+        <div style={{ display: 'none' }} id={CELL_IMAGE_ID} />
 
-        {this.state.showEmojiPicker
-          ? (
-            <EmojiPicker
-              onSelect={this.state.onEmojiSelect}
-              onCancel={this.onPickerCancel}
-              backButtonLabel={this.state.studioState.activeEmojiId ? 'BACK' : 'EXIT'}
-            />)
-          : (
-            <CenteredContainer>
-              <EmojiCanvas
-                activeEmojiId={this.state.studioState.activeEmojiId}
+        {this.state.showEmojiPicker ? (
+          <EmojiPicker
+            onSelect={this.state.onEmojiSelect}
+            onCancel={this.onPickerCancel}
+            backButtonLabel={
+              this.state.studioState.activeEmojiId ? 'BACK' : 'EXIT'
+            }
+          />
+        ) : (
+          <CenteredContainer>
+            <EmojiCanvas
+              activeEmojiId={this.state.studioState.activeEmojiId}
+              backgroundColor={this.state.studioState.backgroundColor}
+              emojis={this.state.studioState.emojis}
+              emojiRefs={this.emojiRefs}
+              handleDragEnd={this.handleDragEnd}
+            />
+            <EverythingElseContainer>
+              <BuilderMenu
+                activeEmoji={activeEmoji}
+                changeActiveEmoji={this.changeActiveEmoji}
                 backgroundColor={this.state.studioState.backgroundColor}
+                decreaseStackOrder={this.decreaseStackOrder}
                 emojis={this.state.studioState.emojis}
-                emojiRefs={this.emojiRefs}
-                handleDragEnd={this.handleDragEnd}
+                increaseStackOrder={this.increaseStackOrder}
+                incrementField={this.incrementField}
+                onChangeClick={this.openEmojiPickerToChangeEmoji}
+                onColorChange={this.onColorChange}
+                onDeleteClick={this.deleteActiveEmoji}
+                onDuplicateClick={this.duplicateActiveEmoji}
+                openEmojiPicker={this.openEmojiPicker}
+                scaleField={this.scaleField}
+                setField={this.setField}
+                setFilterColor={this.setFilterColor}
+                hideActionsMenu={() => this.toggleActionsModal(false)}
+                isActionsModalVisible={this.state.showActionsModal}
+                toggleFilter={this.toggleFilter}
+                renderActionsMenu={({ showCanvaColorMenu }) => (
+                  <ActionsModal
+                    onCancelClick={() => this.toggleActionsModal(false)}
+                    onCanvasColorSelect={() => showCanvaColorMenu()}
+                    onClearClick={() => this.onClearClick()}
+                    onPreviewClick={() => this.handlePreviewClick()}
+                    toggleCaptionModal={this.showCaptionModalFromActionsModal}
+                  />
+                )}
               />
-              <EverythingElseContainer>
-                <BuilderMenu
-                  activeEmoji={activeEmoji}
-                  changeActiveEmoji={this.changeActiveEmoji}
-                  backgroundColor={this.state.studioState.backgroundColor}
-                  decreaseStackOrder={this.decreaseStackOrder}
-                  emojis={this.state.studioState.emojis}
-                  increaseStackOrder={this.increaseStackOrder}
-                  incrementField={this.incrementField}
-                  onChangeClick={this.openEmojiPickerToChangeEmoji}
-                  onColorChange={this.onColorChange}
-                  onDeleteClick={this.deleteActiveEmoji}
-                  onDuplicateClick={this.duplicateActiveEmoji}
-                  openEmojiPicker={this.openEmojiPicker}
-                  scaleField={this.scaleField}
-                  setField={this.setField}
-                  setFilterColor={this.setFilterColor}
-                  hideActionsMenu={() => this.toggleActionsModal(false)}
-                  isActionsModalVisible={this.state.showActionsModal}
-                  toggleFilter={this.toggleFilter}
-                  renderActionsMenu={({showCanvaColorMenu}) => (
-                    <ActionsModal
-                      onCancelClick={() => this.toggleActionsModal(false)}
-                      onCanvasColorSelect={() => showCanvaColorMenu()}
-                      onClearClick={() => this.onClearClick()}
-                      onPreviewClick={() => this.handlePreviewClick()}
-                      toggleCaptionModal={this.showCaptionModalFromActionsModal}
-                    />
-                  )}
-                />
-              </EverythingElseContainer>
-            </CenteredContainer>)
-        }
+            </EverythingElseContainer>
+          </CenteredContainer>
+        )}
 
-        {!this.state.showEmojiPicker && <NavButton
-          value='EXIT'
-          cb={() => this.exit()}
-          position={BOTTOM_LEFT}
-        />}
+        {!this.state.showEmojiPicker && (
+          <NavButton
+            value="EXIT"
+            cb={() => this.exit()}
+            position={BOTTOM_LEFT}
+          />
+        )}
 
-        {!this.state.showEmojiPicker && <NavButton
-          value='ACTIONS'
-          cb={() => this.toggleActionsModal(true)}
-          position={BOTTOM_RIGHT}
-          accented
-        />}
+        {!this.state.showEmojiPicker && (
+          <NavButton
+            value="ACTIONS"
+            cb={() => this.toggleActionsModal(true)}
+            position={BOTTOM_RIGHT}
+            accented
+          />
+        )}
 
-        {this.state.showPreviewModal && <PreviewModal
-          cellImageUrl={this.state.cellImageUrl}
-          onBackToComicClick={() => this.exit()}
-          onCancelClick={() => this.togglePreviewModal(false)}
-          onEditCaptionClick={() => this.toggleCaptionModal(true)}
-          caption={this.state.studioState.caption || ''}
-        />}
+        {this.state.showPreviewModal && (
+          <PreviewModal
+            cellImageUrl={this.state.cellImageUrl}
+            onBackToComicClick={() => this.exit()}
+            onCancelClick={() => this.togglePreviewModal(false)}
+            onEditCaptionClick={() => this.toggleCaptionModal(true)}
+            caption={this.state.studioState.caption || ''}
+          />
+        )}
 
-        {this.state.showCaptionModal && <CaptionModal
-          onCancelClick={() => this.toggleCaptionModal(false)}
-          onUpdateClick={this.onCaptionModalSave}
-          caption={this.state.studioState.caption || ''}
-        />}
+        {this.state.showCaptionModal && (
+          <CaptionModal
+            onCancelClick={() => this.toggleCaptionModal(false)}
+            onUpdateClick={this.onCaptionModalSave}
+            caption={this.state.studioState.caption || ''}
+          />
+        )}
 
-        {this.state.showResetWarningModal && <WarningModal
-          message='Clear the Canvas?'
-          okButtonLabel='CLEAR'
-          onCancelClick={() => this.toggleResetWarningModal(false)}
-          onOkClick={() => this.resetStudioSession()}
-        />}
-      </div>)
+        {this.state.showResetWarningModal && (
+          <WarningModal
+            message="Clear the Canvas?"
+            okButtonLabel="CLEAR"
+            onCancelClick={() => this.toggleResetWarningModal(false)}
+            onOkClick={() => this.resetStudioSession()}
+          />
+        )}
+      </div>
+    )
   }
 }
 
 CellStudio.propTypes = {
-  cellUrlId: PropTypes.string
-};
+  cellUrlId: PropTypes.string,
+}
 
-export default CellStudio 
+export default CellStudio

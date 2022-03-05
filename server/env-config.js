@@ -9,11 +9,12 @@ const clientEnvironment = {
   CAPTCHA_V3_SITE_KEY: fromProcessEnv('CAPTCHA_V3_SITE_KEY'),
   CAPTCHA_V2_SITE_KEY: fromProcessEnv('CAPTCHA_V2_SITE_KEY'),
   CELL_IMAGES_DOMAIN: fromProcessEnv('CELL_IMAGES_DOMAIN'),
+  DDIV2_URL_WITH_PROTOCOL: fromProcessEnv('DDIV2_URL_WITH_PROTOCOL'),
   TWITTER_HANDLE: fromProcessEnv('TWITTER_HANDLE'),
-  GOOGLE_SITE_VERIFICATION: fromProcessEnv('GOOGLE_SITE_VERIFICATION')
+  GOOGLE_SITE_VERIFICATION: fromProcessEnv('GOOGLE_SITE_VERIFICATION'),
 }
 
-function fromProcessEnv (name) {
+function fromProcessEnv(name) {
   return process.env[name]
 }
 
@@ -36,7 +37,7 @@ const serverSecrets = {
   PGDB_HOST: fromProcessEnv('PGDB_HOST'),
   // NEWRELIC
   NR_APP_NAME: fromProcessEnv('NR_APP_NAME'),
-  NR_LICENSE: fromProcessEnv('NR_LICENSE')
+  NR_LICENSE: fromProcessEnv('NR_LICENSE'),
 }
 
 const serverEnvironment = Object.assign({}, clientEnvironment, serverSecrets)
@@ -44,5 +45,5 @@ const serverEnvironment = Object.assign({}, clientEnvironment, serverSecrets)
 module.exports = {
   serverEnvironment,
   serverSecrets,
-  clientEnvironment
+  clientEnvironment,
 }

@@ -1,17 +1,17 @@
 import { Component } from 'react'
 import styled from 'styled-components'
-import Img from 'react-image';
+import Img from 'react-image'
 
 import {
   NavButton,
   BOTTOM_RIGHT,
   BOTTOM_CENTER,
-  TOP_RIGHT
+  TOP_RIGHT,
 } from '../components/navigation'
 import Cell from '../components/Cell'
-import {ErrorCell, LoadingCell} from '../components/Loading'
+import { ErrorCell, LoadingCell } from '../components/Loading'
 
-import { getCellUrl } from '../helpers'
+import { getCellUrl } from '../helpers/urls'
 import { media, shadow } from '../helpers/style-utils'
 import theme from '../helpers/theme'
 
@@ -33,22 +33,22 @@ const Thumbnail = styled(Img)`
     width: 48vw;
     min-width: 130px;
   `}
-`;
+`
 
 const OldThumbNail = styled(Thumbnail)`
-  background-color: ${props => props.theme.colors.white};
+  background-color: ${(props) => props.theme.colors.white};
 `
 
 const CellsCount = styled.div`
   z-index: 999;
   position: absolute;
-  top: .1rem;
-  left: .1rem;
+  top: 0.1rem;
+  left: 0.1rem;
   width: 25px;
   height: 25px;
-  opacity: .75;
-  background-color: ${props => props.theme.colors.pink};
-  color: ${props => props.theme.colors.white};
+  opacity: 0.75;
+  background-color: ${(props) => props.theme.colors.pink};
+  color: ${(props) => props.theme.colors.white};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,43 +56,47 @@ const CellsCount = styled.div`
   cursor: pointer;
 `
 
-const Thumb = ({cellsCount, imageUrl}) => {
-  return (<>
-    {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}
-    <Thumbnail
-      src={imageUrl}
-      loader={<LoadingCell width={theme.cell.fullWidth} />}
-      unloader={<ErrorCell width={theme.cell.fullWidth} />}
-    />
-  </>)
+const Thumb = ({ cellsCount, imageUrl }) => {
+  return (
+    <>
+      {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}
+      <Thumbnail
+        src={imageUrl}
+        loader={<LoadingCell width={theme.cell.fullWidth} />}
+        unloader={<ErrorCell width={theme.cell.fullWidth} />}
+      />
+    </>
+  )
 }
 
-const OldThumb = ({caption, cellsCount, schemaVersion, imageUrl}) => {
-  return (<OldThumbNail as='div'>
-    {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}
-    <Cell
-      clickable
-      removeBorders
-      imageUrl={imageUrl}
-      isImageUrlAbsolute={schemaVersion>1}
-      schemaVersion={schemaVersion}
-      caption={caption} />
-  </OldThumbNail>);
+const OldThumb = ({ caption, cellsCount, schemaVersion, imageUrl }) => {
+  return (
+    <OldThumbNail as="div">
+      {cellsCount > 1 && <CellsCount>{cellsCount}</CellsCount>}
+      <Cell
+        clickable
+        removeBorders
+        imageUrl={imageUrl}
+        isImageUrlAbsolute={schemaVersion > 1}
+        schemaVersion={schemaVersion}
+        caption={caption}
+      />
+    </OldThumbNail>
+  )
 }
 
-const CellsThumb = ({cell, cellsCount}) => {
+const CellsThumb = ({ cell, cellsCount }) => {
   if (cell) {
-    return cell.schemaVersion === 1
-      ? (<Thumb
-        cellsCount={cellsCount}
-        imageUrl={cell.imageUrl}
-      />)
-      : (<OldThumb
+    return cell.schemaVersion === 1 ? (
+      <Thumb cellsCount={cellsCount} imageUrl={cell.imageUrl} />
+    ) : (
+      <OldThumb
         cellsCount={cellsCount}
         imageUrl={getCellUrl(cell.imageUrl, cell.schemaVersion)}
         schemaVersion={cell.schemaVersion}
         caption={cell.caption}
-      />)
+      />
+    )
   }
 
   return null
@@ -111,9 +115,9 @@ const ShowMoreButton = styled(NavButton)`
 
 const UnstyledLink = styled.a`
   text-decoration: none;
-  color: ${props => props.theme.colors.black};
+  color: ${(props) => props.theme.colors.black};
   position: relative;
-  
+
   ${media.desktopMin`
     margin: 1rem;
   `}
@@ -129,16 +133,16 @@ const CreateButton = styled(NavButton)`
 class GalleryRoute extends Component {
   navigateToNewOrDrafts = () => {
     this.props.showSpinner()
-    
-    const {getDirtyComics} = require('../helpers/clientCache');
-    const dirtyComics = getDirtyComics();
-    
+
+    const { getDirtyComics } = require('../helpers/clientCache')
+    const dirtyComics = getDirtyComics()
+
     if (dirtyComics && dirtyComics.length) {
       // if comics exist on client cache, nav to drafts
-      return Router.pushRoute('/me/drafts');
+      return Router.pushRoute('/me/drafts')
     } else {
       // else, nav to /s/cell/new
-      return Router.pushRoute('/s/cell/new');
+      return Router.pushRoute('/s/cell/new')
     }
   }
 
@@ -161,10 +165,10 @@ class GalleryRoute extends Component {
     this.props.appendLatestComics(finishRefresh)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.props.fetchComics(this.props.hideSpinner)
     if (this.props.activeComicUrlId) {
-      const activeComic = document.getElementById(this.props.activeComicUrlId);
+      const activeComic = document.getElementById(this.props.activeComicUrlId)
       if (activeComic) {
         activeComic.scrollIntoView()
         this.props.setActiveComicUrlId(null)
@@ -172,39 +176,40 @@ class GalleryRoute extends Component {
     }
   }
 
-  render () {
+  render() {
     return (
       <div>
         <ComicsContainer>
-          {this.props.comics.map(({cellsCount, initialCell, urlId}) => (
-            <Link
-              key={urlId}
-              route={`/comic/${urlId}`}
-            >
+          {this.props.comics.map(({ cellsCount, initialCell, urlId }) => (
+            <Link key={urlId} route={`/comic/${urlId}`}>
               <UnstyledLink
                 id={urlId}
                 onClick={() => this.handleComicClick(urlId)}
               >
                 <CellsThumb cell={initialCell} cellsCount={cellsCount} />
               </UnstyledLink>
-            </Link>)
-          )}
+            </Link>
+          ))}
         </ComicsContainer>
 
-        {this.props.newerComicsExist && <NavButton
-          value='SHOW NEWER'
-          cb={this.handleRefreshClick}
-          position={TOP_RIGHT}
-        />}
+        {this.props.newerComicsExist && (
+          <NavButton
+            value="SHOW NEWER"
+            cb={this.handleRefreshClick}
+            position={TOP_RIGHT}
+          />
+        )}
 
-        {this.props.hasMoreComics && <ShowMoreButton
-          value='SHOW MORE'
-          cb={this.showMoreComics}
-          position={BOTTOM_CENTER}
-        />}
-        
+        {this.props.hasMoreComics && (
+          <ShowMoreButton
+            value="SHOW MORE"
+            cb={this.showMoreComics}
+            position={BOTTOM_CENTER}
+          />
+        )}
+
         <CreateButton
-          value='+'
+          value="+"
           accented
           cb={this.navigateToNewOrDrafts}
           position={BOTTOM_RIGHT}
@@ -214,4 +219,4 @@ class GalleryRoute extends Component {
   }
 }
 
-export default GalleryRoute 
+export default GalleryRoute

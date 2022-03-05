@@ -5,7 +5,6 @@ const cookieSession = require('cookie-session')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const cluster = require('cluster')
-const cors = require('cors')
 
 const handleUserSession = require('./middleware/userSession')
 const api = require('./controllers')
@@ -21,12 +20,6 @@ const handler = routes.getRequestHandler(app)
 const server = express()
 
 const setUpApp = () => {
-  // if local dev or QA envs, turn off the cors protections
-  // This is useful for developing DDIv2 against DDIv1 data
-  if (process.env.ENV !== 'production') {
-    server.use(cors())
-  }
-
   // if in production envs
   // only allow https connections
   // http://blog.lookfar.com/blog/2017/07/19/how-to-https-all-the-things-in-node/

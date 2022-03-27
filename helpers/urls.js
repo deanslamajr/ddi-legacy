@@ -10,6 +10,6 @@ export function getCellUrl(imageUrl, schemaVersion) {
 
 export const DDI_APP_PAGES = {
   getGalleryPageUrl: () => {
-    return `${publicRuntimeConfig.DDIV2_URL_WITH_PROTOCOL}`
+    return `${publicRuntimeConfig.DDIV2_URL_WITH_PROTOCOL}/gallery`
   },
 }

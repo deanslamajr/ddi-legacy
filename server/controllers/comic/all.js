@@ -1,31 +1,49 @@
-const {Comics, Cells} = require('../../models')
-const {transformComicFromDB} = require('./utils');
-const {PAGE_SIZE} = require('../../../config/constants.json')
+const { Op } = require('sequelize')
 
-async function all (req, res) {
-  let offset = 0
+const { Comics, Cells } = require('../../models')
+const { transformComicFromDB } = require('./utils')
+const { PAGE_SIZE } = require('../../../config/constants.json')
+
+async function all(req, res) {
+  const where = {
+    is_active: true,
+  }
+
+  let isOffsetFromQueryStringValid = false
 
   const offsetFromQueryString = req.query['offset']
   if (offsetFromQueryString) {
-    offset = parseInt(offsetFromQueryString, 10)
+    const parsedDate = Date.parse(offsetFromQueryString)
+    isOffsetFromQueryStringValid = !Number.isNaN(parsedDate)
+    if (isOffsetFromQueryStringValid) {
+      where.updated_at = {
+        [Op.lt]: offsetFromQueryString,
+      }
+    }
   }
 
-  const comics = await Comics.findAll({
-    where: {'is_active': true},
+  const result = await Comics.findAndCountAll({
+    where,
     order: [['updated_at', 'DESC']],
-    offset,
     limit: PAGE_SIZE,
-    include: [Cells]
-  }).map(transformComicFromDB);
+    include: [Cells],
+    distinct: true, // count should not include nested rows
+  })
 
-  const count = await Comics.count()
+  const comics = result.rows.map(transformComicFromDB)
 
   res.json({
     comics,
-    hasMore: count > (offset + PAGE_SIZE)
+    cursor:
+      result.rows.length > 0
+        ? comics[result.rows.length - 1].updatedAt
+        : isOffsetFromQueryStringValid
+        ? offsetFromQueryString
+        : '',
+    hasMore: result.count > result.rows.length,
   })
 }
 
 module.exports = {
-  all
+  all,
 }

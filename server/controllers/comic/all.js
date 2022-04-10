@@ -4,6 +4,8 @@ const { Comics, Cells } = require('../../models')
 const { transformComicFromDB } = require('./utils')
 const { PAGE_SIZE } = require('../../../config/constants.json')
 
+const { getNewerComics } = require('./getNewerThan')
+
 async function all(req, res) {
   const where = {
     is_active: true,
@@ -32,6 +34,13 @@ async function all(req, res) {
 
   const comics = result.rows.map(transformComicFromDB)
 
+  let hasMorePrevious = false
+  const earliestUpdatedAt = comics[0] !== undefined ? comics[0].updatedAt : null
+  if (earliestUpdatedAt) {
+    const newerThanResult = await getNewerComics(earliestUpdatedAt)
+    hasMorePrevious = newerThanResult.count > 0
+  }
+
   res.json({
     comics,
     cursor:
@@ -41,6 +50,7 @@ async function all(req, res) {
         ? offsetFromQueryString
         : '',
     hasMore: result.count > result.rows.length,
+    hasMorePrevious,
   })
 }
 

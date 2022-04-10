@@ -4,7 +4,7 @@ const { PAGE_SIZE } = require('../../../config/constants.json')
 
 async function getNewerComics(offset) {
   return Comics.findAndCountAll({
-    order: [['updated_at', 'ASC']],
+    order: [['updated_at', 'DESC']],
     where: {
       updated_at: { $gt: offset },
       is_active: true,

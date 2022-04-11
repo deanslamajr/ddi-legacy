@@ -23,8 +23,6 @@
   "MAX_RGB": 255,
   "MIN_OPACITY": 0,
   "MAX_OPACITY": 1,
-  "PAGE_SIZE": 20,
-  "FILTERS_LIST": [
-    "RGBA"
-  ]
+  "PAGE_SIZE": 2,
+  "FILTERS_LIST": ["RGBA"]
 }

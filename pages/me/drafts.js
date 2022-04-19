@@ -80,7 +80,7 @@ class DraftsRoute extends Component {
 
   navigateToGallery = () => {
     this.props.showSpinner()
-    Router.pushRoute(DDI_APP_PAGES.getGalleryPageUrl())
+    window.location = DDI_APP_PAGES.getGalleryPageUrl()
   }
 
   navigateToNewComic = () => {

@@ -7,7 +7,7 @@ import { Router } from '../routes'
 // MainMenu
 class MainMenu extends Component {
   componentDidMount() {
-    Router.pushRoute(DDI_APP_PAGES.getGalleryPageUrl())
+    window.location.replace(DDI_APP_PAGES.getGalleryPageUrl())
   }
 
   render() {

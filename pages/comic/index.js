@@ -74,7 +74,7 @@ class ComicRoute extends Component {
 
   navigateToGallery = () => {
     this.props.showSpinner()
-    Router.pushRoute(DDI_APP_PAGES.getGalleryPageUrl())
+    window.location = DDI_APP_PAGES.getGalleryPageUrl()
   }
 
   navigateToStudio = () => {

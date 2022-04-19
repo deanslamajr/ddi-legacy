@@ -4,7 +4,7 @@ const { Comics, Cells } = require('../../models')
 const { transformComicFromDB } = require('./utils')
 const { PAGE_SIZE } = require('../../../config/constants.json')
 
-async function getOlderComics(offset) {
+async function getOlderComics(offset, pageSize = PAGE_SIZE) {
   const where = {
     is_active: true,
   }
@@ -18,20 +18,20 @@ async function getOlderComics(offset) {
   return Comics.findAndCountAll({
     where,
     order: [['updated_at', 'DESC']],
-    limit: PAGE_SIZE,
+    limit: pageSize,
     include: [Cells],
     distinct: true, // count should not include nested rows
   })
 }
 
-async function getNewerComics(offset) {
+async function getNewerComics(offset, pageSize = PAGE_SIZE) {
   return Comics.findAndCountAll({
     order: [['updated_at', 'ASC']],
     where: {
       updated_at: { $gt: offset },
       is_active: true,
     },
-    limit: PAGE_SIZE,
+    limit: pageSize,
     include: [Cells],
     distinct: true, // count should not include nested rows
   })
@@ -61,7 +61,7 @@ async function all(req, res) {
       comics[0] !== undefined ? comics[0].updatedAt : null
 
     if (earliestUpdatedAt) {
-      const newerThanResult = await getNewerComics(earliestUpdatedAt)
+      const newerThanResult = await getNewerComics(earliestUpdatedAt, 1)
       hasMoreNewer = newerThanResult.count > 0
     }
   }
@@ -97,7 +97,7 @@ async function getNewerThan(req, res) {
       comics.length > 0 ? comics[comics.length - 1].updatedAt : null
 
     if (latestUpdatedAt) {
-      const olderThanResult = await getOlderComics(latestUpdatedAt)
+      const olderThanResult = await getOlderComics(latestUpdatedAt, 1)
       hasMoreOlder = olderThanResult.count > 0
     }
   }

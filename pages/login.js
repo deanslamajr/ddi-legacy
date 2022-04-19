@@ -47,7 +47,7 @@ class Login extends Component {
         password: this.state.password,
       })
 
-      Router.pushRoute(DDI_APP_PAGES.getGalleryPageUrl())
+      window.location = DDI_APP_PAGES.getGalleryPageUrl()
     } catch (error) {
       console.error(error)
       // @todo log error
@@ -59,7 +59,7 @@ class Login extends Component {
     try {
       await axios.post('/api/user/logout')
 
-      Router.pushRoute(DDI_APP_PAGES.getGalleryPageUrl())
+      window.location = DDI_APP_PAGES.getGalleryPageUrl()
     } catch (error) {
       console.error(error)
       // @todo log error

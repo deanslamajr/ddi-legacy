@@ -234,7 +234,7 @@ class StudioV2 extends Component {
   navigateBack = () => {
     this.props.showSpinner()
     if (isDraftId(this.props.comicUrlId)) {
-      Router.pushRoute(DDI_APP_PAGES.getGalleryPageUrl())
+      window.location = DDI_APP_PAGES.getGalleryPageUrl()
     } else {
       Router.pushRoute(`/comic/${this.props.comicUrlId}`)
     }
@@ -256,14 +256,15 @@ class StudioV2 extends Component {
       if (isDraftId(this.props.comicUrlId)) {
         const { deleteComic } = require('../../../helpers/clientCache')
         deleteComic(this.props.comicUrlId)
-        Router.pushRoute('/gallery')
+        window.location = DDI_APP_PAGES.getGalleryPageUrl()
       }
       // Delete the published comic
       else {
         await axios.delete(`/api/comic/${this.props.comicUrlId}`)
         // remove this comic from the gallery cache
-        this.props.deleteComicFromCache(this.props.comicUrlId, () =>
-          Router.pushRoute(DDI_APP_PAGES.getGalleryPageUrl())
+        this.props.deleteComicFromCache(
+          this.props.comicUrlId,
+          () => (window.location = DDI_APP_PAGES.getGalleryPageUrl())
         )
       }
     } catch (error) {

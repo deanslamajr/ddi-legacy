@@ -1,4 +1,5 @@
 import getConfig from 'next/config'
+import queryString from 'query-string'
 
 const { publicRuntimeConfig } = getConfig()
 
@@ -9,7 +10,12 @@ export function getCellUrl(imageUrl, schemaVersion) {
 }
 
 export const DDI_APP_PAGES = {
-  getGalleryPageUrl: () => {
-    return `${publicRuntimeConfig.DDIV2_URL_WITH_PROTOCOL}/gallery`
+  getGalleryPageUrl: ({ comicUpdatedAt, queryString: qs } = {}) => {
+    const searchParams = qs
+      ? `?${qs}`
+      : comicUpdatedAt
+      ? `?${queryString.stringify({ oo: comicUpdatedAt })}`
+      : ''
+    return `${publicRuntimeConfig.DDIV2_URL_WITH_PROTOCOL}/gallery${searchParams}`
   },
 }

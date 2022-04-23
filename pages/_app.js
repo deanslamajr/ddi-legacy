@@ -5,25 +5,27 @@ import React from 'react'
 import { ThemeProvider } from 'styled-components'
 import axios from 'axios'
 import queryString from 'query-string'
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga'
 import { load } from 'recaptcha-v3'
 
 import { Router } from '../routes'
 
 import theme from '../helpers/theme'
 
-import {GlobalStyles, MobileViewportSettings} from '../components/Layouts'
-import {LoadSpinner} from '../components/Loading'
+import { GlobalStyles, MobileViewportSettings } from '../components/Layouts'
+import { LoadSpinner } from '../components/Loading'
 
 const { publicRuntimeConfig } = getConfig()
 
-async function getNewerComics (currentComics) {
+async function getNewerComics(currentComics) {
   const latestUpdatedAt = currentComics[0].updatedAt
-  const { data } = await axios.get(`/api/comics/latest?latestUpdatedAt=${latestUpdatedAt}`)
+  const { data } = await axios.get(
+    `/api/comics/latest?latestUpdatedAt=${latestUpdatedAt}`
+  )
   return data.comics.length
     ? {
         comics: data.comics.reverse(),
-        possiblyHasMore: data.possiblyHasMore
+        possiblyHasMore: data.possiblyHasMore,
       }
     : null
 }
@@ -31,9 +33,9 @@ async function getNewerComics (currentComics) {
 /**
  * GOOGLE ANALYTICS - PAGE VIEWS
  */
-const handleRouteChange = url => {
+const handleRouteChange = (url) => {
   if (publicRuntimeConfig.GA_ID) {
-    ReactGA.pageview(url);
+    ReactGA.pageview(url)
   }
 }
 
@@ -51,44 +53,49 @@ class MyApp extends App {
     recaptcha: undefined,
     showSpinner: true,
     totalNumberOfJobs: null,
-    finishedJobsCount: null
+    finishedJobsCount: null,
   }
 
   static async getInitialProps({ Component, ctx }) {
-    let pageProps = {};
+    let pageProps = {}
     if (Component.getInitialProps) {
-        pageProps = await Component.getInitialProps(ctx);
-    }
-    
-    // only on server side rendering
-    if (ctx.req) {
-      pageProps.userId = ctx.req.session.userId;
+      pageProps = await Component.getInitialProps(ctx)
     }
 
-    return { pageProps };
+    // only on server side rendering
+    if (ctx.req) {
+      pageProps.userId = ctx.req.session.userId
+      const searchParams = queryString.extract(ctx.req.url)
+      pageProps.searchParams = searchParams
+    }
+
+    return { pageProps }
   }
 
   hideSpinner = (cb = () => {}) => {
-    this.setState({
-      totalNumberOfJobs: null,
-      finishedJobsCount: null,
-      showSpinner: false
-    }, cb)
+    this.setState(
+      {
+        totalNumberOfJobs: null,
+        finishedJobsCount: null,
+        showSpinner: false,
+      },
+      cb
+    )
   }
 
   showSpinner = (totalNumberOfJobs) => {
     this.setState({
       totalNumberOfJobs,
       finishedJobsCount: totalNumberOfJobs ? 0 : null,
-      showSpinner: true
-    });
+      showSpinner: true,
+    })
   }
 
   markJobAsFinished = (numberOfNewlyFinishedJobs = 1) => {
-    this.setState(({finishedJobsCount}) => {
-      const newFinishedJobsCount = finishedJobsCount + numberOfNewlyFinishedJobs;
-      return {finishedJobsCount: newFinishedJobsCount}
-    });
+    this.setState(({ finishedJobsCount }) => {
+      const newFinishedJobsCount = finishedJobsCount + numberOfNewlyFinishedJobs
+      return { finishedJobsCount: newFinishedJobsCount }
+    })
   }
 
   appendLatestComics = async (cb = () => {}) => {
@@ -96,8 +103,10 @@ class MyApp extends App {
 
     // if any comics that exist in old list are also in new list, remove from old list
     // e.g. a comic was recently updated
-    this.state.newerComics.comics.forEach(newComic => {
-      const duplicateIndex = clonedComics.findIndex(({ urlId }) => urlId === newComic.urlId)
+    this.state.newerComics.comics.forEach((newComic) => {
+      const duplicateIndex = clonedComics.findIndex(
+        ({ urlId }) => urlId === newComic.urlId
+      )
 
       if (duplicateIndex > -1) {
         clonedComics.splice(duplicateIndex, 1)
@@ -110,22 +119,27 @@ class MyApp extends App {
       ? await getNewerComics(newComics)
       : null
 
-    this.setState({
-      comics: newComics,
-      newerComics
-    }, cb)
+    this.setState(
+      {
+        comics: newComics,
+        newerComics,
+      },
+      cb
+    )
   }
 
   fetchComics = async (cb = () => {}) => {
     if (!this.state.comics.length) {
       const { data } = await axios.get('/api/comics')
 
-      this.setState({
-        comics: data.comics,
-        hasMoreComics: data.hasMore
-      }, cb)
-    }
-    else {
+      this.setState(
+        {
+          comics: data.comics,
+          hasMoreComics: data.hasMore,
+        },
+        cb
+      )
+    } else {
       const newerComics = await getNewerComics(this.state.comics)
       this.setState({ newerComics }, cb)
     }
@@ -133,24 +147,27 @@ class MyApp extends App {
 
   fetchMoreComics = async (cb = () => {}) => {
     const paginationData = {
-      offset: this.state.comics.length
+      offset: this.state.comics.length,
     }
 
     const qs = queryString.stringify(paginationData)
 
     const [{ data }, newerComics] = await Promise.all([
       axios.get(`/api/comics?${qs}`),
-      getNewerComics(this.state.comics)
+      getNewerComics(this.state.comics),
     ])
 
     const clonedComics = Array.from(this.state.comics)
     const newComics = clonedComics.concat(data.comics)
 
-    this.setState({
-      comics: newComics,
-      hasMore: data.hasMore,
-      newerComics
-    }, cb)
+    this.setState(
+      {
+        comics: newComics,
+        hasMore: data.hasMore,
+        newerComics,
+      },
+      cb
+    )
   }
 
   setActiveComicUrlId = (comicUrlId) => {
@@ -158,79 +175,122 @@ class MyApp extends App {
   }
 
   deleteComicFromCache = (comicUrlId, cb) => {
-    const clonedComics = Array.from(this.state.comics);
+    const clonedComics = Array.from(this.state.comics)
 
-    const indexToDelete = clonedComics.findIndex(comic => comic.urlId === comicUrlId);
+    const indexToDelete = clonedComics.findIndex(
+      (comic) => comic.urlId === comicUrlId
+    )
 
     if (indexToDelete >= 0) {
-      clonedComics.splice(indexToDelete, 1);
+      clonedComics.splice(indexToDelete, 1)
 
-      const newActiveComicUrlId = this.state.comics.length > indexToDelete
-        ? this.state.comics[indexToDelete].urlId
-        : this.state.comics[0].urlId;
+      const newActiveComicUrlId =
+        this.state.comics.length > indexToDelete
+          ? this.state.comics[indexToDelete].urlId
+          : this.state.comics[0].urlId
 
-      this.setState({
-        activeComicUrlId: newActiveComicUrlId,
-        comics: clonedComics
-      }, cb);
-    }
-    else {
-      cb();
+      this.setState(
+        {
+          activeComicUrlId: newActiveComicUrlId,
+          comics: clonedComics,
+        },
+        cb
+      )
+    } else {
+      cb()
     }
   }
 
-  componentDidMount () {
+  componentDidMount() {
     if (publicRuntimeConfig.CAPTCHA_V3_SITE_KEY) {
       load(publicRuntimeConfig.CAPTCHA_V3_SITE_KEY, {
-        autoHideBadge: true
+        autoHideBadge: true,
       }).then((recaptcha) => {
         this.setState({
-          recaptcha
-        });
-      });
+          recaptcha,
+        })
+      })
     }
 
     if (publicRuntimeConfig.GA_ID) {
       ReactGA.initialize(publicRuntimeConfig.GA_ID, {
         gaOptions: {
-          userId: this.props.userId
-        }
-      });
-      ReactGA.pageview(window.location.pathname + window.location.search);
+          userId: this.props.userId,
+        },
+      })
+      ReactGA.pageview(window.location.pathname + window.location.search)
     }
   }
 
-  render () {
+  render() {
     const { Component, pageProps } = this.props
 
-    const percentCompleted = this.state.totalNumberOfJobs
-      && Math.round((this.state.finishedJobsCount / this.state.totalNumberOfJobs) * 100);
+    const percentCompleted =
+      this.state.totalNumberOfJobs &&
+      Math.round(
+        (this.state.finishedJobsCount / this.state.totalNumberOfJobs) * 100
+      )
 
     return (
       <Container>
         <Head>
           <title>DrawDrawInk</title>
-          <link rel="apple-touch-icon" sizes="180x180" href={`${publicRuntimeConfig.FAVICON_ROOT_URL}/apple-touch-icon.png`}/>
-          <link rel="icon" type="image/png" sizes="32x32" href={`${publicRuntimeConfig.FAVICON_ROOT_URL}/favicon-32x32.png`}/>
-          <link rel="icon" type="image/png" sizes="16x16" href={`${publicRuntimeConfig.FAVICON_ROOT_URL}/favicon-16x16.png`}/>
-          <link rel="manifest" href={`${publicRuntimeConfig.FAVICON_ROOT_URL}/site.webmanifest`}/>
-          <link rel="mask-icon" href={`${publicRuntimeConfig.FAVICON_ROOT_URL}/safari-pinned-tab.svg`} color="#5bbad5"/>
-          <link rel="shortcut icon" href={`${publicRuntimeConfig.FAVICON_ROOT_URL}/favicon.ico`}/>
-          <meta name="msapplication-TileColor" content="#da532c"/>
-          <meta name="msapplication-config" content={`${publicRuntimeConfig.FAVICON_ROOT_URL}/browserconfig.xml`}/>
-          <meta name="theme-color" content="#ffffff"/>
-          
+          <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href={`${publicRuntimeConfig.FAVICON_ROOT_URL}/apple-touch-icon.png`}
+          />
+          <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href={`${publicRuntimeConfig.FAVICON_ROOT_URL}/favicon-32x32.png`}
+          />
+          <link
+            rel="icon"
+            type="image/png"
+            sizes="16x16"
+            href={`${publicRuntimeConfig.FAVICON_ROOT_URL}/favicon-16x16.png`}
+          />
+          <link
+            rel="manifest"
+            href={`${publicRuntimeConfig.FAVICON_ROOT_URL}/site.webmanifest`}
+          />
+          <link
+            rel="mask-icon"
+            href={`${publicRuntimeConfig.FAVICON_ROOT_URL}/safari-pinned-tab.svg`}
+            color="#5bbad5"
+          />
+          <link
+            rel="shortcut icon"
+            href={`${publicRuntimeConfig.FAVICON_ROOT_URL}/favicon.ico`}
+          />
+          <meta name="msapplication-TileColor" content="#da532c" />
+          <meta
+            name="msapplication-config"
+            content={`${publicRuntimeConfig.FAVICON_ROOT_URL}/browserconfig.xml`}
+          />
+          <meta name="theme-color" content="#ffffff" />
+
           {/* Google Search Dashboard - proof of domain ownership */}
-          <meta name="google-site-verification" content={`${publicRuntimeConfig.GOOGLE_SITE_VERIFICATION}`} />
+          <meta
+            name="google-site-verification"
+            content={`${publicRuntimeConfig.GOOGLE_SITE_VERIFICATION}`}
+          />
 
           {/* Fonts */}
-          <link href="https://fonts.googleapis.com/css?family=Nunito&display=swap" rel="stylesheet"/>
+          <link
+            href="https://fonts.googleapis.com/css?family=Nunito&display=swap"
+            rel="stylesheet"
+          />
         </Head>
 
         <MobileViewportSettings />
         <GlobalStyles />
 
-        {this.state.showSpinner && <LoadSpinner percentCompleted={percentCompleted} />}
+        {this.state.showSpinner && (
+          <LoadSpinner percentCompleted={percentCompleted} />
+        )}
 
         <ThemeProvider theme={theme}>
           <Component

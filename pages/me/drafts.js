@@ -80,7 +80,9 @@ class DraftsRoute extends Component {
 
   navigateToGallery = () => {
     this.props.showSpinner()
-    window.location = DDI_APP_PAGES.getGalleryPageUrl()
+    window.location = DDI_APP_PAGES.getGalleryPageUrl({
+      queryString: this.props.searchParams,
+    })
   }
 
   navigateToNewComic = () => {
@@ -94,6 +96,7 @@ class DraftsRoute extends Component {
   }
 
   render() {
+    console.log('this.props', this.props)
     return (
       <div>
         <CenteredCell>DRAFTS</CenteredCell>

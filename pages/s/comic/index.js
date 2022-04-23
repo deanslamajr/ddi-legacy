@@ -28,6 +28,7 @@ import theme from '../../../helpers/theme'
 import { generateCellImage } from '../../../helpers/generateCellImageFromEmojis'
 import { DDI_APP_PAGES } from '../../../helpers/urls'
 import { isDraftId } from '../../../shared/isDraftId'
+import { removeDraftSuffix } from '../../../shared/removeDraftSuffix'
 
 import {
   CAPTCHA_ACTION_CELL_PUBLISH,
@@ -234,7 +235,14 @@ class StudioV2 extends Component {
   navigateBack = () => {
     this.props.showSpinner()
     if (isDraftId(this.props.comicUrlId)) {
-      window.location = DDI_APP_PAGES.getGalleryPageUrl()
+      if (this.props.searchParams) {
+        window.location = DDI_APP_PAGES.getGalleryPageUrl({
+          queryString: this.props.searchParams,
+        })
+      } else {
+        const withoutSuffix = removeDraftSuffix(this.props.comicUrlId)
+        Router.pushRoute(`/comic/${withoutSuffix}`)
+      }
     } else {
       Router.pushRoute(`/comic/${this.props.comicUrlId}`)
     }
@@ -256,7 +264,9 @@ class StudioV2 extends Component {
       if (isDraftId(this.props.comicUrlId)) {
         const { deleteComic } = require('../../../helpers/clientCache')
         deleteComic(this.props.comicUrlId)
-        window.location = DDI_APP_PAGES.getGalleryPageUrl()
+        window.location = DDI_APP_PAGES.getGalleryPageUrl({
+          queryString: this.props.searchParams,
+        })
       }
       // Delete the published comic
       else {
@@ -264,7 +274,10 @@ class StudioV2 extends Component {
         // remove this comic from the gallery cache
         this.props.deleteComicFromCache(
           this.props.comicUrlId,
-          () => (window.location = DDI_APP_PAGES.getGalleryPageUrl())
+          () =>
+            (window.location = DDI_APP_PAGES.getGalleryPageUrl({
+              queryString: this.props.searchParams,
+            }))
         )
       }
     } catch (error) {

@@ -592,7 +592,9 @@ class CellStudio extends Component {
     if (numberOfCells > 0) {
       Router.pushRoute(`/s/comic/${comicUrlId}`)
     } else {
-      window.location = DDI_APP_PAGES.getGalleryPageUrl()
+      window.location = DDI_APP_PAGES.getGalleryPageUrl({
+        queryString: this.props.searchParams,
+      })
     }
   }
 

@@ -51,6 +51,7 @@ class MyApp extends App {
     hasMoreComics: false,
     newerComics: null,
     recaptcha: undefined,
+    searchParams: '',
     showSpinner: true,
     totalNumberOfJobs: null,
     finishedJobsCount: null,
@@ -70,6 +71,11 @@ class MyApp extends App {
     }
 
     return { pageProps }
+  }
+
+  constructor(props) {
+    super(props)
+    this.state.searchParams = props.pageProps.searchParams
   }
 
   hideSpinner = (cb = () => {}) => {
@@ -309,6 +315,7 @@ class MyApp extends App {
             showSpinner={this.showSpinner}
             markJobAsFinished={this.markJobAsFinished}
             {...pageProps}
+            searchParams={this.state.searchParams}
           />
         </ThemeProvider>
       </Container>

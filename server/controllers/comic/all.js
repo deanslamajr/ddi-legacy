@@ -1,4 +1,5 @@
 const { Op } = require('sequelize')
+const { sequelize } = require('../../adapters/db')
 
 const { Comics, Cells } = require('../../models')
 const { transformComicFromDB } = require('./utils')
@@ -8,6 +9,7 @@ async function getOlderComics({
   offset,
   pageSize = PAGE_SIZE,
   includeComicAtOffset = false,
+  transaction,
 }) {
   const where = {
     is_active: true,
@@ -24,11 +26,12 @@ async function getOlderComics({
     order: [['updated_at', 'DESC']],
     limit: pageSize,
     include: [Cells],
-    distinct: true, // count should not include nested rows
+    distinct: true, // count should not include nested rows,
+    transaction,
   })
 }
 
-async function getNewerComics(offset, pageSize = PAGE_SIZE) {
+async function getNewerComics({ offset, pageSize = PAGE_SIZE, transaction }) {
   return Comics.findAndCountAll({
     order: [['updated_at', 'ASC']],
     where: {
@@ -38,6 +41,7 @@ async function getNewerComics(offset, pageSize = PAGE_SIZE) {
     limit: pageSize,
     include: [Cells],
     distinct: true, // count should not include nested rows
+    transaction,
   })
 }
 
@@ -54,38 +58,48 @@ async function all(req, res) {
 
   const includeComicAtOffset = req.query['includeComicAtOffset']
 
-  const result = await getOlderComics({
-    offset: offsetFromQueryString,
-    includeComicAtOffset,
-  })
+  let response = {}
+  await sequelize.transaction(async (transaction) => {
+    const result = await getOlderComics({
+      offset: offsetFromQueryString,
+      includeComicAtOffset,
+      transaction,
+    })
 
-  const comics = result.rows.map(transformComicFromDB)
+    const comics = result.rows.map(transformComicFromDB)
 
-  const isPageLoadRequest = req.query['isPageLoadRequest']
+    const isPageLoadRequest = req.query['isPageLoadRequest']
 
-  let hasMoreNewer = null
-  if (isPageLoadRequest) {
-    hasMoreNewer = false
-    const earliestUpdatedAt =
-      comics[0] !== undefined ? comics[0].updatedAt : null
+    let hasMoreNewer = null
+    if (isPageLoadRequest) {
+      hasMoreNewer = false
+      const earliestUpdatedAt =
+        comics[0] !== undefined ? comics[0].updatedAt : null
 
-    if (earliestUpdatedAt) {
-      const newerThanResult = await getNewerComics(earliestUpdatedAt, 1)
-      hasMoreNewer = newerThanResult.count > 0
+      if (earliestUpdatedAt) {
+        const newerThanResult = await getNewerComics({
+          offset: earliestUpdatedAt,
+          pageSize: 1,
+          transaction,
+        })
+        hasMoreNewer = newerThanResult.count > 0
+      }
     }
-  }
 
-  res.json({
-    comics,
-    cursor:
-      result.rows.length > 0
-        ? comics[result.rows.length - 1].updatedAt
-        : isOffsetFromQueryStringValid
-        ? offsetFromQueryString
-        : '',
-    hasMoreOlder: result.count > result.rows.length,
-    hasMoreNewer,
+    response = {
+      comics,
+      cursor:
+        result.rows.length > 0
+          ? comics[result.rows.length - 1].updatedAt
+          : isOffsetFromQueryStringValid
+          ? offsetFromQueryString
+          : '',
+      hasMoreOlder: result.count > result.rows.length,
+      hasMoreNewer,
+    }
   })
+
+  res.json(response)
 }
 
 async function getNewerThan(req, res) {
@@ -94,31 +108,40 @@ async function getNewerThan(req, res) {
     throw new Error('Invalid request, must include queryString latestUpdatedAt')
   }
 
-  const result = await getNewerComics(latestUpdatedAt)
-  const comics = result.rows.map(transformComicFromDB)
+  let response = {}
+  await sequelize.transaction(async (transaction) => {
+    const result = await getNewerComics({
+      offset: latestUpdatedAt,
+      transaction,
+    })
+    const comics = result.rows.map(transformComicFromDB)
 
-  const isPageLoadRequest = req.query['isPageLoadRequest']
+    const isPageLoadRequest = req.query['isPageLoadRequest']
 
-  let hasMoreOlder = null
-  if (isPageLoadRequest) {
-    hasMoreOlder = false
-    const latestUpdatedAt =
-      comics.length > 0 ? comics[comics.length - 1].updatedAt : null
+    let hasMoreOlder = null
+    if (isPageLoadRequest) {
+      hasMoreOlder = false
+      const latestUpdatedAt =
+        comics.length > 0 ? comics[comics.length - 1].updatedAt : null
 
-    if (latestUpdatedAt) {
-      const olderThanResult = await getOlderComics({
-        offset: latestUpdatedAt,
-        pageSize: 1,
-      })
-      hasMoreOlder = olderThanResult.count > 0
+      if (latestUpdatedAt) {
+        const olderThanResult = await getOlderComics({
+          offset: latestUpdatedAt,
+          pageSize: 1,
+          transaction,
+        })
+        hasMoreOlder = olderThanResult.count > 0
+      }
     }
-  }
 
-  res.json({
-    comics,
-    hasMoreNewer: result.count > result.rows.length,
-    hasMoreOlder,
+    response = {
+      comics,
+      hasMoreNewer: result.count > result.rows.length,
+      hasMoreOlder,
+    }
   })
+
+  res.json(response)
 }
 
 module.exports = {

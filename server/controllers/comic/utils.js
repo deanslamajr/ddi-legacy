@@ -29,6 +29,7 @@ function transformComicFromDB(comic) {
       newrelic.noticeError(new Error('InitialCell does not seem to exist!'), {
         comicCells: JSON.stringify(comic.cells),
         cleanedCells: JSON.stringify(cleanedCells),
+        initialCellId: comic.initial_cell_id || 'value-was-falsey!',
       })
       sortedCells = cleanedCells.sort(sortByOrder)
     } else {

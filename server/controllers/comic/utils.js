@@ -23,7 +23,17 @@ function transformComicFromDB(comic) {
     const initialCell = comic.cells.find(
       ({ id }) => id === comic.initial_cell_id
     )
-    sortedCells = sortCellsV4(initialCell.url_id, cleanedCells)
+
+    if (!initialCell) {
+      const newrelic = require('newrelic')
+      newrelic.noticeError(new Error('InitialCell does not seem to exist!'), {
+        comicCells: JSON.stringify(comic.cells),
+        cleanedCells: JSON.stringify(cleanedCells),
+      })
+      sortedCells = cleanedCells.sort(sortByOrder)
+    } else {
+      sortedCells = sortCellsV4(initialCell.url_id, cleanedCells)
+    }
   } else {
     sortedCells = cleanedCells.sort(sortByOrder)
   }

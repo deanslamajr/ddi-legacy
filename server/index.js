@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser')
 const cluster = require('cluster')
 
 const handleUserSession = require('./middleware/userSession')
+const errorHandlerMiddleware = require('./middleware/errorHandler')
 const api = require('./controllers')
 const routes = require('../routes')
 const { serverEnvironment } = require('./env-config')
@@ -57,6 +58,8 @@ const setUpApp = () => {
   server.use('/', express.static(__dirname + '/../static'))
 
   server.use(handler)
+
+  server.use(errorHandlerMiddleware)
 
   server.listen(port, (err) => {
     if (err) throw err

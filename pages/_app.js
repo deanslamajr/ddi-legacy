@@ -14,6 +14,7 @@ import theme from '../helpers/theme'
 
 import { GlobalStyles, MobileViewportSettings } from '../components/Layouts'
 import { LoadSpinner } from '../components/Loading'
+import NewRelic from '../components/NewRelic'
 
 const { publicRuntimeConfig } = getConfig()
 
@@ -239,6 +240,7 @@ class MyApp extends App {
 
     return (
       <Container>
+        <NewRelic />
         <Head>
           <title>DrawDrawInk</title>
           <link

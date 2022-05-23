@@ -12,6 +12,9 @@ const clientEnvironment = {
   DDIV2_URL_WITH_PROTOCOL: fromProcessEnv('DDIV2_URL_WITH_PROTOCOL'),
   TWITTER_HANDLE: fromProcessEnv('TWITTER_HANDLE'),
   GOOGLE_SITE_VERIFICATION: fromProcessEnv('GOOGLE_SITE_VERIFICATION'),
+  NR_BROWSER_KEY: fromProcessEnv('NR_BROWSER_KEY'),
+  NR_APP_ID_LEGACY_DDI_CLIENT: fromProcessEnv('NR_APP_ID_LEGACY_DDI_CLIENT'),
+  NR_ACCOUNT_ID: fromProcessEnv('NR_ACCOUNT_ID'),
 }
 
 function fromProcessEnv(name) {

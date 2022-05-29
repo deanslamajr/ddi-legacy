@@ -28,6 +28,7 @@ const serverSecrets = {
   COOKIE_SECRET: fromProcessEnv('COOKIE_SECRET'),
   CAPTCHA_V3_SECRET: fromProcessEnv('CAPTCHA_V3_SECRET'),
   CAPTCHA_V2_SECRET: fromProcessEnv('CAPTCHA_V2_SECRET'),
+  ENV: fromProcessEnv('ENV'),
 
   // AWS
   AWS_ACCESS_KEY_ID: fromProcessEnv('AWS_ACCESS_KEY_ID'),
@@ -39,7 +40,6 @@ const serverSecrets = {
   PGDB_PASSWORD: fromProcessEnv('PGDB_PASSWORD'),
   PGDB_HOST: fromProcessEnv('PGDB_HOST'),
   // NEWRELIC
-  NR_APP_NAME: fromProcessEnv('NR_APP_NAME'),
   NR_LICENSE: fromProcessEnv('NR_LICENSE'),
 }
 

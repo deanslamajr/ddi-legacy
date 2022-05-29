@@ -10,7 +10,8 @@ exports.config = {
   /**
    * Array of application names.
    */
-  app_name: [serverEnvironment.NR_APP_NAME],
+  app_name: [`Nextjs-Backend_${serverEnvironment.ENV}`],
+  labels: `ENV:${serverEnvironment.ENV}`,
   /**
    * Your New Relic license key.
    */
@@ -21,7 +22,7 @@ exports.config = {
      * issues with the agent, 'info' and higher will impose the least overhead on
      * production applications.
      */
-    level: 'info'
+    level: 'info',
   },
   /**
    * When true, all request headers except for those listed in attributes.exclude
@@ -43,12 +44,10 @@ exports.config = {
       'request.headers.authorization',
       'request.headers.proxyAuthorization',
       'request.headers.setCookie*',
-      'request.headers.x*',
       'response.headers.cookie',
       'response.headers.authorization',
       'response.headers.proxyAuthorization',
       'response.headers.setCookie*',
-      'response.headers.x*'
-    ]
-  }
+    ],
+  },
 }

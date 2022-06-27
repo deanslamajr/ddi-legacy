@@ -1,10 +1,8 @@
 const { Op } = require('sequelize')
-const { sequelize } = require('../../adapters/db')
 
 const { Comics, Cells } = require('../../models')
 const { transformComicFromDB } = require('./utils')
 const { PAGE_SIZE } = require('../../../config/constants.json')
-const next = require('next')
 
 async function getOlderComics({ offset, pageSize = PAGE_SIZE, transaction }) {
   const where = {
@@ -78,11 +76,22 @@ async function all(req, res, next) {
 
 async function getNewerThan(req, res, next) {
   try {
-    const latestUpdatedAt = req.query['latestUpdatedAt']
+    let latestUpdatedAt = req.query['latestUpdatedAt']
     if (!latestUpdatedAt) {
       throw new Error(
         'Invalid request, must include queryString latestUpdatedAt'
       )
+    }
+
+    try {
+      if (Number.isNaN(Date.parse(latestUpdatedAt))) {
+        const dateAsMilliseconds = Number.parseInt(latestUpdatedAt)
+        if (!Number.isNaN(dateAsMilliseconds)) {
+          latestUpdatedAt = dateAsMilliseconds
+        }
+      }
+    } catch (error) {
+      console.error(error)
     }
 
     const result = await getNewerComics({

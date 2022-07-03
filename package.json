@@ -12,7 +12,7 @@
     "migrate:undo": "sequelize db:migrate:undo",
     "test": "jest --watch",
     "test:nowatch": "jest",
-    "image:build": "docker build -f ../deployment/draw-draw-ink/Dockerfile -t us-central1-docker.pkg.dev/development-262721/draw-draw-ink/ddi-legacy:\"$(git describe)\" .",
+    "image:build": "docker build -f ../deployment/ddi/legacy/Dockerfile -t us-central1-docker.pkg.dev/development-262721/draw-draw-ink/ddi-legacy:\"$(git describe)\" .",
     "image:promote": "docker push us-central1-docker.pkg.dev/development-262721/draw-draw-ink/ddi-legacy:\"$(git describe)\"",
     "image:start": "docker run -p 8080:8080/tcp us-central1-docker.pkg.dev/development-262721/draw-draw-ink/ddi-legacy:\"$(git describe)\"",
     "image:bash": "docker run -p 8080:8080/tcp -it us-central1-docker.pkg.dev/development-262721/draw-draw-ink/ddi-legacy:\"$(git describe)\" /bin/sh",

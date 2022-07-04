@@ -1,5 +1,5 @@
 {
-  "name": "draw-draw-ink",
+  "name": "ddi-legacy",
   "version": "2.1.2",
   "main": "app.js",
   "engines": {
@@ -24,14 +24,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deanslamajr/draw-draw-ink.git"
+    "url": "git+https://github.com/deanslamajr/ddi-legacy.git"
   },
   "author": "Dean Slama Jr",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/deanslamajr/draw-draw-ink/issues"
+    "url": "https://github.com/deanslamajr/ddi-legacy/issues"
   },
-  "homepage": "https://github.com/deanslamajr/draw-draw-ink#readme",
+  "homepage": "https://github.com/deanslamajr/ddi-legacy#readme",
   "nodemonConfig": {
     "ignore": [
       "pages/*",

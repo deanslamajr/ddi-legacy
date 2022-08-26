@@ -10,10 +10,7 @@ async function get(req, res, next) {
     let initialCellUrlId
 
     if (!comic) {
-      return falsePositiveResponse(
-        `comic::get - There is not a Comic with id:${comicId}`,
-        res
-      )
+      return res.sendStatus(404)
     }
 
     if (isUserAuthorized(req.session, comic.creator_user_id)) {

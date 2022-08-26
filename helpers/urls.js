@@ -18,4 +18,7 @@ export const DDI_APP_PAGES = {
       : ''
     return `${publicRuntimeConfig.DDIV2_URL_WITH_PROTOCOL}/gallery${searchParams}`
   },
+  getComicStudioPageUrl: (comicUrlId = 'new') => {
+    return `${publicRuntimeConfig.DDIV2_URL_WITH_PROTOCOL}/s/comic/${comicUrlId}`
+  },
 }

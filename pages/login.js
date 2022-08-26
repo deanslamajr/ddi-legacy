@@ -2,7 +2,6 @@ import axios from 'axios'
 import { Component } from 'react'
 import styled from 'styled-components'
 
-import { Router } from '../routes'
 import { media } from '../helpers/style-utils'
 import { DDI_APP_PAGES } from '../helpers/urls'
 

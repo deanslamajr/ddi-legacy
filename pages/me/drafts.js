@@ -42,6 +42,8 @@ class DraftsRoute extends Component {
     } = require('../../helpers/clientCache')
     const dirtyComics = getDirtyComics()
 
+    console.log('dirtyComics', dirtyComics)
+
     if (dirtyComics && dirtyComics.length) {
       dirtyComics.sort((comicA, comicB) => {
         // Handle cases where lastModified doesn't exist on a cached comic
@@ -74,7 +76,7 @@ class DraftsRoute extends Component {
 
       this.setState({ draftComics }, () => this.props.hideSpinner())
     } else {
-      Router.pushRoute('/s/cell/new')
+      window.location = DDI_APP_PAGES.getComicStudioPageUrl()
     }
   }
 
@@ -92,7 +94,8 @@ class DraftsRoute extends Component {
 
   navigateToDraft = (comicUrlId) => {
     this.props.showSpinner()
-    Router.pushRoute(`/s/comic/${comicUrlId}`)
+    // Router.pushRoute(`/s/comic/${comicUrlId}`)
+    window.location = DDI_APP_PAGES.getComicStudioPageUrl(comicUrlId)
   }
 
   render() {

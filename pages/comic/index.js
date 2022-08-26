@@ -56,10 +56,14 @@ class ComicRoute extends Component {
 
     if (!comicIdIsValid || !data.isActive) {
       // @todo log this case
-      redirect(
-        DDI_APP_PAGES.getGalleryPageUrl({
-          comicUpdatedAt: data.comicUpdatedAt,
-        }),
+      return redirect(
+        DDI_APP_PAGES.getGalleryPageUrl(
+          data && data.comicUpdatedAt
+            ? {
+                comicUpdatedAt: data.comicUpdatedAt,
+              }
+            : undefined
+        ),
         res
       )
     }
@@ -89,8 +93,11 @@ class ComicRoute extends Component {
   }
 
   navigateToStudio = () => {
-    this.props.showSpinner()
-    Router.pushRoute(`/s/comic/${this.props.comicId}`)
+    const { comicId, showSpinner } = this.props
+
+    showSpinner()
+    // Router.pushRoute(`/s/comic/${this.props.comicId}`)
+    window.location = DDI_APP_PAGES.getComicStudioPageUrl(comicId)
   }
 
   /**

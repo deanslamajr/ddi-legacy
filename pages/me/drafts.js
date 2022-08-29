@@ -42,8 +42,6 @@ class DraftsRoute extends Component {
     } = require('../../helpers/clientCache')
     const dirtyComics = getDirtyComics()
 
-    console.log('dirtyComics', dirtyComics)
-
     if (dirtyComics && dirtyComics.length) {
       dirtyComics.sort((comicA, comicB) => {
         // Handle cases where lastModified doesn't exist on a cached comic

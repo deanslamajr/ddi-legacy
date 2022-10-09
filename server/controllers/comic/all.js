@@ -1,47 +1,56 @@
-const { Op } = require('sequelize')
+const { Op, where, literal } = require('sequelize')
 
 const { Comics, Cells } = require('../../models')
 const { transformComicFromDB } = require('./utils')
 const { PAGE_SIZE } = require('../../../config/constants.json')
 
-async function getOlderComics({ offset, pageSize = PAGE_SIZE, transaction }) {
-  const where = {
+async function getOlderComics({
+  caption,
+  emoji,
+  offset,
+  pageSize = PAGE_SIZE,
+  transaction,
+}) {
+  const whereQueryFragment = {
     is_active: true,
   }
 
   if (offset) {
-    where.updated_at = {
+    whereQueryFragment.updated_at = {
       [Op.lte]: offset,
     }
   }
 
+  if (caption) {
+    whereQueryFragment['$cells.caption$'] = { [Op.iLike]: `%${caption}%` }
+  }
+
+  if (emoji) {
+    whereQueryFragment.$and = [
+      where(literal("cells.studio_state->>'emojis'"), {
+        [Op.iLike]: `%"emoji":"${emoji}"%`,
+      }),
+    ]
+  }
+
   return Comics.findAndCountAll({
-    where,
+    where: whereQueryFragment,
     order: [['updated_at', 'DESC']],
     limit: pageSize,
     include: [Cells],
     distinct: true, // count should not include nested rows,
     transaction,
-  })
-}
-
-async function getNewerComics({ offset, pageSize = PAGE_SIZE }) {
-  return Comics.findAndCountAll({
-    order: [['updated_at', 'ASC']],
-    where: {
-      updated_at: { $gt: offset },
-      is_active: true,
-    },
-    limit: pageSize,
-    include: [Cells],
-    distinct: true, // count should not include nested rows
+    subQuery: false,
   })
 }
 
 async function all(req, res, next) {
   try {
     let isOffsetFromQueryStringValid = false
+    const captionSearchFromQueryString = req.query['caption']
+    const emojiFilterFromQueryString = req.query['emoji']
     const offsetFromQueryString = req.query['offset']
+
     if (offsetFromQueryString) {
       const parsedDate = Date.parse(offsetFromQueryString)
       isOffsetFromQueryStringValid = !Number.isNaN(parsedDate)
@@ -50,22 +59,38 @@ async function all(req, res, next) {
       }
     }
 
-    const result = await getOlderComics({
+    const resultFromFilter = await getOlderComics({
+      caption: captionSearchFromQueryString,
+      emoji: emojiFilterFromQueryString,
       offset: offsetFromQueryString,
     })
 
-    const comics = result.rows.map(transformComicFromDB)
+    const comicIdsFromFilter = resultFromFilter.rows.map((comic) => comic.id)
+
+    const result = await Comics.findAll({
+      order: [['updated_at', 'DESC']],
+      where: {
+        id: { [Op.in]: comicIdsFromFilter },
+        // is_active: true,
+      },
+      include: [Cells],
+      distinct: true, // count should not include nested rows
+    })
+
+    const comics = result.map(transformComicFromDB)
 
     const response = {
       comics,
       cursor:
-        result.rows.length > 0
-          ? comics[result.rows.length - 1].updatedAt
+        resultFromFilter.rows.length > 0
+          ? comics[resultFromFilter.rows.length - 1].updatedAt
           : isOffsetFromQueryStringValid
           ? offsetFromQueryString
           : '',
       hasMoreOlder:
-        result.count < 1 ? false : result.count > result.rows.length,
+        resultFromFilter.count < 1
+          ? false
+          : resultFromFilter.count > resultFromFilter.rows.length,
     }
 
     res.json(response)
@@ -74,42 +99,6 @@ async function all(req, res, next) {
   }
 }
 
-async function getNewerThan(req, res, next) {
-  try {
-    let latestUpdatedAt = req.query['latestUpdatedAt']
-    if (!latestUpdatedAt) {
-      throw new Error(
-        'Invalid request, must include queryString latestUpdatedAt'
-      )
-    }
-
-    try {
-      if (Number.isNaN(Date.parse(latestUpdatedAt))) {
-        const dateAsMilliseconds = Number.parseInt(latestUpdatedAt)
-        if (!Number.isNaN(dateAsMilliseconds)) {
-          latestUpdatedAt = dateAsMilliseconds
-        }
-      }
-    } catch (error) {
-      console.error(error)
-    }
-
-    const result = await getNewerComics({
-      offset: latestUpdatedAt,
-    })
-    const comics = result.rows.map(transformComicFromDB)
-
-    res.json({
-      comics,
-      hasMoreNewer:
-        result.count < 1 ? false : result.count > result.rows.length,
-    })
-  } catch (error) {
-    next(error)
-  }
-}
-
 module.exports = {
   all,
-  getNewerThan,
 }

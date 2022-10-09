@@ -1,4 +1,5 @@
-const { all, getNewerThan } = require('./all')
+const { all } = require('./all')
+const { getNewerThan } = require('./getNewerThan')
 const { get } = require('./get')
 const { inactivate } = require('./inactivate')
 const { sign } = require('./sign')

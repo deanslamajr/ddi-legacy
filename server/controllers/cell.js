@@ -25,6 +25,7 @@ async function get(req, res) {
       comicUrlId: cell.comic.url_id,
     })
   } catch (error) {
+    console.error(error)
     next(error)
   }
 }

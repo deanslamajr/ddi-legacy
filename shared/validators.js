@@ -106,7 +106,7 @@ function validatePosition(value, field) {
 
 function validateSkew(value) {
   if (typeof value !== 'number') {
-    return MIN_SKEW
+    return 0
   } else if (value < MIN_SKEW) {
     return MIN_SKEW
   } else if (value > MAX_SKEW) {
@@ -125,7 +125,7 @@ function validateEmojiField(value) {
     return ''
   }
 
-  if (value.length > 8) {
+  if (value.length > 255) {
     return value.substring(0, 8)
   }
 

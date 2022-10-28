@@ -1,5 +1,6 @@
 const { Op, where, literal } = require('sequelize')
 
+const { sequelize } = require('../../adapters/db')
 const { Comics, Cells } = require('../../models')
 const { transformComicFromDB } = require('./utils')
 const { PAGE_SIZE } = require('../../../config/constants.json')
@@ -8,7 +9,7 @@ async function getOlderComics({
   caption,
   emoji,
   offset,
-  pageSize = PAGE_SIZE,
+  pageSize = PAGE_SIZE * 2,
   transaction,
 }) {
   const whereQueryFragment = {
@@ -45,6 +46,8 @@ async function getOlderComics({
 }
 
 async function all(req, res, next) {
+  let transaction
+
   try {
     let isOffsetFromQueryStringValid = false
     const captionSearchFromQueryString = req.query['caption']
@@ -59,42 +62,52 @@ async function all(req, res, next) {
       }
     }
 
-    const resultFromFilter = await getOlderComics({
+    transaction = await sequelize.transaction()
+
+    const { rows, count } = await getOlderComics({
       caption: captionSearchFromQueryString,
       emoji: emojiFilterFromQueryString,
       offset: offsetFromQueryString,
+      transaction,
     })
 
-    const comicIdsFromFilter = resultFromFilter.rows.map((comic) => comic.id)
+    const comicIdsFromFilter = rows.map((comic) => comic.id)
 
     const result = await Comics.findAll({
       order: [['updated_at', 'DESC']],
       where: {
         id: { [Op.in]: comicIdsFromFilter },
-        // is_active: true,
+        is_active: true,
       },
       include: [Cells],
       distinct: true, // count should not include nested rows
+      transaction,
     })
+
+    transaction.commit()
 
     const comics = result.map(transformComicFromDB)
 
     const response = {
       comics,
       cursor:
-        resultFromFilter.rows.length > 0
-          ? comics[resultFromFilter.rows.length - 1].updatedAt
+        rows.length > 0
+          ? comics[rows.length - 1].updatedAt
           : isOffsetFromQueryStringValid
           ? offsetFromQueryString
           : '',
-      hasMoreOlder:
-        resultFromFilter.count < 1
-          ? false
-          : resultFromFilter.count > resultFromFilter.rows.length,
+      hasMoreOlder: count <= 1 ? false : count > rows.length,
     }
 
     res.json(response)
   } catch (error) {
+    try {
+      if (transaction) {
+        transaction.rollback()
+      }
+    } catch (deeperError) {
+      return next(deeperError)
+    }
     next(error)
   }
 }

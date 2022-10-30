@@ -34,15 +34,21 @@ async function getOlderComics({
     ]
   }
 
-  return Comics.findAndCountAll({
+  const emojiSearchArgs = {
+    include: [Cells],
+    distinct: true, // count should not include nested rows,
+  }
+
+  const args = {
     where: whereQueryFragment,
     order: [['updated_at', 'DESC']],
     limit: pageSize,
-    include: [Cells],
-    distinct: true, // count should not include nested rows,
     transaction,
     subQuery: false,
-  })
+    ...(emoji || caption ? emojiSearchArgs : {}),
+  }
+
+  return Comics.findAndCountAll(args)
 }
 
 async function all(req, res, next) {

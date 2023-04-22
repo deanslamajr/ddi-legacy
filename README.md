@@ -50,6 +50,13 @@ Next, run the migrations:
 npm run migrate -- --env development
 ```
 
+### Optional: copy seed data from production database
+
+1. Add your workstation's ip address to the DB ip allowlist
+2. Run `scripts/copyProdDB.sh`
+
+- might need to verify the DB ip address on the script
+
 ## Test Image
 
 - `npm run image:build`
